@@ -1,0 +1,22 @@
+---
+version: 3
+
+images:
+    base_image:
+        name: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
+
+dependencies:
+    galaxy:
+        collections:
+            - name: kubernetes.core
+              version: ">=3.0.0"
+    python:
+        - kubernetes
+        - openshift
+    system:
+        - helm [platform:rpm]
+
+additional_build_steps:
+    prepend_final:
+        - RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz | tar xzf - -C /usr/local/bin oc kubectl
+        - RUN curl -sL https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz | tar xzf - --strip-components=1 -C /usr/local/bin linux-amd64/helm
