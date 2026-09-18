@@ -5,10 +5,11 @@
 #   - pip install kubernetes openshift
 #   - ansible-galaxy collection install kubernetes.core
 #   - oc CLI and helm 3.10+ on PATH
-#   - Copy vars/portal-config.yml.example → vars/portal-config.yml
+#   - Copy vars/vault.yml.example → vars/vault.yml, fill in, then:
+#     ansible-vault encrypt vars/vault.yml
 #
 # Usage:
-#   ansible-playbook deploy-automation-portal.yml
+#   ansible-playbook deploy-automation-portal.yml --ask-vault-pass
 
 - name: Deploy Ansible Automation Portal
   hosts: localhost
@@ -16,7 +17,7 @@
   gather_facts: false
 
   vars_files:
-    - vars/portal-config.yml
+    - vars/vault.yml
 
   module_defaults:
     group/kubernetes.core.all:

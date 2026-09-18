@@ -1,5 +1,9 @@
-# Ansible Automation Portal — deployment configuration
-# Copy this file to portal-config.yml and fill in your values.
+# Ansible Automation Portal — all deployment variables
+# Copy to vault.yml, fill in, then encrypt:
+#   ansible-vault encrypt vars/vault.yml
+#
+# Run with:
+#   ansible-playbook deploy-automation-portal.yml --ask-vault-pass
 
 # --- AAP connection ---
 aap_host: "https://aap.example.com"
@@ -8,12 +12,9 @@ aap_admin_password: "changeme"
 aap_validate_certs: false
 
 # --- AAP organization ---
-# The portal syncs templates from exactly one AAP organization.
 aap_organization: "Default"
 
 # --- OpenShift connection ---
-# Either provide ocp_kubeconfig OR (ocp_api_url + ocp_token).
-# ocp_kubeconfig: "/path/to/kubeconfig"
 ocp_api_url: "https://api.ocp.example.com:6443"
 ocp_token: "sha256~..."
 ocp_validate_certs: false
@@ -25,25 +26,20 @@ ocp_project: "ansible-automation-portal"
 helm_release_name: "redhat-rhaap-portal"
 helm_chart_repo: "https://charts.openshift.io/"
 helm_chart_name: "openshift-helm-charts/redhat-rhaap-portal"
-# Set to a specific version or leave empty for latest:
 # helm_chart_version: "1.0.1"
 
 # --- OCP cluster router base ---
-# The wildcard apps domain for your OCP cluster (e.g. apps.ocp.example.com).
 ocp_cluster_router_base: "apps.ocp.example.com"
 
 # --- Plugin delivery ---
-# OCI is recommended. Set the imageTagInfo to match the portal lifecycle page.
 plugin_mode: "oci"
 image_tag_info: "2.2"
 
 # --- registry.redhat.io credentials ---
-# A registry service account from https://access.redhat.com/terms-based-registry/
 registry_username: ""
 registry_password: ""
 
 # --- Self-signed certs ---
-# Set to false if AAP uses self-signed certificates.
 portal_check_ssl: false
 
 # --- SCM integration (optional) ---
