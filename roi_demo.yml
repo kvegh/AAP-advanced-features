@@ -1,0 +1,20 @@
+---
+- name: ROI Demo - Simulated maintenance task
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Record start time
+      ansible.builtin.debug:
+        msg: "Task started at {{ ansible_date_time.iso8601 }}"
+
+    - name: Simulate maintenance work
+      ansible.builtin.command: sleep 120
+      changed_when: false
+
+    - name: Record end time
+      ansible.builtin.setup:
+        filter: ansible_date_time
+
+    - name: Report completion
+      ansible.builtin.debug:
+        msg: "Task completed at {{ ansible_date_time.iso8601 }}"
