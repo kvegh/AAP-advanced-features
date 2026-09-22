@@ -8,7 +8,7 @@
         msg: "Task started at {{ ansible_date_time.iso8601 }}"
 
     - name: Simulate maintenance work
-      ansible.builtin.command: sleep 120
+      ansible.builtin.command: sleep 1200
       changed_when: false
 
     - name: Record end time
