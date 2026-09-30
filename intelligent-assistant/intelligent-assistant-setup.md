@@ -112,7 +112,55 @@ This will:
 - Register Lightspeed with the platform gateway
 - Configure MCP integration
 
-## Step 4 — Verify
+## Step 4 — Enable Persistent Chat History
+
+By default, the Intelligent Assistant does not persist conversation history — closing the chat bubble or logging out deletes all chat history. This is because the `conversation_cache` in the chatbot service config defaults to `type: null` (disabled).
+
+To enable persistent chat history, add a `conversation_cache` section to the chatbot service config file on the AAP host:
+
+```
+/home/aap_service/aap/lightspeed/etc/chatbot/lightspeed-stack.yaml
+```
+
+Append the following block:
+
+```yaml
+conversation_cache:
+  type: postgres
+  postgres:
+    host: <AAP_HOSTNAME>
+    port: 5432
+    db: lightspeed
+    user: lightspeed
+    password: <LIGHTSPEED_PG_PASSWORD>
+    namespace: chatbot
+```
+
+This reuses the PostgreSQL database that the installer already created for Lightspeed. The supported `type` values are `memory`, `sqlite`, and `postgres` — only `postgres` survives container restarts.
+
+**Important:** The `namespace` parameter must be set to something other than `public` (e.g. `chatbot`). The `lightspeed` database already contains a Django `cache` table from the AAP platform gateway. Without a separate namespace, the chatbot's `CREATE TABLE IF NOT EXISTS cache` silently matches the wrong table, causing cache initialization failures.
+
+After editing, restart the chatbot container:
+
+```bash
+podman restart ansible-lightspeed-chatbot
+```
+
+Verify by checking the container logs for the `conversation_cache` section in the startup configuration dump:
+
+```bash
+podman logs --tail 10 ansible-lightspeed-chatbot
+```
+
+You should see `conversation_cache=ConversationHistoryConfiguration(type='postgres', ...)` in the config output.
+
+### Limitation — Frontend Does Not Restore History on Widget Reopen
+
+With this configuration, the chatbot backend persists all conversations in PostgreSQL. The chat history sidebar works correctly within an open session — previous conversations are listed and can be restored. However, closing the chat bubble widget and reopening it resets the frontend JavaScript state. The widget does not call the conversations API on initialization, so previously persisted conversations are not displayed until a new message is sent.
+
+This is a frontend behavior in the AAP platform gateway, not a chatbot service limitation. The data remains in PostgreSQL and survives container restarts — only the UI does not reload it on widget reopen.
+
+## Step 5 — Verify
 
 1. Log in to `https://<AAP_HOSTNAME>`
 2. Look for the chat bubble icon in the top right corner of the taskbar
