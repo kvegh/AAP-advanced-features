@@ -8,6 +8,9 @@
   connection: local
   gather_facts: false
 
+  vars_files:
+    - vars/vault.yml
+
   vars:
     pah_url: "{{ aap_gateway_url }}"
     pah_validate_certs: false

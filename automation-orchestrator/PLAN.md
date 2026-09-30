@@ -41,10 +41,10 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 6. **Orchestrator configuration**: No certified Ansible collection exists for Orchestrator's own config (identity providers, integrations). The REST API is the only documented interface -- `ansible.builtin.uri` is the correct approach.
 7. **Passwords**: Generated at runtime via `lookup('password', ...)`. Idempotent -- check if K8s secret exists first, only generate if missing. Passwords live only in OCP secrets, never in git.
 8. **AAP credentials**: No admin rights handed to Orchestrator. Manual OAuth path -- create dedicated OAuth app and service account on AAP via `ansible.platform`, pass only client_id/secret and service account credentials to Orchestrator.
-9. **EE**: Custom build based on `ee-minimal-rhel9` -- add `python3-kubernetes` and `python3-openshift` RPMs only. Collections mounted at runtime via `collections/requirements.yml` (must be synced to PAH).
+9. **EE**: Custom build based on `ee-minimal-rhel9` -- add `kubernetes` and `openshift` Python packages via pip. Collections mounted at runtime via `collections/requirements.yml` (must be synced to PAH).
 10. **Disk**: AAP host has sufficient disk space. Custom minimal EE (~500MB) fits comfortably.
 11. **Collection sync**: Automated via `ansible.platform` in a pre-flight play running on the default EE. Syncs `redhat.openshift` and `ansible.platform` from console.redhat.com to PAH.
-12. **Secrets handling**: Zero secrets in playbook or plan files. OCP token and AAP admin creds injected via AAP credential types as extra vars. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
+12. **Secrets handling**: Zero plaintext secrets in git. OCP token, AAP admin creds, and route hostname stored in `vars/vault.yml` (ansible-vault encrypted, committed to repo). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
 13. **Subscription**: No separate manifest needed. Orchestrator operator available via `redhat-operators` catalog (OCP pull secret on RHPDS covers it). AAP subscription includes Orchestrator entitlement.
 14. **PostgreSQL**: CloudNativePG operator runs PG pods directly on OCP. No external DB. Fine for demo.
 15. **EE build**: Build on the KVM host, not on the AAP VM. Push to PAH container registry. No risk to running AAP.
@@ -57,7 +57,7 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 - **Certified Red Hat collections only:** `redhat.openshift`, `ansible.platform`. No `kubernetes.core` directly.
 - **Orchestrator REST API via `ansible.builtin.uri`** for post-deploy configuration (identity provider, integrations) — no certified collection exists for this.
 - **No admin credentials handed to Orchestrator.** Manual OAuth path: create OAuth app + service account on AAP via `ansible.platform`, pass only client_id/secret to Orchestrator.
-- **No secrets in any file.** Passwords generated at runtime. AAP credentials injected via AAP credential types as extra vars at job launch time.
+- **No plaintext secrets in git.** OCP and AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime.
 - **Collections runtime-mounted** from PAH via `collections/requirements.yml`, not baked into EE.
 - **EE based on `ee-minimal-rhel9`**, only adds Python libraries. Build on the KVM host, not on the AAP VM.
 - **Idempotent.** Re-running the playbook must not break an existing deployment (check-before-create pattern for secrets, operators, CRs).
@@ -85,8 +85,8 @@ This solves the chicken-and-egg: the default EE has `ansible.platform` built in,
 
 ### Step 2: Prerequisites
 
-- OCP API token provided via AAP credential type (injected as extra var)
-- AAP admin credentials provided via AAP credential type (for OAuth app creation only)
+- All credentials stored in `vars/vault.yml` (ansible-vault encrypted): OCP API URL/token, AAP Gateway URL/credentials, Orchestrator route hostname
+- AAP Vault credential attached to job template for decryption at runtime
 - Playbook uses `redhat.openshift.k8s` and `redhat.openshift.k8s_info` -- no `oc` CLI needed
 - Authentication via `redhat.openshift.openshift_auth` or API token variable
 - Preflight: verify OCP version >= 4.14 and OLM catalog via `k8s_info`
@@ -256,6 +256,7 @@ automation-orchestrator/
     requirements.yml                    # Runtime collection mounting (redhat.openshift, ansible.platform)
   vars/
     main.yml                            # Non-secret variables (namespace, channel, PG config)
+    vault.yml                           # Encrypted secrets (OCP token, AAP creds, route host)
     vault.yml.example                   # Template showing required var names (no values)
   execution-environment/
     execution-environment.yml           # EE definition based on ee-minimal-rhel9
@@ -264,7 +265,7 @@ automation-orchestrator/
 
 No Jinja templates needed -- `redhat.openshift.k8s` takes inline `definition:` dicts directly, which is cleaner and keeps everything in one playbook file.
 
-Passwords for PG and Orchestrator admin are generated at runtime and stored in K8s secrets only -- vault.yml only holds AAP-side credentials needed to create the OAuth app and service account.
+Passwords for PG and Orchestrator admin are generated at runtime and stored in K8s secrets only. `vars/vault.yml` (ansible-vault encrypted) holds OCP credentials, AAP admin credentials, and the Orchestrator route hostname. Decrypted at runtime by AAP Vault credential.
 
 ### Playbook structure
 
@@ -299,11 +300,11 @@ Collections must be synced to Private Automation Hub.
 version: 3
 images:
   base_image:
-    name: registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:latest
+    name: registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:2.20
 dependencies:
-  system:
-    - python3-kubernetes
-    - python3-openshift
+  python:
+    - kubernetes
+    - openshift
 ```
 
 Collections are NOT baked in -- mounted at runtime from PAH. Only the Python libraries that collections depend on are added to the image.

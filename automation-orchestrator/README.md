@@ -6,7 +6,7 @@ Deploys Automation Orchestrator on OpenShift via OLM, with CloudNativePG for Pos
 
 - OpenShift 4.14+ with `redhat-operators` and `certified-operators` CatalogSources
 - OCP service account token with cluster-admin (or namespace-admin on target namespaces)
-- Custom EE with `python3-kubernetes` and `python3-openshift` (see `execution-environment/`)
+- Custom EE with `kubernetes` and `openshift` Python packages (see `execution-environment/`)
 - Collections `redhat.openshift` and `ansible.platform` synced to PAH (see `sync-collections.yml`)
 
 ## Files
@@ -34,43 +34,36 @@ Push to PAH container registry, then register in AAP as an Execution Environment
 
 ### 2. Sync collections to PAH
 
-Run on the default EE (which already has `ansible.platform`):
+Run on the default EE (which already has `ansible.platform`). Reads AAP credentials from the vault:
 
 ```bash
-ansible-playbook sync-collections.yml \
-    -e aap_gateway_url=https://aap.example.com \
-    -e aap_admin_username=admin \
-    -e aap_admin_password=changeme
+ansible-playbook sync-collections.yml --ask-vault-pass
 ```
 
-### 3. Deploy Orchestrator
-
-```bash
-ansible-playbook deploy-automation-orchestrator.yml \
-    -e ocp_api_url=https://api.cluster.example.com:6443 \
-    -e ocp_api_token=sha256~xxxx \
-    -e orchestrator_route_host=orchestrator.apps.cluster.example.com \
-    -e aap_gateway_url=https://aap.example.com \
-    -e aap_admin_username=admin \
-    -e aap_admin_password=changeme
-```
-
-Or with vault:
+### 3. Create the vault file
 
 ```bash
 cp vars/vault.yml.example vars/vault.yml
+# Edit vars/vault.yml with your actual values
 ansible-vault encrypt vars/vault.yml
-ansible-playbook deploy-automation-orchestrator.yml -e @vars/vault.yml --ask-vault-pass
 ```
 
-Omit `aap_gateway_url` to skip AAP integration (Orchestrator deploys standalone).
+Omit `aap_gateway_url` from the vault to skip AAP integration (Orchestrator deploys standalone).
+
+### 4. Deploy Orchestrator
+
+```bash
+ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass
+```
+
+The playbook loads `vars/vault.yml` automatically via `vars_files`.
 
 ### Running as an AAP Job Template
 
-1. Create an OCP credential type injecting `ocp_api_url` and `ocp_api_token` as extra vars
-2. Create the project pointing at this repo
-3. Create the job template using the custom EE, `deploy-automation-orchestrator.yml`, and the OCP credential
-4. Add AAP admin credentials as a second credential (or as survey variables)
+1. Create the project pointing at this repo
+2. Create the job template using the Orchestrator EE and `deploy-automation-orchestrator.yml`
+3. Attach the Vault credential to the job template (decrypts `vars/vault.yml` at runtime)
+4. No custom credential types needed — all secrets live in the encrypted vault file
 
 ## What it does
 

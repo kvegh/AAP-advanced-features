@@ -6,6 +6,7 @@
 
   vars_files:
     - vars/main.yml
+    - vars/vault.yml
 
   module_defaults:
     redhat.openshift.k8s:
@@ -426,94 +427,31 @@
           - "================================================"
 
     # =======================================================================
-    # AAP OAUTH APPLICATION AND SERVICE ACCOUNT
-    # (skipped when aap_gateway_url is not provided)
+    # AAP INTEGRATION
+    # OAuth app and service account are pre-created in AAP.
+    # Credentials come from vars/vault.yml (oauth_client_id, oauth_client_secret,
+    # svc_account_username, svc_account_password).
+    # Skipped when aap_gateway_url is not provided.
     # =======================================================================
 
     - name: Configure AAP integration
-      when: aap_gateway_url is defined and aap_admin_username is defined
+      when: aap_gateway_url is defined and oauth_client_id is defined
       block:
 
-        - name: Check for existing AAP credentials secret
-          redhat.openshift.k8s_info:
-            api_version: v1
-            kind: Secret
-            name: orchestrator-aap-credentials
-            namespace: "{{ orchestrator_namespace }}"
-          register: existing_aap_creds
-
-        - name: Read stored AAP credentials
-          ansible.builtin.set_fact:
-            oauth_client_id: "{{ existing_aap_creds.resources[0].data.client_id | b64decode }}"
-            oauth_client_secret: "{{ existing_aap_creds.resources[0].data.client_secret | b64decode }}"
-            svc_account_password: "{{ existing_aap_creds.resources[0].data.svc_password | b64decode }}"
-          when: existing_aap_creds.resources | length > 0
-
-        - name: Create AAP resources
-          when: existing_aap_creds.resources | length == 0
-          block:
-
-            - name: Generate service account password
-              ansible.builtin.set_fact:
-                svc_account_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
-
-            - name: Create OAuth2 application on AAP Gateway
-              ansible.builtin.uri:
-                url: "{{ aap_gateway_url }}/api/gateway/v1/o/applications/"
-                method: POST
-                user: "{{ aap_admin_username }}"
-                password: "{{ aap_admin_password }}"
-                force_basic_auth: true
-                validate_certs: false
-                body_format: json
-                body:
-                  name: Automation Orchestrator
-                  client_type: confidential
-                  authorization_grant_type: authorization-code
-                  redirect_uris: "{{ orchestrator_url }}/api/v1/auth/oidc/callback"
-                status_code: [201]
-              register: oauth_app
-
-            - name: Set OAuth credentials
-              ansible.builtin.set_fact:
-                oauth_client_id: "{{ oauth_app.json.client_id }}"
-                oauth_client_secret: "{{ oauth_app.json.client_secret }}"
-
-            - name: Create service account user on AAP
-              ansible.builtin.uri:
-                url: "{{ aap_gateway_url }}/api/gateway/v1/users/"
-                method: POST
-                user: "{{ aap_admin_username }}"
-                password: "{{ aap_admin_password }}"
-                force_basic_auth: true
-                validate_certs: false
-                body_format: json
-                body:
-                  username: orchestrator_svc
-                  password: "{{ svc_account_password }}"
-                  is_superuser: false
-                  email: "orchestrator_svc@localhost"
-                status_code: [201]
-              register: svc_user
-
-            - name: Store AAP credentials in K8s secret
-              redhat.openshift.k8s:
-                definition:
-                  apiVersion: v1
-                  kind: Secret
-                  metadata:
-                    name: orchestrator-aap-credentials
-                    namespace: "{{ orchestrator_namespace }}"
-                  type: Opaque
-                  stringData:
-                    client_id: "{{ oauth_client_id }}"
-                    client_secret: "{{ oauth_client_secret }}"
-                    svc_password: "{{ svc_account_password }}"
-                    svc_username: orchestrator_svc
-
-        # ===================================================================
-        # CONFIGURE ORCHESTRATOR VIA REST API
-        # ===================================================================
+        - name: Store AAP credentials in K8s secret
+          redhat.openshift.k8s:
+            definition:
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: orchestrator-aap-credentials
+                namespace: "{{ orchestrator_namespace }}"
+              type: Opaque
+              stringData:
+                client_id: "{{ oauth_client_id }}"
+                client_secret: "{{ oauth_client_secret }}"
+                svc_password: "{{ svc_account_password }}"
+                svc_username: "{{ svc_account_username }}"
 
         - name: Authenticate to Orchestrator API
           ansible.builtin.uri:
@@ -592,7 +530,7 @@
               security:
                 disable_tls_verify: true
               credential:
-                username: orchestrator_svc
+                username: "{{ svc_account_username }}"
                 password: "{{ svc_account_password }}"
             validate_certs: false
             status_code: [200, 201]
@@ -609,6 +547,6 @@
               - "================================================"
               - "Identity Provider:  Ansible Automation Platform"
               - "Integration:        AAP Demo"
-              - "Service Account:    orchestrator_svc"
+              - "Service Account:    {{ svc_account_username }}"
               - "OAuth Client ID:    {{ oauth_client_id }}"
               - "================================================"
