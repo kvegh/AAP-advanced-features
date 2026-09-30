@@ -1,0 +1,614 @@
+---
+- name: Deploy Automation Orchestrator on OpenShift
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - vars/main.yml
+
+  module_defaults:
+    redhat.openshift.k8s:
+      host: "{{ ocp_api_url }}"
+      api_key: "{{ ocp_api_token }}"
+      validate_certs: "{{ ocp_validate_certs }}"
+    redhat.openshift.k8s_info:
+      host: "{{ ocp_api_url }}"
+      api_key: "{{ ocp_api_token }}"
+      validate_certs: "{{ ocp_validate_certs }}"
+
+  tasks:
+
+    # =======================================================================
+    # PREFLIGHT
+    # =======================================================================
+
+    - name: Verify OCP cluster version
+      redhat.openshift.k8s_info:
+        api_version: config.openshift.io/v1
+        kind: ClusterVersion
+        name: version
+      register: cluster_version
+
+    - name: Assert OCP >= 4.14
+      ansible.builtin.assert:
+        that:
+          - cluster_version.resources | length > 0
+          - >-
+            cluster_version.resources[0].status.desired.version
+            is version('4.14', '>=', version_type='loose')
+        fail_msg: "OCP 4.14+ required. Found: {{ cluster_version.resources[0].status.desired.version | default('unknown') }}"
+
+    - name: Verify redhat-operators CatalogSource
+      redhat.openshift.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: CatalogSource
+        name: redhat-operators
+        namespace: openshift-marketplace
+      register: redhat_catalog
+      failed_when: redhat_catalog.resources | length == 0
+
+    - name: Verify certified-operators CatalogSource
+      redhat.openshift.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: CatalogSource
+        name: certified-operators
+        namespace: openshift-marketplace
+      register: certified_catalog
+      failed_when: certified_catalog.resources | length == 0
+
+    # =======================================================================
+    # CLOUDNATIVEPG OPERATOR
+    # =======================================================================
+
+    - name: Create CloudNativePG operator namespace
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ cnpg_namespace }}"
+
+    - name: Create CloudNativePG OperatorGroup
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            name: cnpg-operator
+            namespace: "{{ cnpg_namespace }}"
+          spec: {}
+
+    - name: Create CloudNativePG Subscription
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: "{{ cnpg_operator_name }}"
+            namespace: "{{ cnpg_namespace }}"
+          spec:
+            channel: "{{ cnpg_channel }}"
+            name: "{{ cnpg_operator_name }}"
+            source: certified-operators
+            sourceNamespace: openshift-marketplace
+            installPlanApproval: Manual
+
+    - name: Wait for CloudNativePG InstallPlan
+      redhat.openshift.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: Subscription
+        name: "{{ cnpg_operator_name }}"
+        namespace: "{{ cnpg_namespace }}"
+      register: cnpg_sub
+      until: >-
+        cnpg_sub.resources | length > 0 and
+        cnpg_sub.resources[0].status.installPlanRef is defined
+      retries: 30
+      delay: 10
+
+    - name: Approve CloudNativePG InstallPlan
+      redhat.openshift.k8s:
+        api_version: operators.coreos.com/v1alpha1
+        kind: InstallPlan
+        name: "{{ cnpg_sub.resources[0].status.installPlanRef.name }}"
+        namespace: "{{ cnpg_namespace }}"
+        definition:
+          spec:
+            approved: true
+        merge_type: merge
+
+    - name: Wait for CloudNativePG operator ready
+      redhat.openshift.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        namespace: "{{ cnpg_namespace }}"
+        label_selectors:
+          - "app.kubernetes.io/name=cloudnative-pg"
+      register: cnpg_deploy
+      until: >-
+        cnpg_deploy.resources | length > 0 and
+        (cnpg_deploy.resources[0].status.availableReplicas | default(0)) > 0
+      retries: 60
+      delay: 10
+
+    # =======================================================================
+    # ORCHESTRATOR NAMESPACE AND SECRETS
+    # =======================================================================
+
+    - name: Create Orchestrator namespace
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ orchestrator_namespace }}"
+
+    - name: Check for existing orchestrator-pg-credentials
+      redhat.openshift.k8s_info:
+        api_version: v1
+        kind: Secret
+        name: orchestrator-pg-credentials
+        namespace: "{{ orchestrator_namespace }}"
+      register: existing_orch_pg
+
+    - name: Check for existing temporal-pg-credentials
+      redhat.openshift.k8s_info:
+        api_version: v1
+        kind: Secret
+        name: temporal-pg-credentials
+        namespace: "{{ orchestrator_namespace }}"
+      register: existing_temporal_pg
+
+    - name: Check for existing orchestrator-admin-password
+      redhat.openshift.k8s_info:
+        api_version: v1
+        kind: Secret
+        name: orchestrator-admin-password
+        namespace: "{{ orchestrator_namespace }}"
+      register: existing_admin_pw
+
+    - name: Generate orchestrator PG password
+      ansible.builtin.set_fact:
+        orchestrator_pg_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      when: existing_orch_pg.resources | length == 0
+
+    - name: Read existing orchestrator PG password
+      ansible.builtin.set_fact:
+        orchestrator_pg_password: "{{ existing_orch_pg.resources[0].data.password | b64decode }}"
+      when: existing_orch_pg.resources | length > 0
+
+    - name: Generate temporal PG password
+      ansible.builtin.set_fact:
+        temporal_pg_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      when: existing_temporal_pg.resources | length == 0
+
+    - name: Read existing temporal PG password
+      ansible.builtin.set_fact:
+        temporal_pg_password: "{{ existing_temporal_pg.resources[0].data.password | b64decode }}"
+      when: existing_temporal_pg.resources | length > 0
+
+    - name: Generate admin password
+      ansible.builtin.set_fact:
+        orchestrator_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      when: existing_admin_pw.resources | length == 0
+
+    - name: Read existing admin password
+      ansible.builtin.set_fact:
+        orchestrator_admin_password: "{{ existing_admin_pw.resources[0].data.password | b64decode }}"
+      when: existing_admin_pw.resources | length > 0
+
+    - name: Create orchestrator-pg-credentials
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: orchestrator-pg-credentials
+            namespace: "{{ orchestrator_namespace }}"
+          type: Opaque
+          stringData:
+            database: orchestrator
+            username: orchestrator_user
+            password: "{{ orchestrator_pg_password }}"
+      when: existing_orch_pg.resources | length == 0
+
+    - name: Create temporal-pg-credentials
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: temporal-pg-credentials
+            namespace: "{{ orchestrator_namespace }}"
+          type: Opaque
+          stringData:
+            database: temporal
+            username: temporal_user
+            password: "{{ temporal_pg_password }}"
+      when: existing_temporal_pg.resources | length == 0
+
+    - name: Create orchestrator-admin-password
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: orchestrator-admin-password
+            namespace: "{{ orchestrator_namespace }}"
+          type: Opaque
+          stringData:
+            password: "{{ orchestrator_admin_password }}"
+      when: existing_admin_pw.resources | length == 0
+
+    # =======================================================================
+    # CLOUDNATIVEPG CLUSTER
+    # =======================================================================
+
+    - name: Create CloudNativePG Cluster
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: postgresql.cnpg.io/v1
+          kind: Cluster
+          metadata:
+            name: "{{ cnpg_cluster_name }}"
+            namespace: "{{ orchestrator_namespace }}"
+          spec:
+            instances: "{{ cnpg_instances }}"
+            storage:
+              size: "{{ cnpg_storage_size }}"
+            postgresql:
+              parameters:
+                max_connections: "200"
+            bootstrap:
+              initdb:
+                database: orchestrator
+                owner: orchestrator_user
+                secret:
+                  name: orchestrator-pg-credentials
+                postInitApplicationSQL:
+                  - "CREATE ROLE temporal_user WITH LOGIN PASSWORD '{{ temporal_pg_password }}';"
+                  - "CREATE DATABASE temporal OWNER temporal_user;"
+                  - "CREATE DATABASE temporal_visibility OWNER temporal_user;"
+                  - "GRANT ALL PRIVILEGES ON DATABASE orchestrator TO orchestrator_user;"
+
+    - name: Wait for CloudNativePG Cluster ready
+      redhat.openshift.k8s_info:
+        api_version: postgresql.cnpg.io/v1
+        kind: Cluster
+        name: "{{ cnpg_cluster_name }}"
+        namespace: "{{ orchestrator_namespace }}"
+      register: cnpg_cluster
+      until: >-
+        cnpg_cluster.resources | length > 0 and
+        cnpg_cluster.resources[0].status is defined and
+        (cnpg_cluster.resources[0].status.readyInstances | default(0)) >= cnpg_instances
+      retries: 60
+      delay: 15
+
+    # =======================================================================
+    # ORCHESTRATOR OPERATOR
+    # =======================================================================
+
+    - name: Create Orchestrator OperatorGroup
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            name: "{{ orchestrator_operator_name }}"
+            namespace: "{{ orchestrator_namespace }}"
+          spec: {}
+
+    - name: Create Orchestrator Subscription
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: "{{ orchestrator_operator_name }}"
+            namespace: "{{ orchestrator_namespace }}"
+          spec:
+            channel: "{{ orchestrator_channel }}"
+            name: "{{ orchestrator_operator_name }}"
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+            installPlanApproval: Manual
+
+    - name: Wait for Orchestrator InstallPlan
+      redhat.openshift.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: Subscription
+        name: "{{ orchestrator_operator_name }}"
+        namespace: "{{ orchestrator_namespace }}"
+      register: orch_sub
+      until: >-
+        orch_sub.resources | length > 0 and
+        orch_sub.resources[0].status.installPlanRef is defined
+      retries: 30
+      delay: 10
+
+    - name: Approve Orchestrator InstallPlan
+      redhat.openshift.k8s:
+        api_version: operators.coreos.com/v1alpha1
+        kind: InstallPlan
+        name: "{{ orch_sub.resources[0].status.installPlanRef.name }}"
+        namespace: "{{ orchestrator_namespace }}"
+        definition:
+          spec:
+            approved: true
+        merge_type: merge
+
+    - name: Wait for Orchestrator operator ready
+      redhat.openshift.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: automation-orchestrator-operator-controller-manager
+        namespace: "{{ orchestrator_namespace }}"
+      register: orch_deploy
+      until: >-
+        orch_deploy.resources | length > 0 and
+        (orch_deploy.resources[0].status.availableReplicas | default(0)) > 0
+      retries: 60
+      delay: 10
+
+    # =======================================================================
+    # AUTOMATIONORCHESTRATOR CR
+    # =======================================================================
+
+    - name: Create AutomationOrchestrator CR
+      redhat.openshift.k8s:
+        definition:
+          apiVersion: aap.ansible.com/v1alpha1
+          kind: AutomationOrchestrator
+          metadata:
+            name: "{{ orchestrator_cr_name }}"
+            namespace: "{{ orchestrator_namespace }}"
+          spec:
+            postgres:
+              host: "{{ cnpg_cluster_name }}-rw.{{ orchestrator_namespace }}.svc"
+              port: "{{ pg_port }}"
+              sslMode: "{{ pg_ssl_mode }}"
+              backendDatabase:
+                secretRef:
+                  name: orchestrator-pg-credentials
+              temporalDatabase:
+                secretRef:
+                  name: temporal-pg-credentials
+            ingress:
+              host: "{{ orchestrator_route_host }}"
+            secrets:
+              initialAdminPasswordSecretRef:
+                name: orchestrator-admin-password
+
+    - name: Wait for AutomationOrchestrator ready
+      redhat.openshift.k8s_info:
+        api_version: aap.ansible.com/v1alpha1
+        kind: AutomationOrchestrator
+        name: "{{ orchestrator_cr_name }}"
+        namespace: "{{ orchestrator_namespace }}"
+      register: orch_cr
+      until: >-
+        orch_cr.resources | length > 0 and
+        orch_cr.resources[0].status.conditions is defined and
+        orch_cr.resources[0].status.conditions
+        | selectattr('type', 'equalto', 'Ready')
+        | selectattr('status', 'equalto', 'True')
+        | list | length > 0
+      retries: 120
+      delay: 15
+
+    # =======================================================================
+    # RETRIEVE ROUTE
+    # =======================================================================
+
+    - name: Get Orchestrator Route
+      redhat.openshift.k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        namespace: "{{ orchestrator_namespace }}"
+      register: orch_routes
+
+    - name: Set Orchestrator URL from Route
+      ansible.builtin.set_fact:
+        orchestrator_url: "https://{{ orchestrator_route_host }}"
+
+    - name: Display Orchestrator deployment info
+      ansible.builtin.debug:
+        msg:
+          - "================================================"
+          - "Automation Orchestrator deployed successfully"
+          - "================================================"
+          - "URL:            {{ orchestrator_url }}"
+          - "Admin user:     admin"
+          - "Admin password: {{ orchestrator_admin_password }}"
+          - "PG host:        {{ cnpg_cluster_name }}-rw.{{ orchestrator_namespace }}.svc"
+          - "================================================"
+
+    # =======================================================================
+    # AAP OAUTH APPLICATION AND SERVICE ACCOUNT
+    # (skipped when aap_gateway_url is not provided)
+    # =======================================================================
+
+    - name: Configure AAP integration
+      when: aap_gateway_url is defined and aap_admin_username is defined
+      block:
+
+        - name: Check for existing AAP credentials secret
+          redhat.openshift.k8s_info:
+            api_version: v1
+            kind: Secret
+            name: orchestrator-aap-credentials
+            namespace: "{{ orchestrator_namespace }}"
+          register: existing_aap_creds
+
+        - name: Read stored AAP credentials
+          ansible.builtin.set_fact:
+            oauth_client_id: "{{ existing_aap_creds.resources[0].data.client_id | b64decode }}"
+            oauth_client_secret: "{{ existing_aap_creds.resources[0].data.client_secret | b64decode }}"
+            svc_account_password: "{{ existing_aap_creds.resources[0].data.svc_password | b64decode }}"
+          when: existing_aap_creds.resources | length > 0
+
+        - name: Create AAP resources
+          when: existing_aap_creds.resources | length == 0
+          block:
+
+            - name: Generate service account password
+              ansible.builtin.set_fact:
+                svc_account_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+
+            - name: Create OAuth2 application on AAP Gateway
+              ansible.builtin.uri:
+                url: "{{ aap_gateway_url }}/api/gateway/v1/o/applications/"
+                method: POST
+                user: "{{ aap_admin_username }}"
+                password: "{{ aap_admin_password }}"
+                force_basic_auth: true
+                validate_certs: false
+                body_format: json
+                body:
+                  name: Automation Orchestrator
+                  client_type: confidential
+                  authorization_grant_type: authorization-code
+                  redirect_uris: "{{ orchestrator_url }}/api/v1/auth/oidc/callback"
+                status_code: [201]
+              register: oauth_app
+
+            - name: Set OAuth credentials
+              ansible.builtin.set_fact:
+                oauth_client_id: "{{ oauth_app.json.client_id }}"
+                oauth_client_secret: "{{ oauth_app.json.client_secret }}"
+
+            - name: Create service account user on AAP
+              ansible.builtin.uri:
+                url: "{{ aap_gateway_url }}/api/gateway/v1/users/"
+                method: POST
+                user: "{{ aap_admin_username }}"
+                password: "{{ aap_admin_password }}"
+                force_basic_auth: true
+                validate_certs: false
+                body_format: json
+                body:
+                  username: orchestrator_svc
+                  password: "{{ svc_account_password }}"
+                  is_superuser: false
+                  email: "orchestrator_svc@localhost"
+                status_code: [201]
+              register: svc_user
+
+            - name: Store AAP credentials in K8s secret
+              redhat.openshift.k8s:
+                definition:
+                  apiVersion: v1
+                  kind: Secret
+                  metadata:
+                    name: orchestrator-aap-credentials
+                    namespace: "{{ orchestrator_namespace }}"
+                  type: Opaque
+                  stringData:
+                    client_id: "{{ oauth_client_id }}"
+                    client_secret: "{{ oauth_client_secret }}"
+                    svc_password: "{{ svc_account_password }}"
+                    svc_username: orchestrator_svc
+
+        # ===================================================================
+        # CONFIGURE ORCHESTRATOR VIA REST API
+        # ===================================================================
+
+        - name: Authenticate to Orchestrator API
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/auth/login"
+            method: POST
+            body_format: json
+            body:
+              username: admin
+              password: "{{ orchestrator_admin_password }}"
+            validate_certs: false
+            status_code: [200]
+          register: orch_auth
+
+        - name: Set auth token
+          ansible.builtin.set_fact:
+            orch_token: "{{ orch_auth.json.access_token }}"
+
+        - name: List existing identity providers
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/identity_providers"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            validate_certs: false
+          register: existing_idps
+
+        - name: Add AAP as OIDC identity provider
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/identity_providers"
+            method: POST
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            body_format: json
+            body:
+              provider_type: oidc
+              idp_type: aap
+              name: Ansible Automation Platform
+              issuer_url: "{{ aap_gateway_url }}/o/"
+              client_id: "{{ oauth_client_id }}"
+              client_secret: "{{ oauth_client_secret }}"
+              redirect_uri: "{{ orchestrator_url }}/api/v1/auth/oidc/callback"
+              scopes: "read write openid roles"
+              auto_discovery: true
+              allow_all_authenticated: true
+              aap_role_mapping_enabled: true
+              enable_rp_initiated_logout: true
+              disable_tls_verify: true
+            validate_certs: false
+            status_code: [200, 201]
+          when: >-
+            (existing_idps.json.results | default([]))
+            | selectattr('name', 'equalto', 'Ansible Automation Platform')
+            | list | length == 0
+
+        - name: List existing integrations
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/integrations"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            validate_certs: false
+          register: existing_integrations
+
+        - name: Create AAP integration
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/integrations"
+            method: POST
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            body_format: json
+            body:
+              name: AAP Demo
+              integration_type: aap
+              url: "{{ aap_gateway_url }}"
+              description: Ansible Automation Platform integration for job dispatch
+              security:
+                disable_tls_verify: true
+              credential:
+                username: orchestrator_svc
+                password: "{{ svc_account_password }}"
+            validate_certs: false
+            status_code: [200, 201]
+          when: >-
+            (existing_integrations.json.results | default([]))
+            | selectattr('name', 'equalto', 'AAP Demo')
+            | list | length == 0
+
+        - name: Display AAP integration info
+          ansible.builtin.debug:
+            msg:
+              - "================================================"
+              - "AAP Integration configured"
+              - "================================================"
+              - "Identity Provider:  Ansible Automation Platform"
+              - "Integration:        AAP Demo"
+              - "Service Account:    orchestrator_svc"
+              - "OAuth Client ID:    {{ oauth_client_id }}"
+              - "================================================"

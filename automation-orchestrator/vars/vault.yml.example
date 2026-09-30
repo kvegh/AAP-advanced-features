@@ -1,0 +1,15 @@
+---
+# Copy to vault.yml and encrypt: ansible-vault encrypt vars/vault.yml
+# When running as an AAP job template, inject these via credential types instead.
+
+# OCP cluster credentials
+ocp_api_url: "https://api.cluster.example.com:6443"
+ocp_api_token: "sha256~xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Orchestrator route hostname (must resolve to OCP router)
+orchestrator_route_host: "orchestrator.apps.cluster.example.com"
+
+# AAP Gateway credentials (for OAuth app + service account creation)
+aap_gateway_url: "https://aap.example.com"
+aap_admin_username: "admin"
+aap_admin_password: "changeme"

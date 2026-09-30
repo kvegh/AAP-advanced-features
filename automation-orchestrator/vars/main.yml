@@ -1,0 +1,29 @@
+---
+orchestrator_namespace: automation-orchestrator
+cnpg_namespace: cnpg-system
+
+orchestrator_channel: stable
+cnpg_channel: stable
+
+orchestrator_operator_name: automation-orchestrator-operator
+cnpg_operator_name: cloudnative-pg
+
+orchestrator_cr_name: orchestrator
+cnpg_cluster_name: orchestrator-pg
+cnpg_instances: 1
+cnpg_storage_size: 10Gi
+
+pg_port: 5432
+pg_ssl_mode: require
+
+ocp_validate_certs: true
+
+# Required -- provide via extra vars or vault
+# ocp_api_url: "https://api.cluster.example.com:6443"
+# ocp_api_token: "<bearer-token>"
+# orchestrator_route_host: "orchestrator.apps.cluster.example.com"
+
+# Required for AAP integration (skip AAP config if omitted)
+# aap_gateway_url: "https://aap.example.com"
+# aap_admin_username: "admin"
+# aap_admin_password: "<password>"
