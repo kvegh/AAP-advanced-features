@@ -22,7 +22,7 @@ Deploys Automation Orchestrator on OpenShift via OLM, with CloudNativePG for Pos
 
 ## Usage
 
-### 1. Build the custom EE (on hactar, not the AAP VM)
+### 1. Build the custom EE (on the build host, not the AAP VM)
 
 ```bash
 ansible-builder build \

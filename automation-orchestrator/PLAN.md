@@ -11,13 +11,13 @@ The goal: a tested, documented, automated setup captured in the `AAP-advanced-fe
 ## Architecture
 
 ```
- hactar (KVM host)
+ KVM host
    |
-   +-- aap VM (AAP 2.7 containerized) <--- Automation Gateway on port 443
+   +-- AAP VM (AAP 2.7 containerized) <--- Automation Gateway on port 443
    |
-   +-- testserver1 VM
+   +-- managed host VMs
    |
-   +-- ... other VMs
+   +-- ...
    
  RHPDS OCP cluster (remote, AWS)
    |
@@ -42,12 +42,12 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 7. **Passwords**: Generated at runtime via `lookup('password', ...)`. Idempotent -- check if K8s secret exists first, only generate if missing. Passwords live only in OCP secrets, never in git.
 8. **AAP credentials**: No admin rights handed to Orchestrator. Manual OAuth path -- create dedicated OAuth app and service account on AAP via `ansible.platform`, pass only client_id/secret and service account credentials to Orchestrator.
 9. **EE**: Custom build based on `ee-minimal-rhel9` -- add `python3-kubernetes` and `python3-openshift` RPMs only. Collections mounted at runtime via `collections/requirements.yml` (must be synced to PAH).
-10. **Disk**: AAP host has 24G free (after log cleanup). Custom minimal EE (~500MB) fits comfortably.
+10. **Disk**: AAP host has sufficient disk space. Custom minimal EE (~500MB) fits comfortably.
 11. **Collection sync**: Automated via `ansible.platform` in a pre-flight play running on the default EE. Syncs `redhat.openshift` and `ansible.platform` from console.redhat.com to PAH.
 12. **Secrets handling**: Zero secrets in playbook or plan files. OCP token and AAP admin creds injected via AAP credential types as extra vars. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
 13. **Subscription**: No separate manifest needed. Orchestrator operator available via `redhat-operators` catalog (OCP pull secret on RHPDS covers it). AAP subscription includes Orchestrator entitlement.
 14. **PostgreSQL**: CloudNativePG operator runs PG pods directly on OCP. No external DB. Fine for demo.
-15. **EE build**: Build on hactar (KVM host), not on AAP VM. Push to PAH container registry. No risk to running AAP.
+15. **EE build**: Build on the KVM host, not on the AAP VM. Push to PAH container registry. No risk to running AAP.
 
 ---
 
@@ -59,7 +59,7 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 - **No admin credentials handed to Orchestrator.** Manual OAuth path: create OAuth app + service account on AAP via `ansible.platform`, pass only client_id/secret to Orchestrator.
 - **No secrets in any file.** Passwords generated at runtime. AAP credentials injected via AAP credential types as extra vars at job launch time.
 - **Collections runtime-mounted** from PAH via `collections/requirements.yml`, not baked into EE.
-- **EE based on `ee-minimal-rhel9`**, only adds Python libraries. Build on hactar, not on AAP VM.
+- **EE based on `ee-minimal-rhel9`**, only adds Python libraries. Build on the KVM host, not on the AAP VM.
 - **Idempotent.** Re-running the playbook must not break an existing deployment (check-before-create pattern for secrets, operators, CRs).
 
 ---
@@ -77,9 +77,9 @@ Separate playbook or first play — runs on the default EE (which already has `a
 
 This solves the chicken-and-egg: the default EE has `ansible.platform` built in, so we can use it to sync collections that our custom EE will mount at runtime.
 
-### Step 1: Build and push custom EE (runs on hactar, not AAP VM)
+### Step 1: Build and push custom EE (runs on the KVM host, not the AAP VM)
 
-1. `ansible-builder build` on hactar using the `execution-environment.yml` from the repo
+1. `ansible-builder build` on the KVM host using the `execution-environment.yml` from the repo
 2. Tag and push the image to PAH's container registry
 3. Register the EE in AAP via `ansible.platform`
 
@@ -243,7 +243,7 @@ Using `ansible.platform` certified collection (not handing admin credentials to 
 
 ## Ansible Playbook Design
 
-Target repo: `~/claude-wd/git/AAP-advanced-features/automation-orchestrator/`
+Target directory: `automation-orchestrator/`
 
 ### Files to create
 
@@ -282,7 +282,7 @@ The playbook runs against `localhost` and uses `redhat.openshift` certified coll
 
 Separate automation (runs before the main playbook, on default EE):
 - **Sync collections to PAH** -- ensure `redhat.openshift` and `ansible.platform` are synced from console.redhat.com
-- **Build + push custom EE** -- `ansible-builder build` on hactar, push to PAH container registry, register in AAP
+- **Build + push custom EE** -- `ansible-builder build` on the KVM host, push to PAH container registry, register in AAP
 
 ### Collections needed (runtime-mounted via collections/requirements.yml)
 
