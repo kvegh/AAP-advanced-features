@@ -1,0 +1,44 @@
+---
+- name: "Destroy Test AAP VM"
+  hosts: hypervisor
+  become: true
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Validate vm_name is provided
+      ansible.builtin.assert:
+        that:
+          - vm_name is defined
+          - vm_name | length > 0
+        fail_msg: "vm_name must be provided as an extra variable"
+
+    - name: Validate vm_name matches allowed pattern
+      ansible.builtin.assert:
+        that:
+          - vm_name is match('^aap27-test-\d+$')
+        fail_msg: "vm_name must match pattern 'aap27-test-N' (got '{{ vm_name }}')"
+
+    - name: Destroy VM (force stop)
+      ansible.builtin.command:
+        cmd: "virsh destroy {{ vm_name }}"
+      register: destroy_result
+      failed_when: false
+      changed_when: destroy_result.rc == 0
+
+    - name: Undefine VM
+      ansible.builtin.command:
+        cmd: "virsh undefine {{ vm_name }}"
+      register: undefine_result
+      failed_when:
+        - undefine_result.rc != 0
+        - "'failed to get domain' not in undefine_result.stderr"
+
+    - name: Remove VM disk
+      ansible.builtin.file:
+        path: "{{ vm_dir }}/{{ vm_name }}.disk.qcow2"
+        state: absent
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "VM {{ vm_name }} destroyed and disk removed"
