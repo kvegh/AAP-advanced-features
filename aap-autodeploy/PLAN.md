@@ -152,7 +152,7 @@ aap_disk_size: "60G"
 
 # AAP installer
 aap_version: "2.7-8"
-aap_version_short: "v27"
+aap_version_short: "27"
 installer_extract_dir: "/opt/sources"
 
 # AAP services config
