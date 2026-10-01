@@ -36,12 +36,13 @@ Golden Image (pre-updated RHEL 9.8 qcow2)
 aap-autodeploy/
   deploy-test-aap.yml          # Main orchestration playbook (multi-play)
   templates/
-    inventory.j2               # AAP installer inventory template
     nginx-aap-test.conf.j2     # nginx reverse proxy config for test instance
   vars/
     main.yml                   # Non-sensitive defaults (ports, sizing, paths)
   version-registry.yml         # Tracks AAP version -> VM name mapping
 ```
+
+Inventory handling: copy from source AAP host, search-and-replace hostname. No template needed.
 
 Secrets come from the shared `automAIton/myvars` vault (passed via `vault_file` variable). No separate vault in this directory.
 
