@@ -2,4 +2,3 @@
 collections:
   - name: redhat.rhel_system_roles
     version: "1.120.5"
-    source: https://aap.supercorp.at/api/galaxy/content/rh-certified/
