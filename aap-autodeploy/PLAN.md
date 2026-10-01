@@ -161,7 +161,7 @@ hub_seed_collections: false
 controller_percent_memory_capacity: 0.5
 
 # Golden image
-golden_image_path: "/opt/images/rhel-9.8-x86_64-kvm.qcow2"
+golden_image_path: "/opt/vms/goldimg-vm-1.disk.qcow2"
 
 # Network
 vm_network: "internal"
