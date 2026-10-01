@@ -184,6 +184,7 @@
 
 - name: "Play 3 — Copy installer tarball from hypervisor to VM"
   hosts: hypervisor
+  become: false
   vars_files:
     - vars/main.yml
   vars:
