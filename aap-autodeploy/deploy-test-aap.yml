@@ -130,8 +130,8 @@
 
     - name: Subscribe to RHEL
       community.general.redhat_subscription:
-        activationkey: "{{ rhsm_activation_key }}"
-        org_id: "{{ rhsm_org_id }}"
+        activationkey: "{{ vault_rhsm_activation_key }}"
+        org_id: "{{ vault_rhsm_org_id }}"
         state: present
 
     - name: Enable AAP repository
