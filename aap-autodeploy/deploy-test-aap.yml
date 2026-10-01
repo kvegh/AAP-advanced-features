@@ -194,7 +194,7 @@
     - name: Push installer directory to VM
       ansible.builtin.command:
         cmd: >-
-          rsync -az
+          rsync -a
           -e "ssh -o StrictHostKeyChecking=no"
           {{ installer_extract_dir }}/{{ installer_dir_name }}/
           aap_service@{{ new_vm_ip }}:{{ installer_extract_dir }}/{{ installer_dir_name }}/
