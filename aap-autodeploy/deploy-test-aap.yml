@@ -7,11 +7,21 @@
     - vars/main.yml
   vars:
     vm_suffix: testvm
-    vm_name: "aap-v{{ aap_version_short }}-{{ vm_suffix }}-1"
+    vmcounter_file: /opt/vms/vmcounter
     installer_tarball_name: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
     installer_dir_name: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64"
 
   tasks:
+    - name: Read VM counter
+      ansible.builtin.slurp:
+        src: "{{ vmcounter_file }}"
+      register: vmcounter_raw
+
+    - name: Set VM name from counter
+      ansible.builtin.set_fact:
+        vm_counter: "{{ (vmcounter_raw.content | b64decode | trim) | int }}"
+        vm_name: "aap-v{{ aap_version_short }}-{{ vm_suffix }}-{{ (vmcounter_raw.content | b64decode | trim) | int }}"
+
     - name: Copy golden image for VM
       ansible.builtin.copy:
         src: "{{ golden_image_path }}"
@@ -76,6 +86,12 @@
     - name: Display VM IP
       ansible.builtin.debug:
         msg: "New VM {{ vm_name }} is at {{ new_vm_ip }}"
+
+    - name: Increment VM counter
+      ansible.builtin.copy:
+        content: "{{ (vm_counter | int) + 1 }}"
+        dest: "{{ vmcounter_file }}"
+        mode: "0644"
 
 
 - name: "Play 2 — Prepare host for AAP installation"
