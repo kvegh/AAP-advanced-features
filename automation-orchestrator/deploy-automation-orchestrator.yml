@@ -424,15 +424,11 @@
 
     # =======================================================================
     # AAP INTEGRATION
-    # 1. setup_aap_oidc — creates OAuth2 app on AAP + OIDC IdP in Orchestrator
-    # 2. Credential — AAP admin creds for integration health checks
-    # 3. Integration — connects Orchestrator to AAP for job dispatch
-    # AAP admin credentials are used transiently (never stored in Orchestrator).
-    # Skipped when aap_gateway_url is not provided.
+    # Skipped when aap_gateway_url is not defined (provide via vault).
     # =======================================================================
 
     - name: Configure AAP integration
-      when: aap_gateway_url is defined and aap_admin_password is defined
+      when: aap_gateway_url is defined
       block:
 
         - name: Authenticate to Orchestrator API

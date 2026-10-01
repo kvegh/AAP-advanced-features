@@ -9,8 +9,7 @@ ocp_api_token: "sha256~xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 # Orchestrator route hostname (must resolve to OCP router)
 orchestrator_route_host: "orchestrator.apps.cluster.example.com"
 
-# AAP Gateway URL and admin credentials (for Orchestrator API config)
-# Admin credentials are used transiently by setup_aap_oidc — never stored in Orchestrator.
+# AAP integration (skip AAP config if omitted)
 aap_gateway_url: "https://aap.example.com"
 aap_admin_username: "admin"
 aap_admin_password: "your-aap-admin-password"

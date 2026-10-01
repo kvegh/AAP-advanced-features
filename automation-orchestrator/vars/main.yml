@@ -23,7 +23,7 @@ ocp_validate_certs: false
 # ocp_api_token: "<bearer-token>"
 # orchestrator_route_host: "orchestrator.apps.cluster.example.com"
 
-# Required for AAP integration (skip AAP config if omitted)
+# AAP integration (skip AAP config if omitted)
 # aap_gateway_url: "https://aap.example.com"
 # aap_admin_username: "admin"
-# aap_admin_password: "<password>"
+# aap_admin_password: "<vault>"
