@@ -34,7 +34,24 @@ registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:latest
 podman save registry.redhat.io/.../ee-supported-rhel9:latest | podman --remote load
 ```
 
-### 2. Create the vault file
+### 2. Obtain OCP API token
+
+The vault requires an OCP API token (`ocp_api_token`). Two ways to get it:
+
+**Option A — via `oc`:**
+```bash
+oc login https://api.cluster.example.com:6443 -u admin -p <password>
+oc whoami -t
+```
+
+**Option B — via curl (no `oc` needed, works for RHPDS):**
+```bash
+curl -sk -X POST \
+  "https://oauth-openshift.apps.<cluster>/oauth/authorize?response_type=token&client_id=openshift-challenging-client" \
+  --user "admin:<password>" -D - -o /dev/null 2>&1 | grep -oP 'access_token=\K[^&]+'
+```
+
+### 3. Create the vault file
 
 ```bash
 cp vars/vault.yml.example vars/vault.yml
@@ -44,7 +61,9 @@ ansible-vault encrypt vars/vault.yml
 
 Omit `aap_gateway_url` from the vault to skip AAP integration (Orchestrator deploys standalone).
 
-### 3. Deploy Orchestrator
+**Note:** `aap_gateway_url` must be reachable from the OCP cluster — use the public URL (e.g., `https://aap.example.com`), not an internal hostname that the remote OCP pods cannot resolve.
+
+### 4. Deploy Orchestrator
 
 ```bash
 ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass
@@ -54,17 +73,19 @@ The playbook loads `vars/vault.yml` automatically via `vars_files`.
 
 ### Running as an AAP Job Template
 
-1. Create the project pointing at this repo
-2. Create the job template using the `ee-supported-rhel9` EE and `deploy-automation-orchestrator.yml`
-3. Attach the Vault credential to the job template (decrypts `vars/vault.yml` at runtime)
-4. No custom credential types needed — all secrets live in the encrypted vault file
+1. **Project**: Create a project pointing at this repo. Enable `scm_update_on_launch: true` so the playbook always runs the latest version.
+2. **Execution Environment**: Register `ee-supported-rhel9:latest` with pull policy `Never` (the image must already be in AAP's podman storage — see Step 1).
+3. **Inventory**: Create an inventory with a single `localhost` host. Set `ansible_connection: local` as a host variable (the playbook also sets `connection: local`, so any inventory works).
+4. **Job Template**: Create a job template using the project, EE, inventory, and `deploy-automation-orchestrator.yml` as the playbook.
+5. **Vault Credential**: Attach an Ansible Vault credential to the job template (decrypts `vars/vault.yml` at runtime).
+6. No custom credential types needed — all secrets live in the encrypted vault file.
 
 ## What it does
 
 1. Validates OCP version and CatalogSources
 2. Installs CloudNativePG operator (Manual approval) in `cnpg-system`
 3. Creates PG secrets (generates passwords on first run, reads existing on re-run)
-4. Creates CloudNativePG Cluster with `orchestrator` and `temporal` databases
+4. Creates CloudNativePG Cluster with `orchestrator`, `temporal`, and `temporal_visibility` databases
 5. Installs Orchestrator operator (Manual approval) in `automation-orchestrator`
 6. Creates AutomationOrchestrator CR pointing at CloudNativePG
 7. (Optional) Configures OIDC identity provider and AAP integration via Orchestrator REST API

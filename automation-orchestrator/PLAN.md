@@ -21,10 +21,14 @@ The goal: a tested, documented, automated setup captured in the `AAP-advanced-fe
    
  RHPDS OCP cluster (remote, AWS)
    |
+   +-- cnpg-system namespace
+   |     +-- CloudNativePG Operator (OLM, certified-operators, channel: stable-v1)
+   |
    +-- automation-orchestrator namespace
-         +-- Orchestrator Operator (OLM)
+         +-- Orchestrator Operator (OLM, redhat-operators, channel: stable)
          +-- AutomationOrchestrator CR
-         +-- PostgreSQL secrets (pointing to external PG or CloudNativePG)
+         +-- CloudNativePG Cluster (orchestrator-pg)
+         +-- PostgreSQL secrets (generated at first run)
 ```
 
 Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inbound from AAP to OCP needed).
@@ -40,7 +44,7 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 5. **Tooling**: Pure Ansible with `kubernetes.core` (via `ee-supported-rhel9`) -- no `oc` CLI dependency. Playbook must be runnable from AAP as a job template. Module defaults use `group/kubernetes.core.k8s`.
 6. **Orchestrator configuration**: No certified Ansible collection exists for Orchestrator's own config (identity providers, integrations). The REST API is the only documented interface -- `ansible.builtin.uri` is the correct approach.
 7. **Passwords**: Generated at runtime via `lookup('password', ...)`. Idempotent -- check if K8s secret exists first, only generate if missing. Passwords live only in OCP secrets, never in git.
-8. **AAP credentials**: Automatic path via `setup_aap_oidc` — provides AAP admin credentials transiently (never stored by Orchestrator). The endpoint creates the OAuth2 application on AAP and configures the OIDC identity provider automatically. For the integration health-check credential, AAP admin creds are stored in the Orchestrator credential store (encrypted at rest).
+8. **AAP credentials**: Automatic path via `setup_aap_oidc` — provides AAP admin credentials transiently (never stored by Orchestrator). The endpoint creates the OAuth2 application on AAP and configures the OIDC identity provider automatically. For the integration health-check credential, AAP admin creds are stored in the Orchestrator credential store (encrypted at rest). AAP's built-in credential type injection (`CONTROLLER_HOST`/`CONTROLLER_PASSWORD` env vars) was considered and rejected — the playbook passes credentials in `uri` request bodies, not as env vars, and vault variables keep the approach explicit without requiring a custom credential type.
 9. **EE**: Stock `ee-supported-rhel9` used directly — includes all certified collections (`redhat.openshift`, `ansible.platform`) and the `kubernetes` Python library. No custom build needed. AAP 2.7 gateway auth prevents `ansible-galaxy` from pulling collections from PAH during project sync, so baking collections into the EE (via the supported image) is the current workaround.
 10. **Disk**: AAP host has sufficient disk space. The `ee-supported-rhel9` image is ~2.5GB.
 11. **Collection sync**: Not required — collections are included in `ee-supported-rhel9`. The `sync-collections.yml` playbook remains in the repo for reference if switching back to `ee-minimal-rhel9` in the future.
@@ -54,9 +58,9 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 ## Constraints (modus operandi)
 
 - **Pure Ansible only.** No `oc` CLI commands. No manual UI steps. No shell scripts.
-- **Certified Red Hat collections only:** `redhat.openshift`, `ansible.platform`. No `kubernetes.core` directly.
+- **Certified Red Hat collections only:** `redhat.openshift` for mutations (`k8s`), `kubernetes.core` for queries (`k8s_info` — `redhat.openshift` has no `k8s_info` module). AAP interaction via Orchestrator's `setup_aap_oidc` endpoint (`ansible.builtin.uri`), not `ansible.platform`.
 - **Orchestrator REST API via `ansible.builtin.uri`** for post-deploy configuration (identity provider, integrations) — no certified collection exists for this.
-- **No admin credentials handed to Orchestrator.** Manual OAuth path: create OAuth app + service account on AAP via `ansible.platform`, pass only client_id/secret to Orchestrator.
+- **Admin credentials used transiently only.** The `setup_aap_oidc` endpoint accepts AAP admin credentials to create the OAuth2 app automatically — credentials are used once and not stored by Orchestrator. A health-check credential with admin creds is stored in Orchestrator's credential store (encrypted at rest) for integration status checks.
 - **No plaintext secrets in git.** OCP and AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime.
 - **EE: stock `ee-supported-rhel9`** — includes all certified collections and `kubernetes` Python library. No custom build needed. Future improvement: switch to `ee-minimal-rhel9` once gateway-compatible galaxy credentials work.
 - **Idempotent.** Re-running the playbook must not break an existing deployment (check-before-create pattern for secrets, operators, CRs).
@@ -72,9 +76,11 @@ Register `ee-supported-rhel9` as an Execution Environment in AAP (pull: never). 
 ### Step 2: Prerequisites
 
 - All credentials stored in `vars/vault.yml` (ansible-vault encrypted): OCP API URL/token, AAP Gateway URL/credentials, Orchestrator route hostname
+- `aap_gateway_url` must be reachable from the OCP cluster (use public URL, not internal hostname — the Orchestrator pods connect to AAP over the internet)
+- OCP API token: obtain via `oc whoami -t` after login, or via curl to the OAuth endpoint (see README for details)
 - AAP Vault credential attached to job template for decryption at runtime
-- Playbook uses `redhat.openshift.k8s` and `redhat.openshift.k8s_info` -- no `oc` CLI needed
-- Authentication via `redhat.openshift.openshift_auth` or API token variable
+- Playbook uses `redhat.openshift.k8s` for mutations and `kubernetes.core.k8s_info` for queries (`redhat.openshift` has no `k8s_info` module)
+- Authentication via `module_defaults` `group/kubernetes.core.k8s` with API token variable (not `openshift_auth`)
 - Preflight: verify OCP version >= 4.14 and OLM catalog via `k8s_info`
 
 ### Step 3: Create namespace and secrets
@@ -157,10 +163,10 @@ spec:
 
 ### Step 5: Provision PostgreSQL via CloudNativePG (runs on OCP)
 
-- Install CloudNativePG operator (Namespace, OperatorGroup, Subscription from `certified-operators`)
-- Wait for CloudNativePG operator ready
-- Create Cluster CR with 3 databases (orchestrator, temporal, temporal_visibility)
-- Operator auto-generates credential secrets
+- Install CloudNativePG operator in `cnpg-system` namespace (OperatorGroup, Subscription from `certified-operators`, channel `stable-v1` — NOT `stable`)
+- Approve InstallPlan (Manual approval), wait for CSV
+- Create Cluster CR with 3 databases (orchestrator, temporal, temporal_visibility via `postInitApplicationSQL`)
+- PG service: `orchestrator-pg-rw.automation-orchestrator.svc:5432`
 
 ### Step 6: Create AutomationOrchestrator CR
 
@@ -196,34 +202,47 @@ spec:
 
 - Playbook outputs: Orchestrator route URL, admin credentials
 - Manual verification: access UI, log in
+- Expected pods after successful deployment:
+  - `orchestrator-backend` (2 replicas)
+  - `orchestrator-background-worker` (1)
+  - `orchestrator-pg` (1 — CloudNativePG managed)
+  - `orchestrator-redis` (1)
+  - `orchestrator-temporal` (1)
+  - `orchestrator-ui` (2 replicas)
+  - `orchestrator-worker` (2 replicas)
 
-### Step 8: Create OAuth app and service account on AAP (no admin handover)
+### Step 8: Authenticate to Orchestrator API
 
-Using `ansible.platform` certified collection (not handing admin credentials to Orchestrator):
-
-1. Create a dedicated OAuth2 application on AAP Gateway:
-   - Grant type: `authorization-code`
-   - Redirect URI: `https://<orchestrator-route>/api/v1/auth/oidc/callback`
-   - Record `client_id` and `client_secret`
-2. Create a dedicated service account user on AAP for job dispatch (limited permissions, not admin)
-3. Assign the service account only the roles needed for launching job templates
-
-### Step 9: Authenticate to Orchestrator API
-
-- Use `ansible.builtin.uri` to POST `/api/v1/auth/login` with admin credentials
+- `ansible.builtin.uri` to POST `/api/v1/auth/login` with admin credentials (auto-generated, retrieved from K8s secret)
 - Retrieve JWT access token for subsequent API calls
+- `no_log: true` mandatory (body contains password)
 
-### Step 10: Add AAP as identity provider (manual OAuth path)
+### Step 9: Configure AAP as OIDC identity provider (automatic)
 
-- Use `ansible.builtin.uri` to call the Orchestrator REST API to add AAP as an OIDC identity provider
-- Provide: AAP Gateway URL as issuer, `client_id` and `client_secret` from Step 7
-- Orchestrator never receives AAP admin credentials
+Uses the `setup_aap_oidc` endpoint which creates the OAuth2 app on AAP and configures OIDC in Orchestrator in one call:
+- `ansible.builtin.uri` to POST `/api/v1/identity_providers/setup_aap_oidc`
+- Provide: `aap_url`, `admin_username`, `admin_password`, `insecure_skip_tls_verify: true`
+- `insecure_skip_tls_verify: true` is needed when the Orchestrator pods cannot verify AAP's TLS certificate (self-signed, internal CA, or reverse-proxy cert not in the pod's trust store)
+- Admin credentials used transiently (never stored by Orchestrator)
+- `no_log: true` mandatory
+- Skip if an AAP-related identity provider already exists (idempotent)
 
-### Step 11: Add AAP integration (for job dispatch)
+### Step 10: Create AAP health-check credential
 
-- Use `ansible.builtin.uri` to call the Orchestrator REST API to create an AAP integration
-- Provide: AAP Gateway URL, service account credentials from Step 7 (not admin)
-- Test connection via API
+- Get default project ID (list `/api/v1/projects`, filter client-side — `?search=` returns 422)
+- Get "Ansible Automation Platform" credential type ID
+- Create credential with AAP admin username/password for integration health checks
+- `no_log: true` mandatory
+- Skip if credential already exists (idempotent)
+
+### Step 11: Create AAP integration
+
+- `ansible.builtin.uri` to POST `/api/v1/integrations`
+- `integration_type: ansible_automation_platform` (not `aap`)
+- `management_credential_id` links to health-check credential from Step 10
+- `configuration.base_url` points to AAP Gateway URL
+- Duplicate `integration_type` field required inside `configuration` (discriminated union)
+- Skip if integration already exists (idempotent)
 
 ---
 
@@ -255,7 +274,7 @@ Passwords for PG and Orchestrator admin are generated at runtime and stored in K
 
 ### Playbook structure
 
-The playbook runs against `localhost` and uses `redhat.openshift` certified collection for OCP resources, `ansible.platform` for AAP Gateway resources, and `ansible.builtin.uri` for Orchestrator REST API. No `oc` CLI. Authentication via `host` (API URL) + `api_key` (token) variables, or kubeconfig file.
+The playbook runs against `localhost` and uses `redhat.openshift` certified collection for OCP resource mutations, `kubernetes.core` for OCP queries (`k8s_info`), and `ansible.builtin.uri` for both Orchestrator REST API and AAP integration (via `setup_aap_oidc`). No `oc` CLI. Authentication via `module_defaults` `group/kubernetes.core.k8s` with `host` (API URL) + `api_key` (token) variables.
 
 1. **Preflight** -- `k8s_info` to verify OCP version, OLM catalog source
 2. **CloudNativePG operator** -- Namespace, OperatorGroup, Subscription, approve InstallPlan, wait for CSV
@@ -263,15 +282,16 @@ The playbook runs against `localhost` and uses `redhat.openshift` certified coll
 4. **Orchestrator namespace + secrets** -- Namespace, generate passwords (idempotent), create PG credential secrets and admin password secret
 5. **Orchestrator operator** -- OperatorGroup, Subscription, approve InstallPlan, wait for CSV
 6. **AutomationOrchestrator CR** -- apply CR, wait for Ready condition
-7. **AAP OAuth + service account** -- `ansible.platform` to create OAuth2 app (redirect URI pointing to Orchestrator) and limited-privilege service account on AAP
-8. **Configure Orchestrator** -- `uri` to authenticate to Orchestrator API, add AAP as OIDC identity provider (with client_id/secret from step 7), add AAP integration (with service account from step 7)
-9. **Output** -- retrieve Route URL and admin password, display
+7. **AAP integration** (conditional on `aap_gateway_url` defined) -- `uri` to authenticate to Orchestrator API, `setup_aap_oidc` to auto-configure OIDC+OAuth with AAP, create health-check credential and AAP integration
+8. **Output** -- retrieve Route URL and admin password, display
 
 ### Collections needed (included in ee-supported-rhel9)
 
-- `redhat.openshift` (certified -- k8s, k8s_info, openshift_auth for OCP resources)
-- `ansible.platform` (certified -- OAuth2 app, users, roles on AAP Gateway)
-- `ansible.builtin` (uri module for Orchestrator REST API -- built-in, no install needed)
+- `redhat.openshift` (certified -- `k8s` for OCP resource mutations)
+- `kubernetes.core` (certified -- `k8s_info` for OCP queries, also provides `group/kubernetes.core.k8s` for `module_defaults`)
+- `ansible.builtin` (`uri` module for Orchestrator REST API and AAP integration -- built-in)
+
+`ansible.platform` is available in the EE but not used — the playbook calls AAP via `setup_aap_oidc` on the Orchestrator API instead.
 
 All collections are included in the stock `ee-supported-rhel9` image. No PAH sync or runtime install needed.
 
@@ -414,6 +434,10 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 
 ### Key gotchas
 
+- **CloudNativePG channel**: On OCP 4.21+, the channel is `stable-v1` (not `stable`). Using `stable` results in "no operators found in channel stable of package cloudnative-pg". The Orchestrator operator itself uses channel `stable`.
+- **`kubernetes.core.k8s_info` FQCN**: `redhat.openshift` has no `k8s_info` module — only `k8s`. All `k8s_info` calls must use `kubernetes.core.k8s_info`.
+- **`module_defaults` group**: Must use `group/kubernetes.core.k8s` (not individual FQCN entries). `redhat.openshift` modules redirect to `kubernetes.core` action plugins; `module_defaults` resolves by action plugin group.
+- **RHPDS self-signed certificates**: RHPDS clusters use self-signed certs — `ocp_validate_certs: false` is required.
 - All POST bodies use **nested `configuration` wrapper** — the docs show fields flat but the API nests them
 - The credential field is `management_credential_id` (not `credential_id`, `health_check_credential_id`, or `connection_credential_id` — all of which the docs imply)
 - List responses use `resources` as the array key (not `results`)
