@@ -17,6 +17,43 @@
   tasks:
 
     # =======================================================================
+    # OCP AUTHENTICATION
+    # =======================================================================
+
+    - name: Validate required OCP variables
+      ansible.builtin.assert:
+        that:
+          - ocp_api_url is defined and ocp_api_url | length > 0
+          - ocp_admin_password is defined and ocp_admin_password | length > 0
+        fail_msg: "ocp_api_url and ocp_admin_password are required (provide via survey or extra vars)"
+
+    - name: Derive apps domain from API URL
+      ansible.builtin.set_fact:
+        ocp_apps_domain: "{{ ocp_api_url | regex_replace('^https://api\\.', '') | regex_replace(':6443$', '') }}"
+
+    - name: Set orchestrator route hostname
+      ansible.builtin.set_fact:
+        orchestrator_route_host: "{{ orchestrator_route_host | default('orchestrator.apps.' + ocp_apps_domain) }}"
+
+    - name: Obtain OCP API token
+      ansible.builtin.uri:
+        url: "https://oauth-openshift.apps.{{ ocp_apps_domain }}/oauth/authorize?response_type=token&client_id=openshift-challenging-client"
+        method: POST
+        user: "{{ ocp_admin_username | default('admin') }}"
+        password: "{{ ocp_admin_password }}"
+        force_basic_auth: true
+        validate_certs: false
+        follow_redirects: none
+        status_code: [302]
+      register: ocp_oauth_response
+      no_log: true
+
+    - name: Extract token from redirect
+      ansible.builtin.set_fact:
+        ocp_api_token: "{{ ocp_oauth_response.location | regex_search('access_token=([^&]+)', '\\1') | first }}"
+      no_log: true
+
+    # =======================================================================
     # PREFLIGHT
     # =======================================================================
 
