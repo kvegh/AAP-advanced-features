@@ -220,6 +220,6 @@ deployments: []
 
 ---
 
-## Open Questions for Review
+## Resolved
 
-1. **Subscription for AAP repo**: The golden image is unsubscribed. The new VM needs ansible-core to run the installer. Plan: subscribe briefly (activation key from vault), enable AAP repo, install ansible-core, then unsubscribe after install completes. Do you have an activation key, or username/password? *(If the bundle includes ansible-core RPM, we can skip subscription entirely — needs verification.)*
+- **Subscription for AAP repo**: Subscribe using activation key + org ID from vault (`vault_rhsm_activation_key`, `vault_rhsm_org_id`), enable AAP repo, install ansible-core, then unsubscribe after install completes.
