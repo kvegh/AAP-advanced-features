@@ -131,6 +131,9 @@ All secrets live in `automAIton/myvars` (shared vault). The playbook loads it vi
 | `vault_hypervisor_host` | Hypervisor IP/hostname | Check |
 | `vault_source_aap_host` | Existing AAP host (installer source) | Check |
 | `vault_installer_path` | Path to installer tarball on source | Check |
+| `vault_godaddy_api_token` | GoDaddy API token for DNS records | Just added |
+| `vault_domain` | Domain name for DNS records | Check |
+| `vault_public_ip` | Hypervisor's public IP for A records | Check |
 
 ### `main.yml` (committed — non-sensitive defaults)
 

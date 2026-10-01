@@ -207,7 +207,7 @@
       until: aap_ping.status == 200
 
 
-- name: "Play 4 — Configure nginx reverse proxy for external access"
+- name: "Play 4 — Create DNS record and configure nginx reverse proxy"
   hosts: hypervisor
   become: true
   vars_files:
@@ -218,6 +218,19 @@
     aap_test_subdomain: "aap-test-v{{ aap_version_short }}"
 
   tasks:
+    - name: Create GoDaddy DNS A record
+      ansible.builtin.uri:
+        url: "https://api.godaddy.com/v1/domains/{{ vault_domain }}/records/A/{{ aap_test_subdomain }}"
+        method: PUT
+        headers:
+          Authorization: "Bearer {{ vault_godaddy_api_token }}"
+        body_format: json
+        body:
+          - data: "{{ vault_public_ip }}"
+            ttl: 600
+        status_code: 200
+      become: false
+
     - name: Template nginx config
       ansible.builtin.template:
         src: templates/nginx-aap-test.conf.j2
