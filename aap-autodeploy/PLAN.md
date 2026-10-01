@@ -58,9 +58,8 @@ Add `disk_size` variable support for `qemu-img resize` after copy (needed for AA
 ### Step 1: VM Creation (Play 1 — targets: hypervisor)
 
 Reuse the existing `deploy_vms.yml` with extended parameters:
-- `projectname`: `aap-v{{ aap_version_short }}` (e.g., `aap-v27`)
-- `sequence`: `1`
-- **Note**: `deploy_vms.yml` creates names as `{{ projectname }}-vm-{{ item }}`, producing `aap-v27-vm-1`. To get the desired `aap-v27-testvm` naming, we'll modify the naming pattern in `deploy_vms.yml` to use a configurable suffix (default `vm`) so we can pass `suffix: testvm`.
+- VM naming pattern: `aap{{ aap_version_short }}-{{ vm_suffix }}-{{ counter }}` (e.g., `aap27-test-1`)
+- The same name is used as VM name, hostname, and DNS subdomain for consistency.
 - `vcpus`: `4`
 - `memory`: `20480` (20 GiB)
 - `base_image`: path to golden image (not the raw RHEL base)
@@ -68,8 +67,8 @@ Reuse the existing `deploy_vms.yml` with extended parameters:
 
 **Extend `deploy_vms.yml`**: Add a task between "Copy base image" and "Customize VM images" that runs `qemu-img resize` when `disk_size` is defined. One line addition; backwards compatible.
 
-VM naming: `aap-vX-testvm` where X is the version (e.g., `aap-v27-testvm`).
-Hostname: matches VM name.
+VM naming: `aapX-test-N` where X is the version and N is the counter (e.g., `aap27-test-1`).
+Hostname: matches VM name (`aap27-test-1.supercorp.at`).
 
 ### Step 2: Host Preparation (Play 2 — targets: new VM via dynamic inventory)
 
@@ -106,7 +105,7 @@ After the VM boots and gets a DHCP IP, we need to:
 
 **Domain approach — use a subdomain**, not a path:
 - AAP's Envoy gateway expects to own the domain root; path-based routing breaks it
-- New subdomain: parameterized, e.g., `{{ aap_test_subdomain }}.{{ domain }}`
+- New subdomain: matches VM name, e.g., `aap27-test-1.{{ domain }}`
 - The Let's Encrypt cert would need a new SAN — or for test purposes, use nginx `proxy_ssl_verify off` to the backend's self-signed cert, and the frontend can share the existing wildcard or get a new cert
 - Nginx reverse proxy is **required** — VMs are on an internal libvirt network, only the hypervisor has a public IP. External access requires nginx on the hypervisor forwarding to the VM, same as the existing AAP setup.
 
@@ -152,7 +151,7 @@ aap_disk_size: "60G"
 
 # AAP installer
 aap_version: "2.7-8"
-aap_version_short: "27"
+aap_version_short: "27"   # used in naming: aap27-test-N
 installer_extract_dir: "/opt/sources"
 
 # AAP services config
@@ -181,7 +180,7 @@ mcp_allow_write_operations: true
 deployments: []
 # Example entry:
 #   - version: "2.7-8"
-#     vm_name: "aap-v27-testvm"
+#     vm_name: "aap27-test-1"
 #     deployed_date: "2026-10-01"
 #     ip: "<assigned by DHCP>"
 #     status: active
@@ -195,7 +194,7 @@ deployments: []
 
 2. **Bundle install, not online** — copy the existing 3.8G tarball rather than downloading from registry. Faster, no internet dependency, reproducible.
 
-3. **Subdomain + nginx required for external access** — VMs are on internal libvirt network, only the hypervisor has a public IP. Nginx reverse proxy is mandatory, same as the existing AAP setup.
+3. **Subdomain + nginx required for external access** — VMs are on internal libvirt network, only the hypervisor has a public IP. Nginx reverse proxy is mandatory, same as the existing AAP setup. Subdomain = VM name (e.g., `aap27-test-1`).
 
 4. **Vault for ALL secrets** — passwords, registry creds, hostnames, IPs. The repo contains zero environment-specific values.
 
