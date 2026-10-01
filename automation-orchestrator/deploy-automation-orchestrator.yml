@@ -21,7 +21,7 @@
     # =======================================================================
 
     - name: Verify OCP cluster version
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: config.openshift.io/v1
         kind: ClusterVersion
         name: version
@@ -37,7 +37,7 @@
         fail_msg: "OCP 4.14+ required. Found: {{ cluster_version.resources[0].status.desired.version | default('unknown') }}"
 
     - name: Verify redhat-operators CatalogSource
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: operators.coreos.com/v1alpha1
         kind: CatalogSource
         name: redhat-operators
@@ -46,7 +46,7 @@
       failed_when: redhat_catalog.resources | length == 0
 
     - name: Verify certified-operators CatalogSource
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: operators.coreos.com/v1alpha1
         kind: CatalogSource
         name: certified-operators
@@ -92,7 +92,7 @@
             installPlanApproval: Manual
 
     - name: Wait for CloudNativePG InstallPlan
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: operators.coreos.com/v1alpha1
         kind: Subscription
         name: "{{ cnpg_operator_name }}"
@@ -116,7 +116,7 @@
         merge_type: merge
 
     - name: Wait for CloudNativePG operator ready
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: apps/v1
         kind: Deployment
         namespace: "{{ cnpg_namespace }}"
@@ -142,7 +142,7 @@
             name: "{{ orchestrator_namespace }}"
 
     - name: Check for existing orchestrator-pg-credentials
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: v1
         kind: Secret
         name: orchestrator-pg-credentials
@@ -150,7 +150,7 @@
       register: existing_orch_pg
 
     - name: Check for existing temporal-pg-credentials
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: v1
         kind: Secret
         name: temporal-pg-credentials
@@ -158,7 +158,7 @@
       register: existing_temporal_pg
 
     - name: Check for existing orchestrator-admin-password
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: v1
         kind: Secret
         name: orchestrator-admin-password
@@ -270,7 +270,7 @@
                   - "GRANT ALL PRIVILEGES ON DATABASE orchestrator TO orchestrator_user;"
 
     - name: Wait for CloudNativePG Cluster ready
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: postgresql.cnpg.io/v1
         kind: Cluster
         name: "{{ cnpg_cluster_name }}"
@@ -313,7 +313,7 @@
             installPlanApproval: Manual
 
     - name: Wait for Orchestrator InstallPlan
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: operators.coreos.com/v1alpha1
         kind: Subscription
         name: "{{ orchestrator_operator_name }}"
@@ -337,7 +337,7 @@
         merge_type: merge
 
     - name: Wait for Orchestrator operator ready
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: apps/v1
         kind: Deployment
         name: automation-orchestrator-operator-controller-manager
@@ -379,7 +379,7 @@
                 name: orchestrator-admin-password
 
     - name: Wait for AutomationOrchestrator ready
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: aap.ansible.com/v1alpha1
         kind: AutomationOrchestrator
         name: "{{ orchestrator_cr_name }}"
@@ -400,7 +400,7 @@
     # =======================================================================
 
     - name: Get Orchestrator Route
-      redhat.openshift.k8s_info:
+      kubernetes.core.k8s_info:
         api_version: route.openshift.io/v1
         kind: Route
         namespace: "{{ orchestrator_namespace }}"
