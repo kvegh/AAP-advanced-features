@@ -637,6 +637,7 @@
                   - "================================================"
                   - "AAP Integration configured"
                   - "================================================"
+                  - "Orchestrator URL:   {{ orchestrator_url }}"
                   - "Identity Provider:  Ansible Automation Platform (auto-configured)"
                   - "Integration:        AAP Demo"
                   - "AAP URL:            {{ aap_gateway_url }}"

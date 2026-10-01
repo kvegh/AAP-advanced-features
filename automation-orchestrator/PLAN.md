@@ -48,7 +48,7 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 9. **EE**: Stock `ee-supported-rhel9` used directly — includes all certified collections (`redhat.openshift`, `ansible.platform`) and the `kubernetes` Python library. No custom build needed. AAP 2.7 gateway auth prevents `ansible-galaxy` from pulling collections from PAH during project sync, so baking collections into the EE (via the supported image) is the current workaround.
 10. **Disk**: AAP host has sufficient disk space. The `ee-supported-rhel9` image is ~2.5GB.
 11. **Collection sync**: Not required — collections are included in `ee-supported-rhel9`. The `sync-collections.yml` playbook remains in the repo for reference if switching back to `ee-minimal-rhel9` in the future.
-12. **Secrets handling**: Zero plaintext secrets in git. OCP token, AAP admin credentials, and route hostname stored in `vars/vault.yml` (ansible-vault encrypted, committed to repo). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
+12. **Secrets handling**: Zero plaintext secrets in git. AAP admin credentials stored in `vars/vault.yml` (ansible-vault encrypted, committed to repo). OCP credentials (`ocp_api_url`, `ocp_admin_password`) provided at launch via survey — never stored in vault. OCP API token obtained automatically at runtime via OAuth flow. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
 13. **Subscription**: No separate manifest needed. Orchestrator operator available via `redhat-operators` catalog (OCP pull secret on RHPDS covers it). AAP subscription includes Orchestrator entitlement.
 14. **PostgreSQL**: CloudNativePG operator runs PG pods directly on OCP. No external DB. Fine for demo.
 15. **AAP containerized EE storage**: AAP containerized uses a separate podman storage root (`~/aap/containers/storage`). Images built or pulled into the interactive user's storage are not visible to AAP's receptor. Use `podman save | podman --remote load` to copy images into AAP's service storage.
@@ -61,7 +61,7 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 - **Certified Red Hat collections only:** `redhat.openshift` for mutations (`k8s`), `kubernetes.core` for queries (`k8s_info` — `redhat.openshift` has no `k8s_info` module). AAP interaction via Orchestrator's `setup_aap_oidc` endpoint (`ansible.builtin.uri`), not `ansible.platform`.
 - **Orchestrator REST API via `ansible.builtin.uri`** for post-deploy configuration (identity provider, integrations) — no certified collection exists for this.
 - **Admin credentials used transiently only.** The `setup_aap_oidc` endpoint accepts AAP admin credentials to create the OAuth2 app automatically — credentials are used once and not stored by Orchestrator. A health-check credential with admin creds is stored in Orchestrator's credential store (encrypted at rest) for integration status checks.
-- **No plaintext secrets in git.** OCP and AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime.
+- **No plaintext secrets in git.** AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted). OCP credentials provided at launch via survey/extra-vars. OCP API token obtained at runtime via OAuth. PG and Orchestrator admin passwords generated at runtime.
 - **EE: stock `ee-supported-rhel9`** — includes all certified collections and `kubernetes` Python library. No custom build needed. Future improvement: switch to `ee-minimal-rhel9` once gateway-compatible galaxy credentials work.
 - **Idempotent.** Re-running the playbook must not break an existing deployment (check-before-create pattern for secrets, operators, CRs).
 
@@ -75,12 +75,13 @@ Register `ee-supported-rhel9` as an Execution Environment in AAP (pull: never). 
 
 ### Step 2: Prerequisites
 
-- All credentials stored in `vars/vault.yml` (ansible-vault encrypted): OCP API URL/token, AAP Gateway URL/credentials, Orchestrator route hostname
+- AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted): `aap_gateway_url`, `aap_admin_username`, `aap_admin_password`
+- OCP credentials (`ocp_api_url`, `ocp_admin_password`) provided at launch via job template survey or `--extra-vars` — never stored in the vault
+- The playbook obtains an OCP API token at runtime via the OAuth `openshift-challenging-client` flow and derives the route hostname from the API URL
 - `aap_gateway_url` must be reachable from the OCP cluster (use public URL, not internal hostname — the Orchestrator pods connect to AAP over the internet)
-- OCP API token: obtain via `oc whoami -t` after login, or via curl to the OAuth endpoint (see README for details)
 - AAP Vault credential attached to job template for decryption at runtime
 - Playbook uses `redhat.openshift.k8s` for mutations and `kubernetes.core.k8s_info` for queries (`redhat.openshift` has no `k8s_info` module)
-- Authentication via `module_defaults` `group/kubernetes.core.k8s` with API token variable (not `openshift_auth`)
+- Authentication via block-level `module_defaults` `group/kubernetes.core.k8s` with API token variable (not `openshift_auth`). Must be block-level, not play-level — the token is created mid-play by the OAuth task, and play-level `module_defaults` evaluate before any task runs
 - Preflight: verify OCP version >= 4.14 and OLM catalog via `k8s_info`
 
 ### Step 3: Create namespace and secrets
@@ -270,7 +271,7 @@ automation-orchestrator/
 
 No Jinja templates needed -- `redhat.openshift.k8s` takes inline `definition:` dicts directly, which is cleaner and keeps everything in one playbook file.
 
-Passwords for PG and Orchestrator admin are generated at runtime and stored in K8s secrets only. `vars/vault.yml` (ansible-vault encrypted) holds OCP credentials, AAP admin credentials, and the Orchestrator route hostname. Decrypted at runtime by AAP Vault credential.
+Passwords for PG and Orchestrator admin are generated at runtime and stored in K8s secrets only. `vars/vault.yml` (ansible-vault encrypted) holds AAP admin credentials only. OCP credentials are provided at launch via survey/extra-vars and the API token is obtained automatically. Decrypted at runtime by AAP Vault credential.
 
 ### Playbook structure
 
@@ -438,6 +439,7 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 - **`kubernetes.core.k8s_info` FQCN**: `redhat.openshift` has no `k8s_info` module — only `k8s`. All `k8s_info` calls must use `kubernetes.core.k8s_info`.
 - **`module_defaults` group**: Must use `group/kubernetes.core.k8s` (not individual FQCN entries). `redhat.openshift` modules redirect to `kubernetes.core` action plugins; `module_defaults` resolves by action plugin group.
 - **RHPDS self-signed certificates**: RHPDS clusters use self-signed certs — `ocp_validate_certs: false` is required.
+- **`module_defaults` must be block-level**: When the OCP API token is obtained mid-play (e.g. via OAuth flow), `module_defaults` with `api_key: "{{ ocp_api_token }}"` must be on a `block:` wrapping the k8s tasks, not at play level. Play-level `module_defaults` evaluate before any task runs, causing an undefined variable error.
 - All POST bodies use **nested `configuration` wrapper** — the docs show fields flat but the API nests them
 - The credential field is `management_credential_id` (not `credential_id`, `health_check_credential_id`, or `connection_credential_id` — all of which the docs imply)
 - List responses use `resources` as the array key (not `results`)
@@ -447,6 +449,10 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 - **Do not use block-level `vars:` to set defaults for variables that may come from vault** — `aap_admin_username: "{{ aap_admin_username | default('admin') }}"` causes a recursive template loop because the variable references itself. Use `{{ var | default('value') }}` inline in each task body instead
 
 ---
+
+## Cleanup
+
+`cleanup-aap-orchestrator.yml` removes Orchestrator OAuth2 apps ("Syntara") from AAP Gateway. Run this before deploying to a new OCP cluster — the `setup_aap_oidc` endpoint refuses to create a duplicate OAuth2 app. Has its own AAP job template (ID 24).
 
 ## What the playbook does NOT automate
 

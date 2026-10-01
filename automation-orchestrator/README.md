@@ -5,7 +5,7 @@ Deploys Automation Orchestrator on OpenShift via OLM, with CloudNativePG for Pos
 ## Prerequisites
 
 - OpenShift 4.14+ with `redhat-operators` and `certified-operators` CatalogSources
-- OCP service account token with cluster-admin (or namespace-admin on target namespaces)
+- OCP cluster-admin credentials (provided at launch via job template survey)
 - `ee-supported-rhel9` registered as an Execution Environment in AAP (includes all certified collections and the `kubernetes` Python library)
 
 ## Files
@@ -13,6 +13,7 @@ Deploys Automation Orchestrator on OpenShift via OLM, with CloudNativePG for Pos
 | File | Purpose |
 |------|---------|
 | `deploy-automation-orchestrator.yml` | Main playbook — operators, PG, CR, AAP integration |
+| `cleanup-aap-orchestrator.yml` | Cleanup playbook — removes Orchestrator OAuth2 apps from AAP |
 | `vars/main.yml` | Default variables |
 | `vars/vault.yml.example` | Template for secrets (copy to `vault.yml`, encrypt) |
 | `collections/requirements.yml` | Documents required collections (informational, not used at runtime) |
@@ -34,24 +35,7 @@ registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:latest
 podman save registry.redhat.io/.../ee-supported-rhel9:latest | podman --remote load
 ```
 
-### 2. Obtain OCP API token
-
-The vault requires an OCP API token (`ocp_api_token`). Two ways to get it:
-
-**Option A — via `oc`:**
-```bash
-oc login https://api.cluster.example.com:6443 -u admin -p <password>
-oc whoami -t
-```
-
-**Option B — via curl (no `oc` needed, works for RHPDS):**
-```bash
-curl -sk -X POST \
-  "https://oauth-openshift.apps.<cluster>/oauth/authorize?response_type=token&client_id=openshift-challenging-client" \
-  --user "admin:<password>" -D - -o /dev/null 2>&1 | grep -oP 'access_token=\K[^&]+'
-```
-
-### 3. Create the vault file
+### 2. Create the vault file
 
 ```bash
 cp vars/vault.yml.example vars/vault.yml
@@ -59,17 +43,21 @@ cp vars/vault.yml.example vars/vault.yml
 ansible-vault encrypt vars/vault.yml
 ```
 
+The vault only contains AAP credentials (`aap_gateway_url`, `aap_admin_username`, `aap_admin_password`). OCP credentials are provided at launch time via the job template survey — they are never stored in the vault.
+
 Omit `aap_gateway_url` from the vault to skip AAP integration (Orchestrator deploys standalone).
 
 **Note:** `aap_gateway_url` must be reachable from the OCP cluster — use the public URL (e.g., `https://aap.example.com`), not an internal hostname that the remote OCP pods cannot resolve.
 
-### 4. Deploy Orchestrator
+### 3. Deploy Orchestrator
 
 ```bash
-ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass
+ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass \
+  -e ocp_api_url=https://api.cluster.example.com:6443 \
+  -e ocp_admin_password=<password>
 ```
 
-The playbook loads `vars/vault.yml` automatically via `vars_files`.
+The playbook automatically obtains an OCP API token at runtime using the OAuth `openshift-challenging-client` flow — no manual `oc login` needed. The route hostname is derived from the API URL automatically.
 
 ### Running as an AAP Job Template
 
@@ -78,7 +66,18 @@ The playbook loads `vars/vault.yml` automatically via `vars_files`.
 3. **Inventory**: Create an inventory with a single `localhost` host. Set `ansible_connection: local` as a host variable (the playbook also sets `connection: local`, so any inventory works).
 4. **Job Template**: Create a job template using the project, EE, inventory, and `deploy-automation-orchestrator.yml` as the playbook.
 5. **Vault Credential**: Attach an Ansible Vault credential to the job template (decrypts `vars/vault.yml` at runtime).
-6. No custom credential types needed — all secrets live in the encrypted vault file.
+6. **Survey**: Enable a survey with two fields:
+   - `ocp_api_url` (text) — the OCP API URL, e.g. `https://api.cluster-xyz.dyn.redhatworkshops.io:6443`
+   - `ocp_admin_password` (password) — the OCP admin password (stored encrypted, shown as `$encrypted$`)
+7. No custom credential types needed — AAP secrets live in the encrypted vault file, OCP credentials come from the survey.
+
+### Cleanup between deployments
+
+When tearing down an OCP cluster and redeploying to a new one, the Orchestrator `setup_aap_oidc` step will fail because the OAuth2 app ("Syntara") from the old cluster still exists on AAP. Run the cleanup job template first:
+
+- **Playbook**: `cleanup-aap-orchestrator.yml`
+- **What it does**: Finds and deletes all OAuth2 applications matching "syntara" or "orchestrator" from AAP Gateway
+- **When to run**: Before deploying Orchestrator to a new OCP cluster, or after tearing down an old deployment
 
 ## What it does
 
