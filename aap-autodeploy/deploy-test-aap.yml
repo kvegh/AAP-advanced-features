@@ -148,7 +148,7 @@
           activation_keys:
             keys:
               - "{{ vault_rhsm_activation_key }}"
-            org_id: "{{ vault_rhsm_org_id }}"
+          org_id: "{{ vault_rhsm_org_id }}"
         rhc_repositories:
           - name: ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms
             state: enabled
