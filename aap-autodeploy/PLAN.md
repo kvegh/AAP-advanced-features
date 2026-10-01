@@ -115,25 +115,31 @@ After the VM boots and gets a DHCP IP, we need to:
 
 All secrets live in `automAIton/myvars` (shared vault). The playbook loads it via `vars_files: ["{{ vault_file }}"]`.
 
-**Required vault variables** (verify these exist in myvars):
+**Required variables in myvars** (same names as the current AAP inventory):
 
-| Variable | Purpose | Likely already present? |
-|---|---|---|
-| `vault_registry_username` | Red Hat registry service account | Yes (existing AAP uses it) |
-| `vault_registry_password` | Registry service account token | Yes |
-| `vault_rhsm_activation_key` | RHEL subscription activation key | Just added |
-| `vault_rhsm_org_id` | RHEL subscription org ID | Just added |
-| `vault_aap_admin_password` | AAP admin password (all services) | Yes |
-| `vault_gateway_pg_password` | Gateway PostgreSQL password | Check |
-| `vault_controller_pg_password` | Controller PostgreSQL password | Check |
-| `vault_hub_pg_password` | Hub PostgreSQL password | Check |
-| `vault_eda_pg_password` | EDA PostgreSQL password | Check |
-| `vault_hypervisor_host` | Hypervisor IP/hostname | Check |
-| `vault_source_aap_host` | Existing AAP host (installer source) | Check |
-| `vault_installer_path` | Path to installer tarball on source | Check |
-| `vault_godaddy_api_token` | GoDaddy API token for DNS records | Just added |
-| `vault_domain` | Domain name for DNS records | Check |
-| `vault_public_ip` | Hypervisor's public IP for A records | Check |
+| Variable | Purpose |
+|---|---|
+| `registry_username` | Red Hat registry service account |
+| `registry_password` | Registry service account token |
+| `postgresql_admin_password` | PostgreSQL admin password |
+| `gateway_admin_password` | Gateway admin password |
+| `gateway_pg_password` | Gateway PostgreSQL password |
+| `controller_admin_password` | Controller admin password |
+| `controller_pg_password` | Controller PostgreSQL password |
+| `hub_admin_password` | Hub admin password |
+| `hub_pg_password` | Hub PostgreSQL password |
+| `eda_admin_password` | EDA admin password |
+| `eda_pg_password` | EDA PostgreSQL password |
+| `automationmetrics_pg_password` | Metrics PostgreSQL password |
+| `automationmetrics_controller_read_pg_password` | Metrics controller read PG password |
+| `rhsm_activation_key` | RHEL subscription activation key |
+| `rhsm_org_id` | RHEL subscription org ID |
+| `godaddy_api_token` | GoDaddy API token for DNS records |
+| `domain` | Domain name |
+| `public_ip` | Hypervisor's public IP |
+| `ssh_pubkey_path` | Path to SSH public key on hypervisor |
+| `installer_path` | Path to installer tarball on source AAP |
+| `source_aap_host` | SSH alias for existing AAP host |
 
 ### `main.yml` (committed — non-sensitive defaults)
 
@@ -225,4 +231,4 @@ deployments: []
 
 ## Resolved
 
-- **Subscription for AAP repo**: Subscribe using activation key + org ID from vault (`vault_rhsm_activation_key`, `vault_rhsm_org_id`), enable AAP repo, install ansible-core, then unsubscribe after install completes.
+- **Subscription for AAP repo**: Subscribe using activation key + org ID from vault (`rhsm_activation_key`, `rhsm_org_id`), enable AAP repo, install ansible-core, then unsubscribe after install completes.

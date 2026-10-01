@@ -130,8 +130,8 @@
 
     - name: Subscribe to RHEL
       community.general.redhat_subscription:
-        activationkey: "{{ vault_rhsm_activation_key }}"
-        org_id: "{{ vault_rhsm_org_id }}"
+        activationkey: "{{ rhsm_activation_key }}"
+        org_id: "{{ rhsm_org_id }}"
         state: present
 
     - name: Enable AAP repository
@@ -220,13 +220,13 @@
   tasks:
     - name: Create GoDaddy DNS A record
       ansible.builtin.uri:
-        url: "https://api.godaddy.com/v1/domains/{{ vault_domain }}/records/A/{{ aap_test_subdomain }}"
+        url: "https://api.godaddy.com/v1/domains/{{ domain }}/records/A/{{ aap_test_subdomain }}"
         method: PUT
         headers:
-          Authorization: "Bearer {{ vault_godaddy_api_token }}"
+          Authorization: "Bearer {{ godaddy_api_token }}"
         body_format: json
         body:
-          - data: "{{ vault_public_ip }}"
+          - data: "{{ public_ip }}"
             ttl: 600
         status_code: 200
       become: false

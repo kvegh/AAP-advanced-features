@@ -28,36 +28,36 @@ ansible_connection=local
 bundle_install=true
 bundle_dir={{ installer_extract_dir }}/{{ installer_dir_name }}
 
-registry_username={{ vault_registry_username }}
-registry_password={{ vault_registry_password }}
+registry_username={{ registry_username }}
+registry_password={{ registry_password }}
 
 postgresql_admin_username=postgres
-postgresql_admin_password={{ vault_aap_admin_password }}
+postgresql_admin_password={{ postgresql_admin_password }}
 
 redis_mode={{ redis_mode }}
 
-gateway_admin_password={{ vault_aap_admin_password }}
+gateway_admin_password={{ gateway_admin_password }}
 gateway_pg_host={{ aap_hostname }}
-gateway_pg_password={{ vault_gateway_pg_password | default(vault_aap_admin_password) }}
+gateway_pg_password={{ gateway_pg_password }}
 
-controller_admin_password={{ vault_aap_admin_password }}
+controller_admin_password={{ controller_admin_password }}
 controller_pg_host={{ aap_hostname }}
-controller_pg_password={{ vault_controller_pg_password | default(vault_aap_admin_password) }}
+controller_pg_password={{ controller_pg_password }}
 controller_percent_memory_capacity={{ controller_percent_memory_capacity }}
 
-hub_admin_password={{ vault_aap_admin_password }}
+hub_admin_password={{ hub_admin_password }}
 hub_pg_host={{ aap_hostname }}
-hub_pg_password={{ vault_hub_pg_password | default(vault_aap_admin_password) }}
+hub_pg_password={{ hub_pg_password }}
 hub_seed_collections={{ hub_seed_collections }}
 
-eda_admin_password={{ vault_aap_admin_password }}
+eda_admin_password={{ eda_admin_password }}
 eda_pg_host={{ aap_hostname }}
-eda_pg_password={{ vault_eda_pg_password | default(vault_aap_admin_password) }}
+eda_pg_password={{ eda_pg_password }}
 
 automationmetrics_pg_host={{ aap_hostname }}
-automationmetrics_pg_password={{ vault_aap_admin_password }}
+automationmetrics_pg_password={{ automationmetrics_pg_password }}
 automationmetrics_controller_read_pg_host={{ aap_hostname }}
-automationmetrics_controller_read_pg_password={{ vault_aap_admin_password }}
+automationmetrics_controller_read_pg_password={{ automationmetrics_controller_read_pg_password }}
 
 mcp_allow_write_operations={{ mcp_allow_write_operations }}
 

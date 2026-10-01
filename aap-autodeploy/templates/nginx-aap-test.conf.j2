@@ -1,10 +1,10 @@
 # {{ ansible_managed }}
 server {
     listen 443 ssl;
-    server_name {{ aap_test_subdomain }}.{{ vault_domain }};
+    server_name {{ aap_test_subdomain }}.{{ domain }};
 
-    ssl_certificate /etc/letsencrypt/live/{{ vault_domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ vault_domain }}/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
 
     location / {
         proxy_pass https://{{ new_vm_ip }};
