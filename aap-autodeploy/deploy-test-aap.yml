@@ -122,16 +122,19 @@
       ansible.builtin.command:
         cmd: loginctl enable-linger aap_service
 
-    - name: Subscribe to RHEL
-      community.general.redhat_subscription:
-        activationkey: "{{ vault_rhsm_activation_key }}"
-        org_id: "{{ vault_rhsm_org_id }}"
-        state: present
-
-    - name: Enable AAP repository
-      community.general.rhsm_repository:
-        name: ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms
-        state: enabled
+    - name: Subscribe to RHEL and enable AAP repository
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.rhc
+      vars:
+        rhc_state: present
+        rhc_auth:
+          activation_keys:
+            keys:
+              - "{{ vault_rhsm_activation_key }}"
+            org_id: "{{ vault_rhsm_org_id }}"
+        rhc_repositories:
+          - name: ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms
+            state: enabled
 
     - name: Install ansible-core
       ansible.builtin.dnf:
@@ -139,8 +142,10 @@
         state: present
 
     - name: Unsubscribe from RHEL
-      community.general.redhat_subscription:
-        state: absent
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.rhc
+      vars:
+        rhc_state: absent
 
     - name: Create installer directory
       ansible.builtin.file:

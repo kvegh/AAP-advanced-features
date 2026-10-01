@@ -40,6 +40,9 @@ aap-autodeploy/
   vars/
     main.yml                   # Non-sensitive defaults (ports, sizing, paths)
   version-registry.yml         # Tracks AAP version -> VM name mapping
+collections/
+  requirements.yml             # redhat.rhel_system_roles (from PAH rh-certified)
+myvars                         # Vault-encrypted secrets
 ```
 
 Inventory handling: copy from source AAP host, search-and-replace hostname. No template needed.
@@ -78,11 +81,10 @@ After the VM boots and gets a DHCP IP, we need to:
 2. **Add to in-memory inventory** — `add_host` with the discovered IP
 3. **Wait for SSH** — `wait_for_connection`
 4. **Create `aap_service` user** — with sudo NOPASSWD, home dir, SSH key
-5. **Subscribe to RHEL** — `community.general.redhat_subscription` with activation key (from vault)
-6. **Enable AAP repo** — `ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms`
-7. **Install ansible-core** — `dnf install ansible-core`
-8. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
-9. **Configure `loginctl enable-linger`** for the aap_service user (required for rootless podman)
+5. **Subscribe to RHEL and enable AAP repo** — `redhat.rhel_system_roles.rhc` role with activation key (from vault)
+6. **Install ansible-core** — `dnf install ansible-core`
+7. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
+8. **Configure `loginctl enable-linger`** for the aap_service user (required for rootless podman)
 
 ### Step 3: AAP Installation (Play 3 — targets: new VM as aap_service)
 
