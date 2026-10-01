@@ -3,7 +3,7 @@
   hosts: hypervisor
   become: true
   vars_files:
-    - "{{ vault_file }}"
+    - ../myvars
     - vars/main.yml
   vars:
     vm_suffix: testvm
@@ -83,7 +83,7 @@
   become: true
   gather_facts: false
   vars_files:
-    - "{{ vault_file }}"
+    - ../myvars
     - vars/main.yml
 
   tasks:
@@ -157,7 +157,7 @@
   become_user: aap_service
   gather_facts: false
   vars_files:
-    - "{{ vault_file }}"
+    - ../myvars
     - vars/main.yml
   vars:
     aap_hostname: "aap-test-v{{ aap_version_short }}.{{ vault_domain }}"
@@ -222,7 +222,7 @@
   hosts: hypervisor
   become: true
   vars_files:
-    - "{{ vault_file }}"
+    - ../myvars
     - vars/main.yml
   vars:
     new_vm_ip: "{{ hostvars['new_aap_vm']['new_vm_ip'] }}"

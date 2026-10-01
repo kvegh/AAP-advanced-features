@@ -44,7 +44,7 @@ aap-autodeploy/
 
 Inventory handling: copy from source AAP host, search-and-replace hostname. No template needed.
 
-Secrets come from the shared `automAIton/myvars` vault (passed via `vault_file` variable). No separate vault in this directory.
+Secrets come from `myvars` in the repo root (vault-encrypted).
 
 ### Changes to `automAIton/deploy_vms/deploy_vms.yml`
 
@@ -114,7 +114,7 @@ After the VM boots and gets a DHCP IP, we need to:
 
 ## Credential & Secret Handling
 
-All secrets live in `automAIton/myvars` (shared vault). The playbook loads it via `vars_files: ["{{ vault_file }}"]`.
+All secrets live in `myvars` (vault-encrypted, in the repo root). The playbook loads it via `vars_files: [../myvars]`.
 
 **Required variables in myvars** (same names as the current AAP inventory):
 
