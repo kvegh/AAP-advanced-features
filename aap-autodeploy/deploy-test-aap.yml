@@ -27,7 +27,7 @@
       ansible.builtin.command:
         cmd: >-
           virt-customize -a {{ vm_dir }}/{{ vm_name }}.disk.qcow2
-          --hostname {{ vm_name }}.internal
+          --hostname aap-test-v{{ aap_version_short }}.{{ vault_domain }}
           --selinux-relabel
 
     - name: Create and start VM
@@ -160,7 +160,7 @@
     - "{{ vault_file }}"
     - vars/main.yml
   vars:
-    aap_hostname: "{{ vm_name }}.internal"
+    aap_hostname: "aap-test-v{{ aap_version_short }}.{{ vault_domain }}"
     source_aap_fqdn: "aap.{{ vault_domain }}"
     installer_tarball_name: "{{ hostvars['new_aap_vm']['installer_tarball_name'] }}"
     installer_dir_name: "{{ hostvars['new_aap_vm']['installer_dir_name'] }}"
