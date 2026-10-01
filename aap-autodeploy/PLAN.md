@@ -40,9 +40,7 @@ aap-autodeploy/
   vars/
     main.yml                   # Non-sensitive defaults (ports, sizing, paths)
   version-registry.yml         # Tracks AAP version -> VM name mapping
-collections/
-  requirements.yml             # redhat.rhel_system_roles (from PAH rh-certified)
-myvars                         # Vault-encrypted secrets
+myvars                         # Vault-encrypted secrets (repo root)
 ```
 
 Inventory handling: copy from source AAP host, search-and-replace hostname. No template needed.
