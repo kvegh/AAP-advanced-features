@@ -429,6 +429,8 @@
 
     - name: Configure AAP integration
       when: aap_gateway_url is defined
+      vars:
+        aap_admin_username: "{{ aap_admin_username | default('admin') }}"
       block:
 
         - name: Authenticate to Orchestrator API
