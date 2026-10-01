@@ -1,9 +1,11 @@
 ---
+# No custom build needed — the stock ee-supported-rhel9 image includes all
+# certified collections and the kubernetes Python library.
+# Register it directly in AAP as an Execution Environment.
+#
+# If a custom build is ever needed (e.g. switching back to ee-minimal-rhel9),
+# use: ansible-builder build -f execution-environment.yml -t orchestrator-ee:latest
 version: 3
 images:
     base_image:
-        name: registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:2.20
-dependencies:
-    python:
-        - kubernetes
-        - openshift
+        name: registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:latest

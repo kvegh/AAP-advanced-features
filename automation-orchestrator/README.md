@@ -6,41 +6,35 @@ Deploys Automation Orchestrator on OpenShift via OLM, with CloudNativePG for Pos
 
 - OpenShift 4.14+ with `redhat-operators` and `certified-operators` CatalogSources
 - OCP service account token with cluster-admin (or namespace-admin on target namespaces)
-- Custom EE with `kubernetes` and `openshift` Python packages (see `execution-environment/`)
-- Collections `redhat.openshift` and `ansible.platform` synced to PAH (see `sync-collections.yml`)
+- `ee-supported-rhel9` registered as an Execution Environment in AAP (includes all certified collections and the `kubernetes` Python library)
 
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `deploy-automation-orchestrator.yml` | Main playbook — operators, PG, CR, AAP integration |
-| `sync-collections.yml` | Pre-flight — sync required collections to PAH |
 | `vars/main.yml` | Default variables |
 | `vars/vault.yml.example` | Template for secrets (copy to `vault.yml`, encrypt) |
-| `collections/requirements.yml` | Runtime collection dependencies |
-| `execution-environment/execution-environment.yml` | Custom EE build spec |
+| `collections/requirements.yml` | Documents required collections (informational, not used at runtime) |
+| `execution-environment/execution-environment.yml` | EE base image reference |
 
 ## Usage
 
-### 1. Build the custom EE (on the build host, not the AAP VM)
+### 1. Register the EE in AAP
 
-```bash
-ansible-builder build \
-    -f execution-environment/execution-environment.yml \
-    -t orchestrator-ee:latest
+No custom build needed. The stock `ee-supported-rhel9` image includes all required certified collections (`redhat.openshift`, `ansible.platform`) and the `kubernetes` Python library.
+
+In AAP, create an Execution Environment pointing at:
+```
+registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:latest
 ```
 
-Push to PAH container registry, then register in AAP as an Execution Environment.
-
-### 2. Sync collections to PAH
-
-Run on the default EE (which already has `ansible.platform`). Reads AAP credentials from the vault:
-
+**AAP containerized note:** The image must exist in AAP's service podman storage (`~/aap/containers/storage`), not the interactive user's storage. If the image is only in interactive storage, copy it:
 ```bash
-ansible-playbook sync-collections.yml --ask-vault-pass
+podman save registry.redhat.io/.../ee-supported-rhel9:latest | podman --remote load
 ```
 
-### 3. Create the vault file
+### 2. Create the vault file
 
 ```bash
 cp vars/vault.yml.example vars/vault.yml
@@ -50,7 +44,7 @@ ansible-vault encrypt vars/vault.yml
 
 Omit `aap_gateway_url` from the vault to skip AAP integration (Orchestrator deploys standalone).
 
-### 4. Deploy Orchestrator
+### 3. Deploy Orchestrator
 
 ```bash
 ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass
@@ -61,7 +55,7 @@ The playbook loads `vars/vault.yml` automatically via `vars_files`.
 ### Running as an AAP Job Template
 
 1. Create the project pointing at this repo
-2. Create the job template using the Orchestrator EE and `deploy-automation-orchestrator.yml`
+2. Create the job template using the `ee-supported-rhel9` EE and `deploy-automation-orchestrator.yml`
 3. Attach the Vault credential to the job template (decrypts `vars/vault.yml` at runtime)
 4. No custom credential types needed — all secrets live in the encrypted vault file
 
@@ -73,8 +67,7 @@ The playbook loads `vars/vault.yml` automatically via `vars_files`.
 4. Creates CloudNativePG Cluster with `orchestrator` and `temporal` databases
 5. Installs Orchestrator operator (Manual approval) in `automation-orchestrator`
 6. Creates AutomationOrchestrator CR pointing at CloudNativePG
-7. (Optional) Creates OAuth2 app and service account on AAP Gateway
-8. (Optional) Configures OIDC identity provider and AAP integration via Orchestrator REST API
+7. (Optional) Configures OIDC identity provider and AAP integration via Orchestrator REST API
 
 ## Idempotency
 
@@ -82,3 +75,7 @@ The playbook loads `vars/vault.yml` automatically via `vars_files`.
 - OAuth credentials: stored in K8s secret `orchestrator-aap-credentials` for re-runs
 - Identity provider and integration: existence checks before POST
 - Operators: OLM Subscriptions and InstallPlans are idempotent
+
+## Future improvements
+
+- **Switch to `ee-minimal-rhel9` base image**: The current EE uses `ee-supported-rhel9` (~2.5GB) because AAP 2.7 gateway auth prevents `ansible-galaxy` from pulling collections from PAH during project sync. Once gateway-compatible galaxy credentials are sorted out, switch back to `ee-minimal-rhel9` (~500MB) and bake only `redhat.openshift` + `ansible.platform` via `dependencies.galaxy` in the EE definition, or rely on runtime collection install from PAH.

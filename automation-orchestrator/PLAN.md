@@ -41,13 +41,13 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 6. **Orchestrator configuration**: No certified Ansible collection exists for Orchestrator's own config (identity providers, integrations). The REST API is the only documented interface -- `ansible.builtin.uri` is the correct approach.
 7. **Passwords**: Generated at runtime via `lookup('password', ...)`. Idempotent -- check if K8s secret exists first, only generate if missing. Passwords live only in OCP secrets, never in git.
 8. **AAP credentials**: No admin rights handed to Orchestrator. Manual OAuth path -- create dedicated OAuth app and service account on AAP via `ansible.platform`, pass only client_id/secret and service account credentials to Orchestrator.
-9. **EE**: Custom build based on `ee-minimal-rhel9` -- add `kubernetes` and `openshift` Python packages via pip. Collections mounted at runtime via `collections/requirements.yml` (must be synced to PAH).
-10. **Disk**: AAP host has sufficient disk space. Custom minimal EE (~500MB) fits comfortably.
-11. **Collection sync**: Automated via `ansible.platform` in a pre-flight play running on the default EE. Syncs `redhat.openshift` and `ansible.platform` from console.redhat.com to PAH.
-12. **Secrets handling**: Zero plaintext secrets in git. OCP token, AAP admin creds, and route hostname stored in `vars/vault.yml` (ansible-vault encrypted, committed to repo). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
+9. **EE**: Stock `ee-supported-rhel9` used directly — includes all certified collections (`redhat.openshift`, `ansible.platform`) and the `kubernetes` Python library. No custom build needed. AAP 2.7 gateway auth prevents `ansible-galaxy` from pulling collections from PAH during project sync, so baking collections into the EE (via the supported image) is the current workaround.
+10. **Disk**: AAP host has sufficient disk space. The `ee-supported-rhel9` image is ~2.5GB.
+11. **Collection sync**: Not required — collections are included in `ee-supported-rhel9`. The `sync-collections.yml` playbook remains in the repo for reference if switching back to `ee-minimal-rhel9` in the future.
+12. **Secrets handling**: Zero plaintext secrets in git. OCP token, AAP OAuth/service account creds, and route hostname stored in `vars/vault.yml` (ansible-vault encrypted, committed to repo). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime, stored only in K8s secrets.
 13. **Subscription**: No separate manifest needed. Orchestrator operator available via `redhat-operators` catalog (OCP pull secret on RHPDS covers it). AAP subscription includes Orchestrator entitlement.
 14. **PostgreSQL**: CloudNativePG operator runs PG pods directly on OCP. No external DB. Fine for demo.
-15. **EE build**: Build on the KVM host, not on the AAP VM. Push to PAH container registry. No risk to running AAP.
+15. **AAP containerized EE storage**: AAP containerized uses a separate podman storage root (`~/aap/containers/storage`). Images built or pulled into the interactive user's storage are not visible to AAP's receptor. Use `podman save | podman --remote load` to copy images into AAP's service storage.
 
 ---
 
@@ -58,30 +58,16 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 - **Orchestrator REST API via `ansible.builtin.uri`** for post-deploy configuration (identity provider, integrations) — no certified collection exists for this.
 - **No admin credentials handed to Orchestrator.** Manual OAuth path: create OAuth app + service account on AAP via `ansible.platform`, pass only client_id/secret to Orchestrator.
 - **No plaintext secrets in git.** OCP and AAP credentials stored in `vars/vault.yml` (ansible-vault encrypted). Decrypted at runtime by AAP Vault credential. PG and Orchestrator admin passwords generated at runtime.
-- **Collections runtime-mounted** from PAH via `collections/requirements.yml`, not baked into EE.
-- **EE based on `ee-minimal-rhel9`**, only adds Python libraries. Build on the KVM host, not on the AAP VM.
+- **EE: stock `ee-supported-rhel9`** — includes all certified collections and `kubernetes` Python library. No custom build needed. Future improvement: switch to `ee-minimal-rhel9` once gateway-compatible galaxy credentials work.
 - **Idempotent.** Re-running the playbook must not break an existing deployment (check-before-create pattern for secrets, operators, CRs).
 
 ---
 
 ## Steps
 
-### Step 0: Sync collections to PAH (pre-flight, runs on default EE)
+### Step 1: Register EE in AAP
 
-Separate playbook or first play — runs on the default EE (which already has `ansible.platform`):
-
-1. Ensure remote registry pointing to `console.redhat.com` exists in PAH
-2. Sync `redhat.openshift` collection to PAH
-3. Sync `ansible.platform` collection to PAH
-4. Verify collections are available
-
-This solves the chicken-and-egg: the default EE has `ansible.platform` built in, so we can use it to sync collections that our custom EE will mount at runtime.
-
-### Step 1: Build and push custom EE (runs on the KVM host, not the AAP VM)
-
-1. `ansible-builder build` on the KVM host using the `execution-environment.yml` from the repo
-2. Tag and push the image to PAH's container registry
-3. Register the EE in AAP via `ansible.platform`
+Register `ee-supported-rhel9` as an Execution Environment in AAP (pull: never). Ensure the image exists in AAP's service podman storage — use `podman save | podman --remote load` if needed.
 
 ### Step 2: Prerequisites
 
@@ -251,15 +237,15 @@ Target directory: `automation-orchestrator/`
 automation-orchestrator/
   PLAN.md                               # This plan document
   deploy-automation-orchestrator.yml    # Main playbook (inline k8s definitions, no templates)
-  sync-collections.yml                  # Pre-flight: sync collections to PAH (runs on default EE)
+  sync-collections.yml                  # Reference: sync collections to PAH (not needed with ee-supported)
   collections/
-    requirements.yml                    # Runtime collection mounting (redhat.openshift, ansible.platform)
+    requirements.yml                    # Documents required collections (informational only)
   vars/
     main.yml                            # Non-secret variables (namespace, channel, PG config)
     vault.yml                           # Encrypted secrets (OCP token, AAP creds, route host)
     vault.yml.example                   # Template showing required var names (no values)
   execution-environment/
-    execution-environment.yml           # EE definition based on ee-minimal-rhel9
+    execution-environment.yml           # EE base image reference (ee-supported-rhel9)
   README.md                             # Setup docs
 ```
 
@@ -281,33 +267,25 @@ The playbook runs against `localhost` and uses `redhat.openshift` certified coll
 8. **Configure Orchestrator** -- `uri` to authenticate to Orchestrator API, add AAP as OIDC identity provider (with client_id/secret from step 7), add AAP integration (with service account from step 7)
 9. **Output** -- retrieve Route URL and admin password, display
 
-Separate automation (runs before the main playbook, on default EE):
-- **Sync collections to PAH** -- ensure `redhat.openshift` and `ansible.platform` are synced from console.redhat.com
-- **Build + push custom EE** -- `ansible-builder build` on the KVM host, push to PAH container registry, register in AAP
-
-### Collections needed (runtime-mounted via collections/requirements.yml)
+### Collections needed (included in ee-supported-rhel9)
 
 - `redhat.openshift` (certified -- k8s, k8s_info, openshift_auth for OCP resources)
 - `ansible.platform` (certified -- OAuth2 app, users, roles on AAP Gateway)
 - `ansible.builtin` (uri module for Orchestrator REST API -- built-in, no install needed)
 
-Collections must be synced to Private Automation Hub.
+All collections are included in the stock `ee-supported-rhel9` image. No PAH sync or runtime install needed.
 
-### EE: custom build on ee-minimal-rhel9
+### EE: stock ee-supported-rhel9
 
 ```yaml
 # execution-environment.yml
 version: 3
 images:
   base_image:
-    name: registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:2.20
-dependencies:
-  python:
-    - kubernetes
-    - openshift
+    name: registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:latest
 ```
 
-Collections are NOT baked in -- mounted at runtime from PAH. Only the Python libraries that collections depend on are added to the image.
+No custom build needed. The image includes all certified collections and the `kubernetes` Python library (29.0.0). See README.md "Future improvements" for the plan to switch to `ee-minimal-rhel9`.
 
 ---
 
@@ -327,4 +305,4 @@ Collections are NOT baked in -- mounted at runtime from PAH. Only the Python lib
 
 - RHPDS OCP cluster provisioning (done separately)
 - LLM provider integration (deferred to later)
-- Building the custom EE image (separate `ansible-builder build` step, documented in README)
+- Pulling `ee-supported-rhel9` and loading it into AAP's podman storage (documented in README)
