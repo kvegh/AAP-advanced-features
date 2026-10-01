@@ -107,7 +107,7 @@ After the VM boots and gets a DHCP IP, we need to:
 - AAP's Envoy gateway expects to own the domain root; path-based routing breaks it
 - New subdomain: parameterized, e.g., `{{ aap_test_subdomain }}.{{ domain }}`
 - The Let's Encrypt cert would need a new SAN — or for test purposes, use nginx `proxy_ssl_verify off` to the backend's self-signed cert, and the frontend can share the existing wildcard or get a new cert
-- Simplest for testing: access by IP + port, skip nginx/TLS entirely. Add nginx later if needed.
+- Nginx reverse proxy is **required** — VMs are on an internal libvirt network, only the hypervisor has a public IP. External access requires nginx on the hypervisor forwarding to the VM, same as the existing AAP setup.
 
 ---
 
@@ -185,7 +185,7 @@ deployments: []
 
 2. **Bundle install, not online** — copy the existing 3.8G tarball rather than downloading from registry. Faster, no internet dependency, reproducible.
 
-3. **Subdomain for external access** — path-based routing doesn't work with AAP's Envoy. But for initial testing, direct IP access is fine. Nginx/subdomain is a later enhancement.
+3. **Subdomain + nginx required for external access** — VMs are on internal libvirt network, only the hypervisor has a public IP. Nginx reverse proxy is mandatory, same as the existing AAP setup.
 
 4. **Vault for ALL secrets** — passwords, registry creds, hostnames, IPs. The repo contains zero environment-specific values.
 

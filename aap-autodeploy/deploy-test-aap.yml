@@ -1,0 +1,232 @@
+---
+- name: "Play 1 — Create VM from golden image"
+  hosts: hypervisor
+  become: true
+  vars_files:
+    - "{{ vault_file }}"
+    - vars/main.yml
+  vars:
+    vm_suffix: testvm
+    vm_name: "aap-v{{ aap_version_short }}-{{ vm_suffix }}-1"
+    installer_tarball_name: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
+    installer_dir_name: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64"
+
+  tasks:
+    - name: Copy golden image for VM
+      ansible.builtin.copy:
+        src: "{{ golden_image_path }}"
+        dest: "{{ vm_dir }}/{{ vm_name }}.disk.qcow2"
+        remote_src: true
+        force: false
+
+    - name: Resize VM disk
+      ansible.builtin.command:
+        cmd: "qemu-img resize {{ vm_dir }}/{{ vm_name }}.disk.qcow2 {{ aap_disk_size }}"
+
+    - name: Customize VM image
+      ansible.builtin.command:
+        cmd: >-
+          virt-customize -a {{ vm_dir }}/{{ vm_name }}.disk.qcow2
+          --hostname {{ vm_name }}.internal
+          --run-command 'growpart /dev/sda 4 || true'
+          --run-command 'xfs_growfs / || true'
+          --ssh-inject root:file:{{ vault_ssh_pubkey_path }}
+          --selinux-relabel
+
+    - name: Create and start VM
+      ansible.builtin.command:
+        cmd: >-
+          virt-install
+          --name {{ vm_name }}
+          --vcpus {{ aap_vcpus }}
+          --memory {{ aap_memory_mb }}
+          --import
+          --graphics none
+          --osinfo detect=on,require=off
+          --disk path={{ vm_dir }}/{{ vm_name }}.disk.qcow2,format=qcow2
+          --network network={{ vm_network }}
+          --noautoconsole
+
+    - name: Wait for VM to get DHCP lease
+      ansible.builtin.command:
+        cmd: "virsh net-dhcp-leases {{ vm_network }}"
+      register: dhcp_leases
+      until: dhcp_leases.stdout is search(vm_name)
+      retries: 30
+      delay: 5
+
+    - name: Extract VM IP from DHCP leases
+      ansible.builtin.set_fact:
+        new_vm_ip: >-
+          {{ dhcp_leases.stdout_lines
+             | select('search', vm_name)
+             | first
+             | regex_search('(\d+\.\d+\.\d+\.\d+)')
+          }}
+
+    - name: Add new VM to in-memory inventory
+      ansible.builtin.add_host:
+        name: new_aap_vm
+        ansible_host: "{{ new_vm_ip }}"
+        ansible_user: root
+        new_vm_ip: "{{ new_vm_ip }}"
+        vm_name: "{{ vm_name }}"
+        installer_tarball_name: "{{ installer_tarball_name }}"
+        installer_dir_name: "{{ installer_dir_name }}"
+
+    - name: Display VM IP
+      ansible.builtin.debug:
+        msg: "New VM {{ vm_name }} is at {{ new_vm_ip }}"
+
+
+- name: "Play 2 — Prepare host for AAP installation"
+  hosts: new_aap_vm
+  become: true
+  gather_facts: false
+  vars_files:
+    - "{{ vault_file }}"
+    - vars/main.yml
+
+  tasks:
+    - name: Wait for SSH
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: Grow root filesystem
+      block:
+        - name: Grow partition
+          ansible.builtin.command:
+            cmd: growpart /dev/sda 4
+          failed_when: false
+
+        - name: Grow XFS filesystem
+          ansible.builtin.command:
+            cmd: xfs_growfs /
+          failed_when: false
+
+    - name: Create aap_service user
+      ansible.builtin.user:
+        name: aap_service
+        create_home: true
+        shell: /bin/bash
+
+    - name: Grant aap_service sudo
+      ansible.builtin.copy:
+        content: "aap_service ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/aap_service
+        mode: "0440"
+
+    - name: Set up SSH key for aap_service
+      ansible.posix.authorized_key:
+        user: aap_service
+        key: "{{ lookup('file', vault_ssh_pubkey_path) }}"
+
+    - name: Enable linger for aap_service
+      ansible.builtin.command:
+        cmd: loginctl enable-linger aap_service
+
+    - name: Subscribe to RHEL
+      community.general.redhat_subscription:
+        activationkey: "{{ vault_rhsm_activation_key }}"
+        org_id: "{{ vault_rhsm_org_id }}"
+        state: present
+
+    - name: Enable AAP repository
+      community.general.rhsm_repository:
+        name: ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms
+        state: enabled
+
+    - name: Install ansible-core
+      ansible.builtin.dnf:
+        name: ansible-core
+        state: present
+
+    - name: Unsubscribe from RHEL
+      community.general.redhat_subscription:
+        state: absent
+
+    - name: Create installer directory
+      ansible.builtin.file:
+        path: "{{ installer_extract_dir }}"
+        state: directory
+        owner: aap_service
+        group: aap_service
+        mode: "0755"
+
+
+- name: "Play 3 — Copy installer and deploy AAP"
+  hosts: new_aap_vm
+  become: true
+  become_user: aap_service
+  gather_facts: false
+  vars_files:
+    - "{{ vault_file }}"
+    - vars/main.yml
+  vars:
+    aap_hostname: "{{ vm_name }}.internal"
+    installer_tarball_name: "{{ hostvars['new_aap_vm']['installer_tarball_name'] }}"
+    installer_dir_name: "{{ hostvars['new_aap_vm']['installer_dir_name'] }}"
+
+  tasks:
+    - name: Copy installer tarball from source AAP
+      ansible.posix.synchronize:
+        src: "{{ vault_installer_path }}"
+        dest: "{{ installer_extract_dir }}/"
+      delegate_to: "{{ vault_source_aap_host }}"
+
+    - name: Extract installer tarball
+      ansible.builtin.unarchive:
+        src: "{{ installer_extract_dir }}/{{ installer_tarball_name }}"
+        dest: "{{ installer_extract_dir }}/"
+        remote_src: true
+
+    - name: Template AAP inventory
+      ansible.builtin.template:
+        src: templates/inventory.j2
+        dest: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
+        mode: "0600"
+      become: false
+
+    - name: Run AAP installer
+      ansible.builtin.command:
+        cmd: ansible-playbook -i inventory ansible.containerized_installer.install
+        chdir: "{{ installer_extract_dir }}/{{ installer_dir_name }}"
+      async: 3600
+      poll: 30
+
+    - name: Verify AAP is accessible
+      ansible.builtin.uri:
+        url: "https://localhost/api/controller/v2/ping/"
+        validate_certs: false
+      register: aap_ping
+      retries: 12
+      delay: 10
+      until: aap_ping.status == 200
+
+
+- name: "Play 4 — Configure nginx reverse proxy for external access"
+  hosts: hypervisor
+  become: true
+  vars_files:
+    - "{{ vault_file }}"
+    - vars/main.yml
+  vars:
+    new_vm_ip: "{{ hostvars['new_aap_vm']['new_vm_ip'] }}"
+    aap_test_subdomain: "aap-test-v{{ aap_version_short }}"
+
+  tasks:
+    - name: Template nginx config
+      ansible.builtin.template:
+        src: templates/nginx-aap-test.conf.j2
+        dest: "/etc/nginx/conf.d/{{ aap_test_subdomain }}.conf"
+        mode: "0644"
+      notify: reload nginx
+
+  handlers:
+    - name: reload nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
