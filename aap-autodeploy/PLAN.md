@@ -11,19 +11,19 @@ All playbooks and docs go in `AAP-advanced-features/aap-autodeploy/`. The VM dep
 ## Architecture Overview
 
 ```
-Golden Image (pre-updated RHEL 9.8 qcow2)
+Golden Image (RHEL 9.8 qcow2 with aap_service user, installer pre-staged)
     |
     v
-[1] Clone + resize disk + virt-install on hypervisor
+[1] Clone + resize disk + virt-customize hostname + virt-install on hypervisor
     |
     v
-[2] Prepare host: create aap_service user, SSH keys, subscribe, install prereqs
+[2] Prepare host: grow filesystem, subscribe, install ansible-core, unsubscribe
     |
     v
-[3] Copy installer tarball from existing AAP, extract, template inventory, run installer
+[3] Customize inventory hostname, set bundle vars, run AAP installer
     |
     v
-[4] Configure nginx reverse proxy on hypervisor for external access
+[4] Configure DNS + nginx reverse proxy on hypervisor for external access
 ```
 
 ---
@@ -72,29 +72,23 @@ Hostname: matches VM name (`aap27-test-1.supercorp.at`).
 
 ### Step 2: Host Preparation (Play 2 — targets: new VM via dynamic inventory)
 
-After the VM boots and gets a DHCP IP, we need to:
+After the VM boots and gets a DHCP IP:
 
-1. **Discover the VM's IP** — `virsh net-dhcp-leases internal` on hypervisor, register the IP
-2. **Add to in-memory inventory** — `add_host` with the discovered IP
-3. **Wait for SSH** — `wait_for_connection`
-4. **Create `aap_service` user** — with sudo NOPASSWD, home dir, SSH key
-5. **Subscribe to RHEL and enable AAP repo** — `redhat.rhel_system_roles.rhc` role with activation key (from vault)
-6. **Install ansible-core** — `dnf install ansible-core`
-7. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
-8. **Configure `loginctl enable-linger`** for the aap_service user (required for rootless podman)
+1. **Wait for SSH** — `wait_for_connection`
+2. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
+3. **Subscribe to RHEL and enable AAP repo** — `redhat.rhel_system_roles.rhc` role with activation key (from vault)
+4. **Install ansible-core** — `dnf install ansible-core`
+5. **Unsubscribe from RHEL** — clean up subscription after install
+
+The `aap_service` user, sudo, linger, SSH authorized_keys, and the AAP installer bundle are all pre-staged in the golden image.
 
 ### Step 3: AAP Installation (Play 3 — targets: new VM as aap_service)
 
-1. **Copy installer tarball** — SCP from the existing AAP host (`/opt/sources/*.tar.gz`) directly to the new VM. The tarball is 3.8 GiB. Both hosts are on the internal network. Run `scp` on the existing AAP host targeting the new VM's IP.
-2. **Extract tarball** — `unarchive` on the new VM
-3. **Template the inventory** — `template` module with `inventory.j2`
-   - All host groups point to the new VM's hostname
-   - `ansible_connection=local`
-   - All passwords from vault variables
-   - Registry credentials from vault
-   - `bundle_install=true`, `bundle_dir` pointing to extracted bundle
-   - MCP enabled with `mcp_allow_write_operations=true`
-4. **Run the installer** — `command: ansible-playbook -i inventory ansible.containerized_installer.install`
+The installer is already unpacked in the golden image at `/opt/sources/ansible-automation-platform-containerized-setup-bundle-2.7-8-x86_64/`.
+
+1. **Customize the inventory** — search-and-replace hostname from source AAP FQDN to new VM's FQDN
+2. **Set bundle install vars** — add `bundle_install=true` and `bundle_dir` to inventory
+3. **Run the installer** — `command: ansible-playbook -i inventory ansible.containerized_installer.install`
    - This takes ~10-20 minutes
    - Runs as `aap_service` user (rootless podman)
 
@@ -198,11 +192,11 @@ deployments: []
 
 4. **Vault for ALL secrets** — passwords, registry creds, hostnames, IPs. The repo contains zero environment-specific values.
 
-5. **Golden image as base** — skip RHEL update on every deploy. Subscribe only to enable AAP repo, not for general updates.
+5. **Golden image as base** — pre-updated RHEL 9.8 with `aap_service` user (sudo, linger, hypervisor SSH key), and the AAP installer bundle unpacked under `/opt/sources/`. Subscribe only to enable AAP repo and install ansible-core, not for general updates.
 
 6. **Extend deploy_vms.yml minimally** — add `disk_size` support (one task). Don't rewrite it.
 
-7. **Installer copy via SCP from the existing AAP host** — direct SCP from the existing AAP host to the new VM over the internal network.
+7. **Installer pre-staged in golden image** — eliminates the slow SCP transfer step entirely. The unpacked bundle (~3.5 GiB) is baked into the golden image.
 
 8. **Filesystem grow after clone** — golden image is small (~10G), resize to 60G at clone time, grow XFS on first boot.
 

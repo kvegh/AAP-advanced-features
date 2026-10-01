@@ -70,11 +70,6 @@
              | regex_search('(\d+\.\d+\.\d+\.\d+)')
           }}
 
-    - name: Read aap_hypervisor public key
-      ansible.builtin.slurp:
-        src: ~aap_hypervisor/.ssh/id_ed25519.pub
-      register: hypervisor_pubkey
-
     - name: Add new VM to in-memory inventory
       ansible.builtin.add_host:
         name: new_aap_vm
@@ -86,7 +81,6 @@
         vm_name: "{{ vm_name }}"
         vm_counter: "{{ vm_counter }}"
         installer_dir_name: "{{ installer_dir_name }}"
-        hypervisor_pubkey: "{{ hypervisor_pubkey.content | b64decode }}"
 
     - name: Display VM IP
       ansible.builtin.debug:
@@ -127,27 +121,6 @@
             cmd: xfs_growfs /
           failed_when: false
 
-    - name: Create aap_service user
-      ansible.builtin.user:
-        name: aap_service
-        create_home: true
-        shell: /bin/bash
-
-    - name: Grant aap_service sudo
-      ansible.builtin.copy:
-        content: "aap_service ALL=(ALL) NOPASSWD: ALL"
-        dest: /etc/sudoers.d/aap_service
-        mode: "0440"
-
-    - name: Enable linger for aap_service
-      ansible.builtin.command:
-        cmd: loginctl enable-linger aap_service
-
-    - name: Authorize hypervisor key for aap_service
-      ansible.posix.authorized_key:
-        user: aap_service
-        key: "{{ hypervisor_pubkey }}"
-
     - name: Subscribe to RHEL and enable AAP repository
       ansible.builtin.include_role:
         name: redhat.rhel_system_roles.rhc
@@ -173,34 +146,8 @@
       vars:
         rhc_state: absent
 
-    - name: Create installer directory
-      ansible.builtin.file:
-        path: "{{ installer_extract_dir }}"
-        state: directory
-        owner: aap_service
-        group: aap_service
-        mode: "0755"
 
-
-- name: "Play 3 — Copy installer tarball from hypervisor to VM"
-  hosts: hypervisor
-  become: false
-  vars_files:
-    - vars/main.yml
-  vars:
-    new_vm_ip: "{{ hostvars['new_aap_vm']['new_vm_ip'] }}"
-    installer_tarball: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
-
-  tasks:
-    - name: Push installer tarball to VM
-      ansible.builtin.command:
-        cmd: >-
-          scp -o StrictHostKeyChecking=no
-          {{ installer_extract_dir }}/{{ installer_tarball }}
-          aap_service@{{ new_vm_ip }}:{{ installer_extract_dir }}/
-
-
-- name: "Play 4 — Configure and install AAP"
+- name: "Play 3 — Configure and install AAP"
   hosts: new_aap_vm
   become: true
   become_user: aap_service
@@ -214,14 +161,6 @@
     installer_dir_name: "{{ hostvars['new_aap_vm']['installer_dir_name'] }}"
 
   tasks:
-    - name: Extract installer tarball
-      ansible.builtin.command:
-        cmd: >-
-          tar xf {{ installer_extract_dir }}/{{ installer_tarball }}
-          -C {{ installer_extract_dir }}
-      vars:
-        installer_tarball: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
-
     - name: Replace hostname in inventory
       ansible.builtin.replace:
         path: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
@@ -254,7 +193,7 @@
       until: aap_ping.status == 200
 
 
-- name: "Play 5 — Create DNS record and configure nginx reverse proxy"
+- name: "Play 4 — Create DNS record and configure nginx reverse proxy"
   hosts: hypervisor
   become: true
   vars_files:
