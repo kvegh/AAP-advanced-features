@@ -485,7 +485,7 @@
 
         - name: Get default project
           ansible.builtin.uri:
-            url: "{{ orchestrator_url }}/api/v1/projects?search=default"
+            url: "{{ orchestrator_url }}/api/v1/projects"
             method: GET
             headers:
               Authorization: "Bearer {{ orch_token }}"
