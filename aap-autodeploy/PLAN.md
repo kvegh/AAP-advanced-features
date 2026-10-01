@@ -43,10 +43,10 @@ aap-autodeploy/
     nginx-aap-test.conf.j2     # nginx reverse proxy config for test instance
   vars/
     main.yml                   # Non-sensitive defaults (ports, sizing, paths)
-    vault.yml                  # Vault-encrypted (passwords, registry creds, API keys)
-    vault.yml.example          # Template showing required vault variables (no values)
   version-registry.yml         # Tracks AAP version -> VM name mapping
 ```
+
+Secrets come from the shared `automAIton/myvars` vault (passed via `vault_file` variable). No separate vault in this directory.
 
 ### Changes to `automAIton/deploy_vms/deploy_vms.yml`
 
@@ -127,42 +127,24 @@ This mirrors the existing `aap_deploy/` playbooks but consolidated into one play
 
 ## Credential & Secret Handling
 
-### `vault.yml.example` (committed — shows structure, no values)
+All secrets live in `automAIton/myvars` (shared vault). The playbook loads it via `vars_files: ["{{ vault_file }}"]`.
 
-```yaml
-# Red Hat registry service account
-vault_registry_username: ""
-vault_registry_password: ""
+**Required vault variables** (verify these exist in myvars):
 
-# RHEL subscription activation key
-vault_rhsm_activation_key: ""
-vault_rhsm_org_id: ""
-
-# AAP admin passwords (shared across all services for simplicity)
-vault_aap_admin_password: ""
-
-# PostgreSQL admin password
-vault_postgresql_admin_password: ""
-
-# Per-service PG passwords (can be same for test)
-vault_gateway_pg_password: ""
-vault_controller_pg_password: ""
-vault_hub_pg_password: ""
-vault_eda_pg_password: ""
-vault_metrics_pg_password: ""
-
-# SSH private key for connecting to new VMs
-vault_ssh_private_key_path: ""
-
-# Hypervisor connection
-vault_hypervisor_host: ""
-vault_hypervisor_user: ""
-
-# Source AAP host (to copy installer from)
-vault_source_aap_host: ""
-vault_source_aap_user: ""
-vault_installer_path: ""
-```
+| Variable | Purpose | Likely already present? |
+|---|---|---|
+| `vault_registry_username` | Red Hat registry service account | Yes (existing AAP uses it) |
+| `vault_registry_password` | Registry service account token | Yes |
+| `vault_rhsm_activation_key` | RHEL subscription activation key | Just added |
+| `vault_rhsm_org_id` | RHEL subscription org ID | Just added |
+| `vault_aap_admin_password` | AAP admin password (all services) | Yes |
+| `vault_gateway_pg_password` | Gateway PostgreSQL password | Check |
+| `vault_controller_pg_password` | Controller PostgreSQL password | Check |
+| `vault_hub_pg_password` | Hub PostgreSQL password | Check |
+| `vault_eda_pg_password` | EDA PostgreSQL password | Check |
+| `vault_hypervisor_host` | Hypervisor IP/hostname | Check |
+| `vault_source_aap_host` | Existing AAP host (installer source) | Check |
+| `vault_installer_path` | Path to installer tarball on source | Check |
 
 ### `main.yml` (committed — non-sensitive defaults)
 
