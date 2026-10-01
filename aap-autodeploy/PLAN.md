@@ -23,10 +23,7 @@ Golden Image (pre-updated RHEL 9.8 qcow2)
 [3] Copy installer tarball from existing AAP, extract, template inventory, run installer
     |
     v
-[4] Post-install: configure AAP objects (projects, credentials, JTs) via ansible.controller
-    |
-    v
-[5] Configure nginx reverse proxy on hypervisor for external access
+[4] Configure nginx reverse proxy on hypervisor for external access
 ```
 
 ---
@@ -59,8 +56,9 @@ Add `disk_size` variable support for `qemu-img resize` after copy (needed for AA
 ### Step 1: VM Creation (Play 1 — targets: hypervisor)
 
 Reuse the existing `deploy_vms.yml` with extended parameters:
-- `projectname`: `aap-v{{ aap_version_short }}-testvm` (e.g., `aap-v27`)
+- `projectname`: `aap-v{{ aap_version_short }}` (e.g., `aap-v27`)
 - `sequence`: `1`
+- **Note**: `deploy_vms.yml` creates names as `{{ projectname }}-vm-{{ item }}`, producing `aap-v27-vm-1`. To get the desired `aap-v27-testvm` naming, we'll modify the naming pattern in `deploy_vms.yml` to use a configurable suffix (default `vm`) so we can pass `suffix: testvm`.
 - `vcpus`: `4`
 - `memory`: `20480` (20 GiB)
 - `base_image`: path to golden image (not the raw RHEL base)
@@ -68,7 +66,7 @@ Reuse the existing `deploy_vms.yml` with extended parameters:
 
 **Extend `deploy_vms.yml`**: Add a task between "Copy base image" and "Customize VM images" that runs `qemu-img resize` when `disk_size` is defined. One line addition; backwards compatible.
 
-VM naming: `aap-v27-vm-1` (from the survey constraints, projectname max 10 chars).
+VM naming: `aap-vX-testvm` where X is the version (e.g., `aap-v27-testvm`).
 Hostname: matches VM name.
 
 ### Step 2: Host Preparation (Play 2 — targets: new VM via dynamic inventory)
@@ -100,19 +98,7 @@ After the VM boots and gets a DHCP IP, we need to:
    - This takes ~10-20 minutes
    - Runs as `aap_service` user (rootless podman)
 
-### Step 4: Post-Install Configuration (Play 4 — targets: localhost or controller API)
-
-Use `ansible.controller` collection modules to configure the new AAP:
-
-1. Create organization
-2. Create credentials (machine, vault)
-3. Create project (pointing to automAIton repo)
-4. Create inventory + inventory source
-5. Create job templates
-
-This mirrors the existing `aap_deploy/` playbooks but consolidated into one play. Variables come from vault.
-
-### Step 5: Nginx Reverse Proxy (Play 5 — targets: hypervisor)
+### Step 4: Nginx Reverse Proxy (Play 4 — targets: hypervisor)
 
 1. **Template nginx config** — server block for the test AAP
 2. **Reload nginx** — `systemctl reload nginx`
@@ -185,7 +171,7 @@ mcp_allow_write_operations: true
 deployments: []
 # Example entry:
 #   - version: "2.7-8"
-#     vm_name: "aap-v27-vm-1"
+#     vm_name: "aap-v27-testvm"
 #     deployed_date: "2026-10-01"
 #     ip: "<assigned by DHCP>"
 #     status: active
@@ -195,7 +181,7 @@ deployments: []
 
 ## Key Design Decisions
 
-1. **KISS: Single playbook, multi-play** — not a role galaxy. One `deploy-test-aap.yml` with 5 plays.
+1. **KISS: Single playbook, multi-play** — not a role galaxy. One `deploy-test-aap.yml` with 4 plays. Post-install AAP configuration (projects, credentials, JTs) is handled separately.
 
 2. **Bundle install, not online** — copy the existing 3.8G tarball rather than downloading from registry. Faster, no internet dependency, reproducible.
 
