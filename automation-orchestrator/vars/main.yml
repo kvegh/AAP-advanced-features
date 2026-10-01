@@ -3,7 +3,7 @@ orchestrator_namespace: automation-orchestrator
 cnpg_namespace: cnpg-system
 
 orchestrator_channel: stable
-cnpg_channel: stable
+cnpg_channel: stable-v1
 
 orchestrator_operator_name: automation-orchestrator-operator
 cnpg_operator_name: cloudnative-pg
