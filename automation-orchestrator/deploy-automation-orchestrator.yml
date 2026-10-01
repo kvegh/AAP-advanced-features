@@ -474,7 +474,7 @@
               insecure_skip_tls_verify: true
             validate_certs: false
             status_code: [201]
-          # no_log: true  # temporarily disabled for debugging
+          no_log: true
           when: >-
             (existing_idps.json.resources | default([]))
             | selectattr('name', 'defined')
