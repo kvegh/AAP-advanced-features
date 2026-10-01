@@ -16,7 +16,7 @@ cnpg_storage_size: 10Gi
 pg_port: 5432
 pg_ssl_mode: require
 
-ocp_validate_certs: true
+ocp_validate_certs: false
 
 # Required -- provide via extra vars or vault
 # ocp_api_url: "https://api.cluster.example.com:6443"
