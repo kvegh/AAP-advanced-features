@@ -161,6 +161,7 @@
     - vars/main.yml
   vars:
     aap_hostname: "{{ vm_name }}.internal"
+    source_aap_fqdn: "aap.{{ vault_domain }}"
     installer_tarball_name: "{{ hostvars['new_aap_vm']['installer_tarball_name'] }}"
     installer_dir_name: "{{ hostvars['new_aap_vm']['installer_dir_name'] }}"
 
@@ -177,12 +178,28 @@
         dest: "{{ installer_extract_dir }}/"
         remote_src: true
 
-    - name: Template AAP inventory
-      ansible.builtin.template:
-        src: templates/inventory.j2
-        dest: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
-        mode: "0600"
+    - name: Copy inventory from source AAP
+      ansible.builtin.command:
+        cmd: >-
+          scp -o StrictHostKeyChecking=no
+          {{ source_aap_host }}:{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory
+          {{ installer_extract_dir }}/{{ installer_dir_name }}/inventory
       become: false
+
+    - name: Replace hostname in inventory
+      ansible.builtin.replace:
+        path: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
+        regexp: "{{ source_aap_fqdn }}"
+        replace: "{{ aap_hostname }}"
+
+    - name: Set bundle install in inventory
+      ansible.builtin.lineinfile:
+        path: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
+        line: "{{ item }}"
+        insertafter: '\[all:vars\]'
+      loop:
+        - "bundle_install=true"
+        - "bundle_dir={{ installer_extract_dir }}/{{ installer_dir_name }}"
 
     - name: Run AAP installer
       ansible.builtin.command:
