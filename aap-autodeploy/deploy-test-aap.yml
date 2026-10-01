@@ -194,10 +194,9 @@
     - name: Push installer directory to VM
       ansible.builtin.command:
         cmd: >-
-          rsync -a
-          -e "ssh -o StrictHostKeyChecking=no"
-          {{ installer_extract_dir }}/{{ installer_dir_name }}/
-          aap_service@{{ new_vm_ip }}:{{ installer_extract_dir }}/{{ installer_dir_name }}/
+          scp -r -o StrictHostKeyChecking=no
+          {{ installer_extract_dir }}/{{ installer_dir_name }}
+          aap_service@{{ new_vm_ip }}:{{ installer_extract_dir }}/
 
 
 - name: "Play 4 — Configure and install AAP"
