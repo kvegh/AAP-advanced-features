@@ -429,8 +429,6 @@
 
     - name: Configure AAP integration
       when: aap_gateway_url is defined
-      vars:
-        aap_admin_username: "{{ aap_admin_username | default('admin') }}"
       block:
 
         - name: Authenticate to Orchestrator API
@@ -470,7 +468,7 @@
             body:
               aap_url: "{{ aap_gateway_url }}"
               organization: Default
-              admin_username: "{{ aap_admin_username }}"
+              admin_username: "{{ aap_admin_username | default('admin') }}"
               admin_password: "{{ aap_admin_password }}"
               insecure_skip_tls_verify: true
             validate_certs: false
@@ -536,7 +534,7 @@
               credential_type_id: "{{ orch_aap_cred_type_id }}"
               project_id: "{{ orch_default_project_id }}"
               inputs:
-                username: "{{ aap_admin_username }}"
+                username: "{{ aap_admin_username | default('admin') }}"
                 password: "{{ aap_admin_password }}"
             validate_certs: false
             status_code: [201]
