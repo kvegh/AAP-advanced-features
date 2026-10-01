@@ -424,30 +424,16 @@
 
     # =======================================================================
     # AAP INTEGRATION
-    # OAuth app and service account are pre-created in AAP.
-    # Credentials come from vars/vault.yml (oauth_client_id, oauth_client_secret,
-    # svc_account_username, svc_account_password).
+    # 1. setup_aap_oidc — creates OAuth2 app on AAP + OIDC IdP in Orchestrator
+    # 2. Credential — AAP admin creds for integration health checks
+    # 3. Integration — connects Orchestrator to AAP for job dispatch
+    # AAP admin credentials are used transiently (never stored in Orchestrator).
     # Skipped when aap_gateway_url is not provided.
     # =======================================================================
 
     - name: Configure AAP integration
-      when: aap_gateway_url is defined and oauth_client_id is defined
+      when: aap_gateway_url is defined and aap_admin_password is defined
       block:
-
-        - name: Store AAP credentials in K8s secret
-          redhat.openshift.k8s:
-            definition:
-              apiVersion: v1
-              kind: Secret
-              metadata:
-                name: orchestrator-aap-credentials
-                namespace: "{{ orchestrator_namespace }}"
-              type: Opaque
-              stringData:
-                client_id: "{{ oauth_client_id }}"
-                client_secret: "{{ oauth_client_secret }}"
-                svc_password: "{{ svc_account_password }}"
-                svc_username: "{{ svc_account_username }}"
 
         - name: Authenticate to Orchestrator API
           ansible.builtin.uri:
@@ -465,6 +451,8 @@
           ansible.builtin.set_fact:
             orch_token: "{{ orch_auth.json.access_token }}"
 
+        # --- Identity Provider (automatic setup) ---
+
         - name: List existing identity providers
           ansible.builtin.uri:
             url: "{{ orchestrator_url }}/api/v1/identity_providers"
@@ -474,33 +462,102 @@
             validate_certs: false
           register: existing_idps
 
-        - name: Add AAP as OIDC identity provider
+        - name: Set up AAP as OIDC identity provider
           ansible.builtin.uri:
-            url: "{{ orchestrator_url }}/api/v1/identity_providers"
+            url: "{{ orchestrator_url }}/api/v1/identity_providers/setup_aap_oidc"
             method: POST
             headers:
               Authorization: "Bearer {{ orch_token }}"
             body_format: json
             body:
-              provider_type: oidc
-              idp_type: aap
-              name: Ansible Automation Platform
-              issuer_url: "{{ aap_gateway_url }}/o/"
-              client_id: "{{ oauth_client_id }}"
-              client_secret: "{{ oauth_client_secret }}"
-              redirect_uri: "{{ orchestrator_url }}/api/v1/auth/oidc/callback"
-              scopes: "read write openid roles"
-              auto_discovery: true
-              allow_all_authenticated: true
-              aap_role_mapping_enabled: true
-              enable_rp_initiated_logout: true
-              disable_tls_verify: true
+              aap_url: "{{ aap_gateway_url }}"
+              organization: Default
+              admin_username: "{{ aap_admin_username }}"
+              admin_password: "{{ aap_admin_password }}"
+              insecure_skip_tls_verify: true
             validate_certs: false
-            status_code: [200, 201]
+            status_code: [201]
           when: >-
-            (existing_idps.json.results | default([]))
-            | selectattr('name', 'equalto', 'Ansible Automation Platform')
+            (existing_idps.json.resources | default([]))
+            | selectattr('name', 'defined')
+            | selectattr('name', 'search', '(?i)ansible|aap')
             | list | length == 0
+
+        # --- Health-check credential ---
+
+        - name: Get default project
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/projects?search=default"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            validate_certs: false
+          register: orch_projects
+
+        - name: Set default project ID
+          ansible.builtin.set_fact:
+            orch_default_project_id: >-
+              {{ (orch_projects.json.resources
+                  | selectattr('name', 'equalto', 'default')
+                  | map(attribute='id') | first) }}
+
+        - name: Get AAP credential type
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/credential_types"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            validate_certs: false
+          register: orch_cred_types
+
+        - name: Set AAP credential type ID
+          ansible.builtin.set_fact:
+            orch_aap_cred_type_id: >-
+              {{ (orch_cred_types.json.resources
+                  | selectattr('name', 'equalto', 'Ansible Automation Platform')
+                  | map(attribute='id') | first) }}
+
+        - name: List existing credentials
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/credentials?project_id={{ orch_default_project_id }}"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            validate_certs: false
+          register: existing_credentials
+
+        - name: Create AAP health-check credential
+          ansible.builtin.uri:
+            url: "{{ orchestrator_url }}/api/v1/credentials"
+            method: POST
+            headers:
+              Authorization: "Bearer {{ orch_token }}"
+            body_format: json
+            body:
+              name: AAP Admin
+              credential_type_id: "{{ orch_aap_cred_type_id }}"
+              project_id: "{{ orch_default_project_id }}"
+              inputs:
+                username: "{{ aap_admin_username }}"
+                password: "{{ aap_admin_password }}"
+            validate_certs: false
+            status_code: [201]
+          register: created_credential
+          when: >-
+            (existing_credentials.json.resources | default([]))
+            | selectattr('name', 'equalto', 'AAP Admin')
+            | list | length == 0
+
+        - name: Set credential ID
+          ansible.builtin.set_fact:
+            orch_aap_credential_id: >-
+              {{ created_credential.json.id
+                 if created_credential is not skipped
+                 else (existing_credentials.json.resources
+                       | selectattr('name', 'equalto', 'AAP Admin')
+                       | map(attribute='id') | first) }}
+
+        # --- AAP Integration ---
 
         - name: List existing integrations
           ansible.builtin.uri:
@@ -520,18 +577,17 @@
             body_format: json
             body:
               name: AAP Demo
-              integration_type: aap
-              url: "{{ aap_gateway_url }}"
               description: Ansible Automation Platform integration for job dispatch
-              security:
-                disable_tls_verify: true
-              credential:
-                username: "{{ svc_account_username }}"
-                password: "{{ svc_account_password }}"
+              integration_type: ansible_automation_platform
+              management_credential_id: "{{ orch_aap_credential_id }}"
+              configuration:
+                integration_type: ansible_automation_platform
+                base_url: "{{ aap_gateway_url }}"
+                insecure_skip_tls_verify: true
             validate_certs: false
-            status_code: [200, 201]
+            status_code: [201]
           when: >-
-            (existing_integrations.json.results | default([]))
+            (existing_integrations.json.resources | default([]))
             | selectattr('name', 'equalto', 'AAP Demo')
             | list | length == 0
 
@@ -541,8 +597,7 @@
               - "================================================"
               - "AAP Integration configured"
               - "================================================"
-              - "Identity Provider:  Ansible Automation Platform"
+              - "Identity Provider:  Ansible Automation Platform (auto-configured)"
               - "Integration:        AAP Demo"
-              - "Service Account:    {{ svc_account_username }}"
-              - "OAuth Client ID:    {{ oauth_client_id }}"
+              - "AAP URL:            {{ aap_gateway_url }}"
               - "================================================"

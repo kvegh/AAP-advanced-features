@@ -9,13 +9,8 @@ ocp_api_token: "sha256~xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 # Orchestrator route hostname (must resolve to OCP router)
 orchestrator_route_host: "orchestrator.apps.cluster.example.com"
 
-# AAP Gateway URL (for Orchestrator API config)
+# AAP Gateway URL and admin credentials (for Orchestrator API config)
+# Admin credentials are used transiently by setup_aap_oidc — never stored in Orchestrator.
 aap_gateway_url: "https://aap.example.com"
-
-# Pre-created OAuth app credentials (create in AAP UI or API first)
-oauth_client_id: "your-client-id"
-oauth_client_secret: "your-client-secret"
-
-# Pre-created service account credentials (create in AAP UI or API first)
-svc_account_username: "orchestrator_svc"
-svc_account_password: "your-service-account-password"
+aap_admin_username: "admin"
+aap_admin_password: "your-aap-admin-password"

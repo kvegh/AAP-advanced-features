@@ -37,10 +37,10 @@ Cross-cluster link: Orchestrator --> AAP Gateway on port 443 (HTTPS only, no inb
 2. **Release channel**: `stable`
 3. **S3 storage**: Skip for now
 4. **LLM provider**: Defer to later
-5. **Tooling**: Pure Ansible with `redhat.openshift` certified collection -- no `oc` CLI dependency. Playbook must be runnable from AAP as a job template.
+5. **Tooling**: Pure Ansible with `kubernetes.core` (via `ee-supported-rhel9`) -- no `oc` CLI dependency. Playbook must be runnable from AAP as a job template. Module defaults use `group/kubernetes.core.k8s`.
 6. **Orchestrator configuration**: No certified Ansible collection exists for Orchestrator's own config (identity providers, integrations). The REST API is the only documented interface -- `ansible.builtin.uri` is the correct approach.
 7. **Passwords**: Generated at runtime via `lookup('password', ...)`. Idempotent -- check if K8s secret exists first, only generate if missing. Passwords live only in OCP secrets, never in git.
-8. **AAP credentials**: No admin rights handed to Orchestrator. Manual OAuth path -- create dedicated OAuth app and service account on AAP via `ansible.platform`, pass only client_id/secret and service account credentials to Orchestrator.
+8. **AAP credentials**: Automatic path via `setup_aap_oidc` — provides AAP admin credentials transiently (never stored by Orchestrator). The endpoint creates the OAuth2 application on AAP and configures the OIDC identity provider automatically. For the integration health-check credential, AAP admin creds are stored in the Orchestrator credential store (encrypted at rest).
 9. **EE**: Stock `ee-supported-rhel9` used directly — includes all certified collections (`redhat.openshift`, `ansible.platform`) and the `kubernetes` Python library. No custom build needed. AAP 2.7 gateway auth prevents `ansible-galaxy` from pulling collections from PAH during project sync, so baking collections into the EE (via the supported image) is the current workaround.
 10. **Disk**: AAP host has sufficient disk space. The `ee-supported-rhel9` image is ~2.5GB.
 11. **Collection sync**: Not required — collections are included in `ee-supported-rhel9`. The `sync-collections.yml` playbook remains in the repo for reference if switching back to `ee-minimal-rhel9` in the future.
@@ -298,6 +298,117 @@ No custom build needed. The image includes all certified collections and the `ku
 5. Log in via AAP SSO -- verify it works
 6. Verify AAP integration shows healthy in Orchestrator UI
 7. Create a test workflow with a Job Execution node pointing at an AAP job template
+
+---
+
+## Orchestrator REST API Reference (reverse-engineered)
+
+The Orchestrator REST API is underdocumented. The official docs show UI field labels but not the actual JSON body structure. The API uses Pydantic v2 with `extra="forbid"` — any unknown field is rejected. The correct schemas were discovered by reading the source inside the Orchestrator backend pod (`/opt/app-root/src/src/syntara/`).
+
+### Authentication
+
+```
+POST /api/v1/auth/login
+Body: {"username": "admin", "password": "..."}
+Response: {"access_token": "..."}
+```
+
+All subsequent requests need `Authorization: Bearer <token>` header.
+
+### Identity Provider — automatic AAP setup
+
+```
+POST /api/v1/identity_providers/setup_aap_oidc
+Body:
+  aap_url: string (required)
+  organization: string (default: "Default")
+  admin_username: string (mutually exclusive with personal_access_token)
+  admin_password: string (required with admin_username)
+  personal_access_token: string (alternative to username/password)
+  insecure_skip_tls_verify: bool (default: false)
+Response: 201 — IdentityProviderRead
+```
+
+Creates an OAuth2 application on AAP and configures the OIDC identity provider in Orchestrator in one shot. Admin credentials are used transiently, never stored.
+
+Source: `syntara/identity_providers/models/aap_setup.py` → `AAPOIDCSetupRequest`
+
+### Identity Provider — manual
+
+```
+POST /api/v1/identity_providers
+Body:
+  name: string (required)
+  configuration:
+    provider_type: "oidc"
+    issuer_url: string
+    client_id: string
+    client_secret: string
+    redirect_uri: string
+    idp_type: "aap" | "generic"
+    disable_tls_verify: bool
+    scopes: string
+    auto_discovery: bool
+    allow_all_authenticated: bool
+    aap_role_mapping_enabled: bool
+    enable_rp_initiated_logout: bool
+Response: 201
+```
+
+List response uses `resources` array (not `results`).
+
+### Credentials
+
+```
+POST /api/v1/credentials
+Body:
+  name: string (required)
+  credential_type_id: UUID (required)
+  project_id: UUID (required)
+  inputs: object (required — fields depend on credential type)
+Response: 201
+
+Built-in credential types:
+  - "Ansible Automation Platform" — inputs: {username, password} or {oauth_token}
+  - "LLM Provider" — inputs: {api_key}
+  - "HTTP Bearer Token" — inputs: {token}
+  - "HTTP Basic Auth" — inputs: {username, password}
+```
+
+### Integrations
+
+```
+POST /api/v1/integrations
+Body:
+  name: string (required)
+  integration_type: "ansible_automation_platform" | "llm_provider" | "mcp_server" (required)
+  management_credential_id: UUID (required for AAP and LLM, optional for MCP)
+  configuration:
+    integration_type: string (must match top-level, acts as discriminator)
+    base_url: string
+    insecure_skip_tls_verify: bool
+    allow_http: bool
+    ca_certificate: string | null
+  description: string | null
+  enabled: bool (default: true)
+  scope: "global" | "project" (default: "global")
+  labels: object
+  discovered_tools: list (MCP only)
+  discovered_models: list (LLM only)
+Response: 201
+
+Extra fields cause: "Extra inputs are not permitted" (Pydantic extra="forbid")
+Missing credential causes: "INTEGRATION_CREDENTIAL_REQUIRED"
+```
+
+Source: `syntara/integrations/models/integration.py` → `IntegrationCreate`
+
+### Key gotchas
+
+- All POST bodies use **nested `configuration` wrapper** — the docs show fields flat but the API nests them
+- The credential field is `management_credential_id` (not `credential_id`, `health_check_credential_id`, or `connection_credential_id` — all of which the docs imply)
+- List responses use `resources` as the array key (not `results`)
+- The `integration_type` field must appear **both** at top level and inside `configuration` (discriminated union)
 
 ---
 
