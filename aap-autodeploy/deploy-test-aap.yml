@@ -28,9 +28,6 @@
         cmd: >-
           virt-customize -a {{ vm_dir }}/{{ vm_name }}.disk.qcow2
           --hostname {{ vm_name }}.internal
-          --run-command 'growpart /dev/sda 4 || true'
-          --run-command 'xfs_growfs / || true'
-          --ssh-inject root:file:{{ ssh_pubkey_path }}
           --selinux-relabel
 
     - name: Create and start VM
@@ -68,7 +65,9 @@
       ansible.builtin.add_host:
         name: new_aap_vm
         ansible_host: "{{ new_vm_ip }}"
-        ansible_user: root
+        ansible_user: ansible
+        ansible_password: ansible
+        ansible_become: true
         new_vm_ip: "{{ new_vm_ip }}"
         vm_name: "{{ vm_name }}"
         installer_tarball_name: "{{ installer_tarball_name }}"
@@ -118,11 +117,6 @@
         content: "aap_service ALL=(ALL) NOPASSWD: ALL"
         dest: /etc/sudoers.d/aap_service
         mode: "0440"
-
-    - name: Set up SSH key for aap_service
-      ansible.posix.authorized_key:
-        user: aap_service
-        key: "{{ lookup('file', ssh_pubkey_path) }}"
 
     - name: Enable linger for aap_service
       ansible.builtin.command:
