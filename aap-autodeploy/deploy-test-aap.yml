@@ -30,7 +30,7 @@
           --hostname {{ vm_name }}.internal
           --run-command 'growpart /dev/sda 4 || true'
           --run-command 'xfs_growfs / || true'
-          --ssh-inject root:file:{{ vault_ssh_pubkey_path }}
+          --ssh-inject root:file:{{ ssh_pubkey_path }}
           --selinux-relabel
 
     - name: Create and start VM
@@ -122,7 +122,7 @@
     - name: Set up SSH key for aap_service
       ansible.posix.authorized_key:
         user: aap_service
-        key: "{{ lookup('file', vault_ssh_pubkey_path) }}"
+        key: "{{ lookup('file', ssh_pubkey_path) }}"
 
     - name: Enable linger for aap_service
       ansible.builtin.command:
@@ -173,9 +173,9 @@
   tasks:
     - name: Copy installer tarball from source AAP
       ansible.posix.synchronize:
-        src: "{{ vault_installer_path }}"
+        src: "{{ installer_path }}"
         dest: "{{ installer_extract_dir }}/"
-      delegate_to: "{{ vault_source_aap_host }}"
+      delegate_to: "{{ source_aap_host }}"
 
     - name: Extract installer tarball
       ansible.builtin.unarchive:
