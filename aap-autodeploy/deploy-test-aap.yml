@@ -182,20 +182,20 @@
         mode: "0755"
 
 
-- name: "Play 3 — Copy installer from hypervisor to VM"
+- name: "Play 3 — Copy installer tarball from hypervisor to VM"
   hosts: hypervisor
   vars_files:
     - vars/main.yml
   vars:
     new_vm_ip: "{{ hostvars['new_aap_vm']['new_vm_ip'] }}"
-    installer_dir_name: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64"
+    installer_tarball: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
 
   tasks:
-    - name: Push installer directory to VM
+    - name: Push installer tarball to VM
       ansible.builtin.command:
         cmd: >-
-          scp -r -o StrictHostKeyChecking=no
-          {{ installer_extract_dir }}/{{ installer_dir_name }}
+          scp -o StrictHostKeyChecking=no
+          {{ installer_extract_dir }}/{{ installer_tarball }}
           aap_service@{{ new_vm_ip }}:{{ installer_extract_dir }}/
 
 
@@ -213,6 +213,14 @@
     installer_dir_name: "{{ hostvars['new_aap_vm']['installer_dir_name'] }}"
 
   tasks:
+    - name: Extract installer tarball
+      ansible.builtin.command:
+        cmd: >-
+          tar xf {{ installer_extract_dir }}/{{ installer_tarball }}
+          -C {{ installer_extract_dir }}
+      vars:
+        installer_tarball: "ansible-automation-platform-containerized-setup-bundle-{{ aap_version }}-x86_64.tar.gz"
+
     - name: Replace hostname in inventory
       ansible.builtin.replace:
         path: "{{ installer_extract_dir }}/{{ installer_dir_name }}/inventory"
