@@ -403,12 +403,24 @@ Missing credential causes: "INTEGRATION_CREDENTIAL_REQUIRED"
 
 Source: `syntara/integrations/models/integration.py` → `IntegrationCreate`
 
+### Projects
+
+```
+GET /api/v1/projects
+Response: {"resources": [...]}
+```
+
+Does **NOT** support `?search=` query parameter — returns `422 Unknown query parameter(s): search`. List all and filter client-side.
+
 ### Key gotchas
 
 - All POST bodies use **nested `configuration` wrapper** — the docs show fields flat but the API nests them
 - The credential field is `management_credential_id` (not `credential_id`, `health_check_credential_id`, or `connection_credential_id` — all of which the docs imply)
 - List responses use `resources` as the array key (not `results`)
 - The `integration_type` field must appear **both** at top level and inside `configuration` (discriminated union)
+- `setup_aap_oidc` returns `502 AAP_AUTHENTICATION_ERROR` ("AAP authentication failed. Check your admin credentials.") when admin credentials are wrong — this is an Orchestrator-side error, not an AAP API error
+- **`no_log: true` is mandatory** on all Ansible tasks that pass credentials in request bodies — AAP job events capture the full task result including `invocation.module_args.body`, which contains plaintext passwords. Affected tasks: auth/login, setup_aap_oidc, credential creation
+- **Do not use block-level `vars:` to set defaults for variables that may come from vault** — `aap_admin_username: "{{ aap_admin_username | default('admin') }}"` causes a recursive template loop because the variable references itself. Use `{{ var | default('value') }}` inline in each task body instead
 
 ---
 
