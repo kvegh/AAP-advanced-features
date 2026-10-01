@@ -40,12 +40,12 @@
         follow_redirects: none
         status_code: [302]
       register: ocp_oauth_response
-      no_log: true
+      # no_log: true  # TEMPORARILY DISABLED FOR DEBUGGING
 
     - name: Extract token from redirect
       ansible.builtin.set_fact:
         ocp_api_token: "{{ ocp_oauth_response.location | regex_search('access_token=([^&]+)', '\\1') | first }}"
-      no_log: true
+      # no_log: true  # TEMPORARILY DISABLED FOR DEBUGGING
 
     - name: Deploy Orchestrator on OCP
       module_defaults:
