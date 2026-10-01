@@ -33,6 +33,8 @@
       ansible.builtin.uri:
         url: "https://oauth-openshift.apps.{{ ocp_apps_domain }}/oauth/authorize?response_type=token&client_id=openshift-challenging-client"
         method: POST
+        headers:
+          X-CSRF-Token: "nonempty"
         user: "{{ ocp_admin_username | default('admin') }}"
         password: "{{ ocp_admin_password }}"
         force_basic_auth: true
@@ -40,12 +42,12 @@
         follow_redirects: none
         status_code: [302]
       register: ocp_oauth_response
-      # no_log: true  # TEMPORARILY DISABLED FOR DEBUGGING
+      no_log: "{{ secure_logging | default(true) }}"
 
     - name: Extract token from redirect
       ansible.builtin.set_fact:
         ocp_api_token: "{{ ocp_oauth_response.location | regex_search('access_token=([^&]+)', '\\1') | first }}"
-      # no_log: true  # TEMPORARILY DISABLED FOR DEBUGGING
+      no_log: "{{ secure_logging | default(true) }}"
 
     - name: Deploy Orchestrator on OCP
       module_defaults:
@@ -481,7 +483,7 @@
                 validate_certs: false
                 status_code: [200]
               register: orch_auth
-              no_log: true
+              no_log: "{{ secure_logging | default(true) }}"
 
             - name: Set auth token
               ansible.builtin.set_fact:
@@ -513,7 +515,7 @@
                   insecure_skip_tls_verify: true
                 validate_certs: false
                 status_code: [201]
-              no_log: true
+              no_log: "{{ secure_logging | default(true) }}"
               when: >-
                 (existing_idps.json.resources | default([]))
                 | selectattr('name', 'defined')
@@ -580,7 +582,7 @@
                 validate_certs: false
                 status_code: [201]
               register: created_credential
-              no_log: true
+              no_log: "{{ secure_logging | default(true) }}"
               when: >-
                 (existing_credentials.json.resources | default([]))
                 | selectattr('name', 'equalto', 'AAP Admin')
