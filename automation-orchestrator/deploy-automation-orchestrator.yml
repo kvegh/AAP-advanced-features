@@ -442,6 +442,7 @@
             validate_certs: false
             status_code: [200]
           register: orch_auth
+          no_log: true
 
         - name: Set auth token
           ansible.builtin.set_fact:
@@ -473,6 +474,7 @@
               insecure_skip_tls_verify: true
             validate_certs: false
             status_code: [201]
+          no_log: true
           when: >-
             (existing_idps.json.resources | default([]))
             | selectattr('name', 'defined')
@@ -539,6 +541,7 @@
             validate_certs: false
             status_code: [201]
           register: created_credential
+          no_log: true
           when: >-
             (existing_credentials.json.resources | default([]))
             | selectattr('name', 'equalto', 'AAP Admin')
