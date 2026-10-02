@@ -41,6 +41,16 @@
         name: nginx
         state: reloaded
 
+    - name: Wait for DNS propagation
+      ansible.builtin.command:
+        cmd: "dig +short {{ aap_test_subdomain }}.{{ vault_domain }} @8.8.8.8"
+      register: dns_check
+      until: dns_check.stdout | trim | length > 0
+      retries: 30
+      delay: 10
+      changed_when: false
+      become: false
+
     - name: Obtain Let's Encrypt certificate
       ansible.builtin.command:
         cmd: >-
