@@ -211,6 +211,14 @@
         status_code: 200
       become: false
 
+    - name: Obtain Let's Encrypt certificate
+      ansible.builtin.command:
+        cmd: >-
+          certbot certonly --nginx
+          -d {{ aap_test_subdomain }}.{{ vault_domain }}
+          --non-interactive --agree-tos
+        creates: "/etc/letsencrypt/live/{{ aap_test_subdomain }}.{{ vault_domain }}/fullchain.pem"
+
     - name: Template nginx config
       ansible.builtin.template:
         src: templates/nginx-aap-test.conf.j2

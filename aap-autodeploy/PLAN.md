@@ -17,7 +17,7 @@ Golden Image (RHEL 9.8 qcow2 with aap_service user, installer pre-staged)
 [1] Clone + resize disk + virt-customize hostname + virt-install on hypervisor
     |
     v
-[2] Prepare host: grow filesystem, subscribe, install ansible-core, unsubscribe
+[2] Prepare host: grow filesystem, subscribe, install ansible-core
     |
     v
 [3] Customize inventory hostname, set bundle vars, run AAP installer
@@ -39,7 +39,6 @@ aap-autodeploy/
     nginx-aap-test.conf.j2     # nginx reverse proxy config for test instance
   vars/
     main.yml                   # Non-sensitive defaults (ports, sizing, paths)
-  version-registry.yml         # Tracks AAP version -> VM name mapping
 myvars                         # Vault-encrypted secrets (repo root)
 ```
 
@@ -57,18 +56,10 @@ Add `disk_size` variable support for `qemu-img resize` after copy (needed for AA
 
 ### Step 1: VM Creation (Play 1 — targets: hypervisor)
 
-Reuse the existing `deploy_vms.yml` with extended parameters:
+Clone golden image, resize disk, customize hostname, virt-install. VM creation is inline in Play 1.
+
 - VM naming pattern: `aap{{ aap_version_short }}-{{ vm_suffix }}-{{ counter }}` (e.g., `aap27-test-1`)
 - The same name is used as VM name, hostname, and DNS subdomain for consistency.
-- `vcpus`: `4`
-- `memory`: `20480` (20 GiB)
-- `base_image`: path to golden image (not the raw RHEL base)
-- `disk_size`: `60G` (new parameter — qemu-img resize after copy)
-
-**Extend `deploy_vms.yml`**: Add a task between "Copy base image" and "Customize VM images" that runs `qemu-img resize` when `disk_size` is defined. One line addition; backwards compatible.
-
-VM naming: `aapX-test-N` where X is the version and N is the counter (e.g., `aap27-test-1`).
-Hostname: matches VM name (`aap27-test-1.supercorp.at`).
 
 ### Step 2: Host Preparation (Play 2 — targets: new VM via dynamic inventory)
 
@@ -78,7 +69,6 @@ After the VM boots and gets a DHCP IP:
 2. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
 3. **Subscribe to RHEL and enable AAP repo** — `redhat.rhel_system_roles.rhc` role with activation key (from vault)
 4. **Install ansible-core** — `dnf install ansible-core`
-5. **Unsubscribe from RHEL** — clean up subscription after install
 
 The `aap_service` user, sudo, linger, SSH authorized_keys, and the AAP installer bundle are all pre-staged in the golden image.
 
@@ -100,7 +90,6 @@ The installer is already unpacked in the golden image at `/opt/sources/ansible-a
 **Domain approach — use a subdomain**, not a path:
 - AAP's Envoy gateway expects to own the domain root; path-based routing breaks it
 - New subdomain: matches VM name, e.g., `aap27-test-1.{{ domain }}`
-- The Let's Encrypt cert would need a new SAN — or for test purposes, use nginx `proxy_ssl_verify off` to the backend's self-signed cert, and the frontend can share the existing wildcard or get a new cert
 - Nginx reverse proxy is **required** — VMs are on an internal libvirt network, only the hypervisor has a public IP. External access requires nginx on the hypervisor forwarding to the VM, same as the existing AAP setup.
 
 ---
@@ -131,9 +120,6 @@ All secrets live in `myvars` (vault-encrypted, in the repo root). The playbook l
 | `godaddy_api_token` | GoDaddy API token for DNS records |
 | `domain` | Domain name |
 | `public_ip` | Hypervisor's public IP |
-| `ssh_pubkey_path` | Path to SSH public key on hypervisor |
-| `installer_path` | Path to installer tarball on source AAP |
-| `source_aap_host` | SSH alias for existing AAP host |
 
 ### `main.yml` (committed — non-sensitive defaults)
 
@@ -148,36 +134,12 @@ aap_version: "2.7-8"
 aap_version_short: "27"   # used in naming: aap27-test-N
 installer_extract_dir: "/opt/sources"
 
-# AAP services config
-redis_mode: standalone
-hub_seed_collections: false
-controller_percent_memory_capacity: 0.5
-
 # Golden image
 golden_image_path: "/opt/vms/goldimg-vm-1.disk.qcow2"
 
 # Network
 vm_network: "internal"
 vm_dir: "/opt/vms"
-
-# MCP
-mcp_allow_write_operations: true
-```
-
----
-
-## Version Registry (`version-registry.yml`)
-
-```yaml
-# Tracks deployed AAP test instances
-# Updated manually or by the playbook after successful deployment
-deployments: []
-# Example entry:
-#   - version: "2.7-8"
-#     vm_name: "aap27-test-1"
-#     deployed_date: "2026-10-01"
-#     ip: "<assigned by DHCP>"
-#     status: active
 ```
 
 ---
@@ -194,11 +156,9 @@ deployments: []
 
 5. **Golden image as base** — pre-updated RHEL 9.8 with `aap_service` user (sudo, linger, hypervisor SSH key), and the AAP installer bundle unpacked under `/opt/sources/`. Subscribe only to enable AAP repo and install ansible-core, not for general updates.
 
-6. **Extend deploy_vms.yml minimally** — add `disk_size` support (one task). Don't rewrite it.
+6. **Installer pre-staged in golden image** — eliminates the slow SCP transfer step entirely. The unpacked bundle (~3.5 GiB) is baked into the golden image.
 
-7. **Installer pre-staged in golden image** — eliminates the slow SCP transfer step entirely. The unpacked bundle (~3.5 GiB) is baked into the golden image.
-
-8. **Filesystem grow after clone** — golden image is small (~10G), resize to 60G at clone time, grow XFS on first boot.
+7. **Filesystem grow after clone** — golden image is small (~10G), resize to 60G at clone time, grow XFS on first boot.
 
 ---
 
@@ -208,8 +168,7 @@ deployments: []
 2. **SSH works**: `ansible -m ping` against new VM succeeds
 3. **AAP accessible**: `curl -k https://<new-ip>` returns the AAP login page
 4. **API works**: `curl -k -u admin:<password> https://<new-ip>/api/controller/v2/ping/` returns 200
-5. **MCP works**: `curl -k -X POST https://<new-ip>:8448/mcp` returns 405 (TLS works, POST expected)
-6. **Post-install objects**: Job templates, credentials, projects exist in the new AAP
+5. **Post-install objects**: Job templates, credentials, projects exist in the new AAP
 
 ---
 
@@ -225,4 +184,4 @@ deployments: []
 
 ## Resolved
 
-- **Subscription for AAP repo**: Subscribe using activation key + org ID from vault (`rhsm_activation_key`, `rhsm_org_id`), enable AAP repo, install ansible-core, then unsubscribe after install completes.
+- **Subscription for AAP repo**: Subscribe using activation key + org ID from vault (`rhsm_activation_key`, `rhsm_org_id`), enable AAP repo, install ansible-core. System stays subscribed.
