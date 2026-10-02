@@ -21,7 +21,16 @@ ocp_validate_certs: false
 # Required -- provide via job template survey or extra vars
 # ocp_api_url: "https://api.cluster.example.com:6443"
 # ocp_admin_password: "<survey-password-field>"
-# ocp_api_token and orchestrator_route_host are auto-derived at runtime
+#
+# Optional overrides:
+# ocp_admin_username: "admin"       # defaults to "admin"
+# orchestrator_route_host: "..."    # defaults to orchestrator.apps.<domain>, derived from
+#                                   # ocp_api_url assuming the demo.redhat.com URL convention
+#                                   # (https://api.<cluster>.<domain>:6443). Set explicitly on
+#                                   # clusters that do not follow it.
+# secure_logging: false             # disables no_log on credential tasks, for debugging only
+#
+# ocp_api_token is obtained at runtime via the OCP OAuth flow -- never set it here.
 
 # AAP integration (skip AAP config if omitted)
 # aap_gateway_url: "https://aap.example.com"
