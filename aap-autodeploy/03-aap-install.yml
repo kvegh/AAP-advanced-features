@@ -61,6 +61,12 @@
           - name: ansible-automation-platform-2.7-for-rhel-9-x86_64-rpms
             state: enabled
 
+    - name: Add FQDN to /etc/hosts so installer resolves locally
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ vm_ip }}  {{ vm_name }}  {{ vm_name }}.{{ vault_domain }}"
+        regexp: "{{ vm_name }}"
+
     - name: Install ansible-core
       ansible.builtin.dnf:
         name: ansible-core
