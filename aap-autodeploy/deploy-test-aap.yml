@@ -174,7 +174,7 @@
         insertafter: '\[all:vars\]'
       loop:
         - "bundle_install=true"
-        - "bundle_dir={{ installer_extract_dir }}/{{ installer_dir_name }}"
+        - "bundle_dir={{ installer_extract_dir }}/{{ installer_dir_name }}/bundle"
 
     - name: Run AAP installer
       ansible.builtin.command:
