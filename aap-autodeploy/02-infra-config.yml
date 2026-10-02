@@ -30,6 +30,17 @@
         status_code: 200
       become: false
 
+    - name: Deploy temporary HTTP-only nginx config for certbot challenge
+      ansible.builtin.template:
+        src: templates/nginx-aap-test-http.conf.j2
+        dest: "/etc/nginx/conf.d/{{ aap_test_subdomain }}.conf"
+        mode: "0644"
+
+    - name: Reload nginx for HTTP config
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
     - name: Obtain Let's Encrypt certificate
       ansible.builtin.command:
         cmd: >-
@@ -38,7 +49,7 @@
           --non-interactive --agree-tos
         creates: "/etc/letsencrypt/live/{{ aap_test_subdomain }}.{{ vault_domain }}/fullchain.pem"
 
-    - name: Template nginx config
+    - name: Deploy full SSL nginx reverse proxy config
       ansible.builtin.template:
         src: templates/nginx-aap-test.conf.j2
         dest: "/etc/nginx/conf.d/{{ aap_test_subdomain }}.conf"

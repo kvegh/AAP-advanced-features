@@ -158,6 +158,8 @@ vm_dir: "/opt/vms"
 
 7. **Filesystem grow after clone** — golden image is small (~10G), resize to 60G at clone time, grow XFS on first boot.
 
+8. **Strict safety assertions on all destructive operations** — every task in `destroy-test-aap.yml` that deletes, removes, or undefines a resource MUST have an `assert` immediately before it that validates the target path/name against the allowed pattern (`^aap27-test-\d+$`). This applies to: virsh destroy, virsh undefine, disk removal, nginx config removal, certbot delete, and DNS record deletion. No destructive task may rely solely on an upfront validation — each must be individually guarded. Shell injection patterns (`;`, `&&`, `|`, `$`, `` ` ``) must also be rejected.
+
 ---
 
 ## Verification
