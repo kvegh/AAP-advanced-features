@@ -57,7 +57,9 @@ ansible-playbook deploy-automation-orchestrator.yml --ask-vault-pass \
   -e ocp_admin_password=<password>
 ```
 
-The playbook automatically obtains an OCP API token at runtime using the OAuth `openshift-challenging-client` flow — no manual `oc login` needed. The route hostname is derived from the API URL automatically.
+The playbook automatically obtains an OCP API token at runtime using the OAuth `openshift-challenging-client` flow (with `X-CSRF-Token` header required by OCP 4.21+) — no manual `oc login` needed. The route hostname is derived from the API URL automatically.
+
+To debug credential-related task failures, pass `secure_logging: false` as an extra var — this disables `no_log` on sensitive tasks so request/response bodies are visible in job output.
 
 ### Running as an AAP Job Template
 

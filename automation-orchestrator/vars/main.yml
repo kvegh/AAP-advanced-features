@@ -18,10 +18,10 @@ pg_ssl_mode: require
 
 ocp_validate_certs: false
 
-# Required -- provide via extra vars or vault
+# Required -- provide via job template survey or extra vars
 # ocp_api_url: "https://api.cluster.example.com:6443"
-# ocp_api_token: "<bearer-token>"
-# orchestrator_route_host: "orchestrator.apps.cluster.example.com"
+# ocp_admin_password: "<survey-password-field>"
+# ocp_api_token and orchestrator_route_host are auto-derived at runtime
 
 # AAP integration (skip AAP config if omitted)
 # aap_gateway_url: "https://aap.example.com"

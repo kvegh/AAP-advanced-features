@@ -439,13 +439,15 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 - **`kubernetes.core.k8s_info` FQCN**: `redhat.openshift` has no `k8s_info` module — only `k8s`. All `k8s_info` calls must use `kubernetes.core.k8s_info`.
 - **`module_defaults` group**: Must use `group/kubernetes.core.k8s` (not individual FQCN entries). `redhat.openshift` modules redirect to `kubernetes.core` action plugins; `module_defaults` resolves by action plugin group.
 - **RHPDS self-signed certificates**: RHPDS clusters use self-signed certs — `ocp_validate_certs: false` is required.
+- **X-CSRF-Token header for OCP OAuth**: The `openshift-challenging-client` OAuth flow requires an `X-CSRF-Token: "nonempty"` header. Without it, OCP 4.21+ returns `401` with `"A non-empty X-CSRF-Token header is required to receive basic-auth challenges"`.
 - **`module_defaults` must be block-level**: When the OCP API token is obtained mid-play (e.g. via OAuth flow), `module_defaults` with `api_key: "{{ ocp_api_token }}"` must be on a `block:` wrapping the k8s tasks, not at play level. Play-level `module_defaults` evaluate before any task runs, causing an undefined variable error.
 - All POST bodies use **nested `configuration` wrapper** — the docs show fields flat but the API nests them
 - The credential field is `management_credential_id` (not `credential_id`, `health_check_credential_id`, or `connection_credential_id` — all of which the docs imply)
 - List responses use `resources` as the array key (not `results`)
 - The `integration_type` field must appear **both** at top level and inside `configuration` (discriminated union)
+- **AAP Gateway OAuth2 API path**: OAuth2 applications are managed via `/api/gateway/v1/applications/`, not the controller API. Paths like `/api/controller/v2/applications/` and `/api/o/applications/` return 404
 - `setup_aap_oidc` returns `502 AAP_AUTHENTICATION_ERROR` ("AAP authentication failed. Check your admin credentials.") when admin credentials are wrong — this is an Orchestrator-side error, not an AAP API error
-- **`no_log: true` is mandatory** on all Ansible tasks that pass credentials in request bodies — AAP job events capture the full task result including `invocation.module_args.body`, which contains plaintext passwords. Affected tasks: auth/login, setup_aap_oidc, credential creation
+- **`no_log: true` is mandatory** on all Ansible tasks that pass credentials in request bodies — AAP job events capture the full task result including `invocation.module_args.body`, which contains plaintext passwords. Affected tasks: auth/login, setup_aap_oidc, credential creation. The playbook uses `no_log: "{{ secure_logging | default(true) }}"` so debugging can be enabled by passing `secure_logging: false` as an extra var
 - **Do not use block-level `vars:` to set defaults for variables that may come from vault** — `aap_admin_username: "{{ aap_admin_username | default('admin') }}"` causes a recursive template loop because the variable references itself. Use `{{ var | default('value') }}` inline in each task body instead
 
 ---
