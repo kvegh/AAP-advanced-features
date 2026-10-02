@@ -513,7 +513,27 @@
                   email: "local-admin@orchestrator.internal"
                 validate_certs: false
                 status_code: [200]
+              register: email_change_result
               when: orch_admin_user.json.email != 'local-admin@orchestrator.internal'
+
+            - name: Re-authenticate after email change
+              ansible.builtin.uri:
+                url: "{{ orchestrator_url }}/api/v1/auth/login"
+                method: POST
+                body_format: json
+                body:
+                  username: admin
+                  password: "{{ orchestrator_admin_password }}"
+                validate_certs: false
+                status_code: [200]
+              register: orch_reauth
+              no_log: "{{ secure_logging | default(true) }}"
+              when: email_change_result is changed
+
+            - name: Update auth token after email change
+              ansible.builtin.set_fact:
+                orch_token: "{{ orch_reauth.json.access_token }}"
+              when: email_change_result is changed
 
             # --- Identity Provider (automatic setup) ---
 
