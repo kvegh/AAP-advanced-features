@@ -89,7 +89,7 @@ When tearing down an OCP cluster and redeploying to a new one, the Orchestrator 
 4. Creates CloudNativePG Cluster with `orchestrator`, `temporal`, and `temporal_visibility` databases
 5. Installs Orchestrator operator (Manual approval) in `automation-orchestrator`
 6. Creates AutomationOrchestrator CR pointing at CloudNativePG
-7. (Optional) Configures OIDC identity provider and AAP integration via Orchestrator REST API
+7. (Optional) Changes local admin email to avoid OIDC collision, configures OIDC identity provider and AAP integration via Orchestrator REST API
 
 ## Idempotency
 

@@ -489,6 +489,32 @@
               ansible.builtin.set_fact:
                 orch_token: "{{ orch_auth.json.access_token }}"
 
+            # --- Prevent OIDC email collision ---
+            # The local admin's default email (admin@example.com) collides
+            # with the AAP admin's email during OIDC login, blocking SSO.
+
+            - name: Get local admin user info
+              ansible.builtin.uri:
+                url: "{{ orchestrator_url }}/api/v1/users/me"
+                method: GET
+                headers:
+                  Authorization: "Bearer {{ orch_token }}"
+                validate_certs: false
+              register: orch_admin_user
+
+            - name: Change local admin email to avoid OIDC collision
+              ansible.builtin.uri:
+                url: "{{ orchestrator_url }}/api/v1/users/{{ orch_admin_user.json.id }}"
+                method: PATCH
+                headers:
+                  Authorization: "Bearer {{ orch_token }}"
+                body_format: json
+                body:
+                  email: "local-admin@orchestrator.internal"
+                validate_certs: false
+                status_code: [200]
+              when: orch_admin_user.json.email != 'local-admin@orchestrator.internal'
+
             # --- Identity Provider (automatic setup) ---
 
             - name: List existing identity providers

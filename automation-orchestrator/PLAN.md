@@ -222,6 +222,13 @@ spec:
 - Retrieve JWT access token for subsequent API calls
 - `no_log: true` mandatory (body contains password)
 
+### Step 9b: Change local admin email to avoid OIDC collision
+
+- PATCH `/api/v1/users/{id}` to change the local admin's email from `admin@example.com` to `local-admin@orchestrator.internal`
+- The Orchestrator's default admin email collides with the AAP admin's email during OIDC login, causing "This email is already associated with an existing account" and blocking SSO
+- Must be done before the OIDC identity provider is set up
+- Idempotent: skipped if email is already changed
+
 ### Step 10: Configure AAP as OIDC identity provider (automatic)
 
 Uses the `setup_aap_oidc` endpoint which creates the OAuth2 app on AAP and configures OIDC in Orchestrator in one call:
@@ -453,6 +460,7 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 - `setup_aap_oidc` returns `502 AAP_AUTHENTICATION_ERROR` ("AAP authentication failed. Check your admin credentials.") when admin credentials are wrong — this is an Orchestrator-side error, not an AAP API error
 - **`no_log: true` is mandatory** on all Ansible tasks that pass credentials in request bodies — AAP job events capture the full task result including `invocation.module_args.body`, which contains plaintext passwords. Affected tasks: auth/login, setup_aap_oidc, credential creation. The playbook uses `no_log: "{{ secure_logging | default(true) }}"` so debugging can be enabled by passing `secure_logging: false` as an extra var
 - **Do not use block-level `vars:` to set defaults for variables that may come from vault** — `aap_admin_username: "{{ aap_admin_username | default('admin') }}"` causes a recursive template loop because the variable references itself. Use `{{ var | default('value') }}` inline in each task body instead
+- **OIDC email collision with local admin**: The Orchestrator CR creates a local `admin` user with email `admin@example.com`. If the AAP admin user has the same email, OIDC login fails with "This email is already associated with an existing account." The fix is to PATCH the local admin's email to `local-admin@orchestrator.internal` via the Orchestrator API before setting up the OIDC provider. The playbook does this automatically
 
 ---
 
