@@ -186,13 +186,6 @@
       delay: 10
       until: aap_ping.status == 200
 
-    - name: Unsubscribe from RHEL
-      ansible.builtin.include_role:
-        name: redhat.rhel_system_roles.rhc
-      vars:
-        rhc_state: absent
-      become_user: root
-
 
 - name: "Play 4 — Create DNS record and configure nginx reverse proxy"
   hosts: hypervisor
