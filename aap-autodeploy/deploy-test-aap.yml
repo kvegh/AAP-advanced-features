@@ -7,7 +7,7 @@
   vars:
     ctrl_host: "https://aap.{{ vault_domain }}"
     ctrl_user: "admin"
-    ctrl_pass: "{{ vault_gateway_admin_password }}"
+    ctrl_pass: "{{ aap_gateway_admin_passwd }}"
 
   tasks:
     - name: Update JT - Deploy Test AAP to 01-vm-setup
