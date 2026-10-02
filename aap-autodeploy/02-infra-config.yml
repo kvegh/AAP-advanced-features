@@ -42,13 +42,13 @@
         state: reloaded
 
     - name: Wait for DNS propagation
-      ansible.builtin.command:
-        cmd: "dig +short {{ aap_test_subdomain }}.{{ vault_domain }} @8.8.8.8"
+      ansible.builtin.uri:
+        url: "https://dns.google/resolve?name={{ aap_test_subdomain }}.{{ vault_domain }}&type=A"
+        return_content: true
       register: dns_check
-      until: dns_check.stdout | trim | length > 0
+      until: dns_check.json.Answer is defined and dns_check.json.Answer | length > 0
       retries: 30
       delay: 10
-      changed_when: false
       become: false
 
     - name: Obtain Let's Encrypt certificate
