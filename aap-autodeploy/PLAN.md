@@ -17,13 +17,13 @@ Golden Image (RHEL 9.8 qcow2 with aap_service user, installer pre-staged)
 [1] Clone + resize disk + virt-customize hostname + virt-install on hypervisor
     |
     v
-[2] Prepare host: grow filesystem, subscribe, install ansible-core
+[2] Configure DNS + certbot + nginx reverse proxy on hypervisor
     |
     v
-[3] Customize inventory hostname, set bundle vars, run AAP installer
+[3] Prepare host, customize inventory, run AAP installer
     |
     v
-[4] Configure DNS + nginx reverse proxy on hypervisor for external access
+[4] AAP config-as-code (post-install configuration)
 ```
 
 ---
@@ -34,63 +34,61 @@ Golden Image (RHEL 9.8 qcow2 with aap_service user, installer pre-staged)
 
 ```
 aap-autodeploy/
-  deploy-test-aap.yml          # Main orchestration playbook (multi-play)
+  01-vm-setup.yml              # Create VM from golden image
+  02-infra-config.yml          # DNS, certbot, nginx reverse proxy
+  03-aap-install.yml           # Prepare host + run AAP installer
+  04-aap-config.yml            # AAP config-as-code (post-install)
+  destroy-test-aap.yml         # Destroy a test VM
   templates/
     nginx-aap-test.conf.j2     # nginx reverse proxy config for test instance
   vars/
-    main.yml                   # Non-sensitive defaults (ports, sizing, paths)
+    main.yml                   # Non-sensitive defaults (sizing, paths)
 myvars                         # Vault-encrypted secrets (repo root)
 ```
 
-Inventory handling: copy from source AAP host, search-and-replace hostname. No template needed.
+Playbooks 02-04 take `vm_name` and `vm_ip` as extra_vars. Playbook 01 outputs these values.
 
 Secrets come from `myvars` in the repo root (vault-encrypted).
-
-### Changes to `automAIton/deploy_vms/deploy_vms.yml`
-
-Add `disk_size` variable support for `qemu-img resize` after copy (needed for AAP's 60G disk). Minimal change to existing playbook.
 
 ---
 
 ## Step-by-Step Design
 
-### Step 1: VM Creation (Play 1 — targets: hypervisor)
+### Step 1: VM Creation (`01-vm-setup.yml` — targets: hypervisor)
 
-Clone golden image, resize disk, customize hostname, virt-install. VM creation is inline in Play 1.
+Clone golden image, resize disk, customize hostname, virt-install. Outputs `vm_name` and `vm_ip` for subsequent playbooks.
 
 - VM naming pattern: `aap{{ aap_version_short }}-{{ vm_suffix }}-{{ counter }}` (e.g., `aap27-test-1`)
 - The same name is used as VM name, hostname, and DNS subdomain for consistency.
 
-### Step 2: Host Preparation (Play 2 — targets: new VM via dynamic inventory)
+### Step 2: Infrastructure Config (`02-infra-config.yml` — targets: hypervisor)
 
-After the VM boots and gets a DHCP IP:
+Must run before the AAP installer — the installer's Lightspeed OAuth task connects to the gateway via FQDN.
 
-1. **Wait for SSH** — `wait_for_connection`
-2. **Grow the filesystem** — `growpart` + `xfs_growfs` to use the resized disk
-3. **Subscribe to RHEL and enable AAP repo** — `redhat.rhel_system_roles.rhc` role with activation key (from vault)
-4. **Install ansible-core** — `dnf install ansible-core`
-
-The `aap_service` user, sudo, linger, SSH authorized_keys, and the AAP installer bundle are all pre-staged in the golden image.
-
-### Step 3: AAP Installation (Play 3 — targets: new VM as aap_service)
-
-The installer is already unpacked in the golden image at `/opt/sources/ansible-automation-platform-containerized-setup-bundle-2.7-8-x86_64/`.
-
-1. **Customize the inventory** — search-and-replace hostname from source AAP FQDN to new VM's FQDN
-2. **Set bundle install vars** — add `bundle_install=true` and `bundle_dir` to inventory
-3. **Run the installer** — `command: ansible-playbook -i inventory ansible.containerized_installer.install`
-   - This takes ~10-20 minutes
-   - Runs as `aap_service` user (rootless podman)
-
-### Step 4: Nginx Reverse Proxy (Play 4 — targets: hypervisor)
-
-1. **Template nginx config** — server block for the test AAP
-2. **Reload nginx** — `systemctl reload nginx`
+1. **GoDaddy DNS A record** — point subdomain to hypervisor's public IP
+2. **Certbot** — obtain Let's Encrypt certificate for the subdomain
+3. **Nginx template + reload** — reverse proxy matching existing AAP setup (HSTS, rate limit, websocket upgrade)
 
 **Domain approach — use a subdomain**, not a path:
 - AAP's Envoy gateway expects to own the domain root; path-based routing breaks it
 - New subdomain: matches VM name, e.g., `aap27-test-1.{{ domain }}`
-- Nginx reverse proxy is **required** — VMs are on an internal libvirt network, only the hypervisor has a public IP. External access requires nginx on the hypervisor forwarding to the VM, same as the existing AAP setup.
+- Nginx reverse proxy is **required** — VMs are on an internal libvirt network, only the hypervisor has a public IP.
+
+### Step 3: AAP Installation (`03-aap-install.yml` — targets: new VM)
+
+1. **Prepare host** — wait for SSH, grow filesystem, subscribe to RHEL, install ansible-core
+2. **Customize the inventory** — search-and-replace hostname from source AAP FQDN to new VM's FQDN
+3. **Set bundle install vars** — add `bundle_install=true` and `bundle_dir` to inventory
+4. **Run the installer** — `ansible-playbook -i inventory ansible.containerized_installer.install`
+   - Takes ~30-40 minutes
+   - Runs as `aap_service` user (rootless podman)
+5. **Verify AAP** — ping the API
+
+The `aap_service` user, sudo, linger, SSH authorized_keys, and the AAP installer bundle are all pre-staged in the golden image.
+
+### Step 4: AAP Config-as-Code (`04-aap-config.yml` — targets: new AAP)
+
+Post-install configuration: projects, credentials, job templates, etc.
 
 ---
 
