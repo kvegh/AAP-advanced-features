@@ -140,12 +140,6 @@
         name: ansible-core
         state: present
 
-    - name: Unsubscribe from RHEL
-      ansible.builtin.include_role:
-        name: redhat.rhel_system_roles.rhc
-      vars:
-        rhc_state: absent
-
 
 - name: "Play 3 — Configure and install AAP"
   hosts: new_aap_vm
@@ -191,6 +185,13 @@
       retries: 12
       delay: 10
       until: aap_ping.status == 200
+
+    - name: Unsubscribe from RHEL
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.rhc
+      vars:
+        rhc_state: absent
+      become_user: root
 
 
 - name: "Play 4 — Create DNS record and configure nginx reverse proxy"
