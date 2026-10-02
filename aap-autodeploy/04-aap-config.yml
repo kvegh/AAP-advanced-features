@@ -1,0 +1,5 @@
+---
+# AAP config-as-code: post-install configuration of the new AAP instance
+# (projects, credentials, job templates, etc.)
+#
+# Required extra_vars: vm_name, vm_ip
