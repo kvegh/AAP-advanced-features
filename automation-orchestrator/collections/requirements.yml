@@ -1,0 +1,7 @@
+---
+# Informational — not used at runtime.
+# These collections are included in the stock ee-supported-rhel9 image.
+# Listed here for reference if switching to ee-minimal-rhel9 in the future.
+collections:
+  - name: redhat.openshift
+  - name: kubernetes.core

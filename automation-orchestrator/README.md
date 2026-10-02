@@ -94,7 +94,7 @@ When tearing down an OCP cluster and redeploying to a new one, the Orchestrator 
 ## Idempotency
 
 - Secrets: check-before-create pattern — passwords generated only on first run
-- OAuth credentials: stored in K8s secret `orchestrator-aap-credentials` for re-runs
+- AAP credentials: existence check via Orchestrator REST API before POST
 - Identity provider and integration: existence checks before POST
 - Operators: OLM Subscriptions and InstallPlans are idempotent
 

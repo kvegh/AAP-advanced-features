@@ -84,9 +84,14 @@ Register `ee-supported-rhel9` as an Execution Environment in AAP (pull: never). 
 - Authentication via block-level `module_defaults` `group/kubernetes.core.k8s` with API token variable (not `openshift_auth`). Must be block-level, not play-level — the token is created mid-play by the OAuth task, and play-level `module_defaults` evaluate before any task runs
 - Preflight: verify OCP version >= 4.14 and OLM catalog via `k8s_info`
 
-### Step 3: Create namespace and secrets
+### Step 3: Install CloudNativePG operator
 
-Create namespace via `redhat.openshift.k8s`.
+- Install CloudNativePG operator in `cnpg-system` namespace (OperatorGroup, Subscription from `certified-operators`, channel `stable-v1` — NOT `stable`)
+- Approve InstallPlan (Manual approval), wait for operator deployment ready
+
+### Step 4: Create namespace and secrets
+
+Create Orchestrator namespace via `redhat.openshift.k8s`.
 
 For each secret: check if it already exists via `k8s_info`. If not, generate a random password with `lookup('password', '/dev/null length=32 chars=ascii_letters,digits')` and create the secret. If it exists, skip (idempotent).
 
@@ -132,7 +137,13 @@ stringData:
   password: "{{ generated_at_runtime }}"
 ```
 
-### Step 4: Install the operator via OLM
+### Step 5: Provision PostgreSQL via CloudNativePG Cluster
+
+- Create Cluster CR with 3 databases (orchestrator, temporal, temporal_visibility via `postInitApplicationSQL`)
+- Wait for ready instances
+- PG service: `orchestrator-pg-rw.automation-orchestrator.svc:5432`
+
+### Step 6: Install the Orchestrator operator via OLM
 
 ```yaml
 # OperatorGroup (AllNamespaces scope -- required)
@@ -160,16 +171,9 @@ spec:
 
 - Apply via `redhat.openshift.k8s`
 - Find and approve InstallPlan via `k8s_info` + `k8s` patch
-- Wait for operator CSV to reach Succeeded phase via `k8s_info` with `wait_condition`
+- Wait for operator deployment ready
 
-### Step 5: Provision PostgreSQL via CloudNativePG (runs on OCP)
-
-- Install CloudNativePG operator in `cnpg-system` namespace (OperatorGroup, Subscription from `certified-operators`, channel `stable-v1` — NOT `stable`)
-- Approve InstallPlan (Manual approval), wait for CSV
-- Create Cluster CR with 3 databases (orchestrator, temporal, temporal_visibility via `postInitApplicationSQL`)
-- PG service: `orchestrator-pg-rw.automation-orchestrator.svc:5432`
-
-### Step 6: Create AutomationOrchestrator CR
+### Step 7: Create AutomationOrchestrator CR
 
 ```yaml
 apiVersion: aap.ansible.com/v1alpha1
@@ -199,9 +203,9 @@ spec:
 - Wait for Ready=True via `k8s_info` with retries
 - Retrieve route and admin password via `k8s_info`, display with `debug`
 
-### Step 7: Verify deployment
+### Step 8: Verify deployment
 
-- Playbook outputs: Orchestrator route URL, admin credentials
+- Playbook outputs: Orchestrator route URL, admin password, PG host
 - Manual verification: access UI, log in
 - Expected pods after successful deployment:
   - `orchestrator-backend` (2 replicas)
@@ -212,13 +216,13 @@ spec:
   - `orchestrator-ui` (2 replicas)
   - `orchestrator-worker` (2 replicas)
 
-### Step 8: Authenticate to Orchestrator API
+### Step 9: Authenticate to Orchestrator API
 
 - `ansible.builtin.uri` to POST `/api/v1/auth/login` with admin credentials (auto-generated, retrieved from K8s secret)
 - Retrieve JWT access token for subsequent API calls
 - `no_log: true` mandatory (body contains password)
 
-### Step 9: Configure AAP as OIDC identity provider (automatic)
+### Step 10: Configure AAP as OIDC identity provider (automatic)
 
 Uses the `setup_aap_oidc` endpoint which creates the OAuth2 app on AAP and configures OIDC in Orchestrator in one call:
 - `ansible.builtin.uri` to POST `/api/v1/identity_providers/setup_aap_oidc`
@@ -228,7 +232,7 @@ Uses the `setup_aap_oidc` endpoint which creates the OAuth2 app on AAP and confi
 - `no_log: true` mandatory
 - Skip if an AAP-related identity provider already exists (idempotent)
 
-### Step 10: Create AAP health-check credential
+### Step 11: Create AAP health-check credential
 
 - Get default project ID (list `/api/v1/projects`, filter client-side — `?search=` returns 422)
 - Get "Ansible Automation Platform" credential type ID
@@ -236,11 +240,11 @@ Uses the `setup_aap_oidc` endpoint which creates the OAuth2 app on AAP and confi
 - `no_log: true` mandatory
 - Skip if credential already exists (idempotent)
 
-### Step 11: Create AAP integration
+### Step 12: Create AAP integration
 
 - `ansible.builtin.uri` to POST `/api/v1/integrations`
 - `integration_type: ansible_automation_platform` (not `aap`)
-- `management_credential_id` links to health-check credential from Step 10
+- `management_credential_id` links to health-check credential from Step 11
 - `configuration.base_url` points to AAP Gateway URL
 - Duplicate `integration_type` field required inside `configuration` (discriminated union)
 - Skip if integration already exists (idempotent)
@@ -262,7 +266,7 @@ automation-orchestrator/
     requirements.yml                    # Documents required collections (informational only)
   vars/
     main.yml                            # Non-secret variables (namespace, channel, PG config)
-    vault.yml                           # Encrypted secrets (OCP token, AAP creds, route host)
+    vault.yml                           # Encrypted secrets (AAP creds only — OCP via survey)
     vault.yml.example                   # Template showing required var names (no values)
   execution-environment/
     execution-environment.yml           # EE base image reference (ee-supported-rhel9)
@@ -278,9 +282,9 @@ Passwords for PG and Orchestrator admin are generated at runtime and stored in K
 The playbook runs against `localhost` and uses `redhat.openshift` certified collection for OCP resource mutations, `kubernetes.core` for OCP queries (`k8s_info`), and `ansible.builtin.uri` for both Orchestrator REST API and AAP integration (via `setup_aap_oidc`). No `oc` CLI. Authentication via `module_defaults` `group/kubernetes.core.k8s` with `host` (API URL) + `api_key` (token) variables.
 
 1. **Preflight** -- `k8s_info` to verify OCP version, OLM catalog source
-2. **CloudNativePG operator** -- Namespace, OperatorGroup, Subscription, approve InstallPlan, wait for CSV
-3. **CloudNativePG Cluster** -- Create Cluster CR with 3 databases on OCP, wait for ready
-4. **Orchestrator namespace + secrets** -- Namespace, generate passwords (idempotent), create PG credential secrets and admin password secret
+2. **CloudNativePG operator** -- Namespace, OperatorGroup, Subscription, approve InstallPlan, wait for deployment ready
+3. **Orchestrator namespace + secrets** -- Namespace, generate passwords (idempotent), create PG credential secrets and admin password secret
+4. **CloudNativePG Cluster** -- Create Cluster CR with 3 databases on OCP, wait for ready
 5. **Orchestrator operator** -- OperatorGroup, Subscription, approve InstallPlan, wait for CSV
 6. **AutomationOrchestrator CR** -- apply CR, wait for Ready condition
 7. **AAP integration** (conditional on `aap_gateway_url` defined) -- `uri` to authenticate to Orchestrator API, `setup_aap_oidc` to auto-configure OIDC+OAuth with AAP, create health-check credential and AAP integration
@@ -312,7 +316,7 @@ No custom build needed. The image includes all certified collections and the `ku
 
 ## Verification
 
-1. Playbook outputs pod status, CR conditions, route URL, admin password
+1. Playbook outputs route URL, admin password, and PG host
 2. Access Orchestrator UI via route URL
 3. Log in as admin
 4. Verify "Log in with AAP" button appears (identity provider configured)
@@ -454,7 +458,7 @@ Does **NOT** support `?search=` query parameter — returns `422 Unknown query p
 
 ## Cleanup
 
-`cleanup-aap-orchestrator.yml` removes Orchestrator OAuth2 apps ("Syntara") from AAP Gateway. Run this before deploying to a new OCP cluster — the `setup_aap_oidc` endpoint refuses to create a duplicate OAuth2 app. Has its own AAP job template (ID 24).
+`cleanup-aap-orchestrator.yml` removes Orchestrator OAuth2 apps ("Syntara") from AAP Gateway. Run this before deploying to a new OCP cluster — the `setup_aap_oidc` endpoint refuses to create a duplicate OAuth2 app. Create a separate AAP job template for cleanup.
 
 ## What the playbook does NOT automate
 
