@@ -1,5 +1,154 @@
 ---
-# AAP config-as-code: post-install configuration of the new AAP instance
-# (projects, credentials, job templates, etc.)
-#
-# Required extra_vars: vm_name, vm_ip
+- name: Configure new AAP instance (config-as-code)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../myvars
+    - vars/main.yml
+  vars:
+    ctrl_host: "https://{{ vm_name }}.{{ vault_domain }}"
+    ctrl_user: "admin"
+    ctrl_pass: "{{ gateway_admin_password }}"
+
+  tasks:
+    - name: Apply extra settings
+      ansible.controller.settings:
+        settings: "{{ item }}"
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_settings | default([]) }}"
+
+    - name: Create users
+      ansible.controller.user:
+        username: "{{ item.username }}"
+        password: "{{ item.password | default(omit) }}"
+        email: "{{ item.email | default(omit) }}"
+        first_name: "{{ item.first_name | default(omit) }}"
+        last_name: "{{ item.last_name | default(omit) }}"
+        superuser: "{{ item.superuser | default(false) }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_users | default([]) }}"
+      no_log: true
+
+    - name: Create credentials
+      ansible.controller.credential:
+        name: "{{ item.name }}"
+        credential_type: "{{ item.credential_type }}"
+        organization: "{{ item.organization | default('Default') }}"
+        inputs: "{{ item.inputs }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_credentials | default([]) }}"
+      no_log: true
+
+    - name: Create inventories
+      ansible.controller.inventory:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization | default('Default') }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_inventories | default([]) }}"
+
+    - name: Create hosts
+      ansible.controller.host:
+        name: "{{ item.name }}"
+        inventory: "{{ item.inventory }}"
+        variables: "{{ item.variables | default({}) }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_hosts | default([]) }}"
+
+    - name: Create projects
+      ansible.controller.project:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization | default('Default') }}"
+        scm_type: "{{ item.scm_type | default('git') }}"
+        scm_url: "{{ item.scm_url }}"
+        scm_branch: "{{ item.scm_branch | default('main') }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_projects | default([]) }}"
+
+    - name: Wait for projects to sync
+      ansible.controller.project:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization | default('Default') }}"
+        wait: true
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_projects | default([]) }}"
+
+    - name: Create job templates
+      ansible.controller.job_template:
+        name: "{{ item.name }}"
+        project: "{{ item.project }}"
+        playbook: "{{ item.playbook }}"
+        inventory: "{{ item.inventory }}"
+        credentials: "{{ item.credentials | default([]) }}"
+        become_enabled: "{{ item.become_enabled | default(false) }}"
+        ask_variables_on_launch: "{{ item.ask_variables_on_launch | default(false) }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_job_templates | default([]) }}"
+
+    - name: Create schedules
+      ansible.controller.schedule:
+        name: "{{ item.name }}"
+        unified_job_template: "{{ item.unified_job_template }}"
+        rrule: "{{ item.rrule }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_schedules | default([]) }}"
+
+    - name: Configure EDA rulebook activations
+      ansible.eda.rulebook_activation:
+        name: "{{ item.name }}"
+        rulebook: "{{ item.rulebook }}"
+        project_name: "{{ item.project_name }}"
+        decision_environment_name: "{{ item.decision_environment_name | default(omit) }}"
+        extra_vars: "{{ item.extra_vars | default(omit) }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_rulebooks | default([]) }}"
+
+    - name: Configure EDA event streams
+      ansible.eda.event_stream:
+        name: "{{ item.name }}"
+        credential_name: "{{ item.credential_name | default(omit) }}"
+        event_stream_type: "{{ item.event_stream_type | default(omit) }}"
+        state: present
+        controller_host: "{{ ctrl_host }}"
+        controller_username: "{{ ctrl_user }}"
+        controller_password: "{{ ctrl_pass }}"
+        validate_certs: false
+      loop: "{{ vault_aap_event_streams | default([]) }}"
