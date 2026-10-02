@@ -24,8 +24,8 @@
       ansible.controller.job_template:
         name: "Deploy Test AAP - 02 Infra Config"
         credentials:
-          - "hypervisor cred"
-          - "local vault cred of myvars"
+          - 3
+          - 5
         controller_host: "{{ ctrl_host }}"
         controller_username: "{{ ctrl_user }}"
         controller_password: "{{ ctrl_pass }}"
@@ -36,8 +36,8 @@
       ansible.controller.job_template:
         name: "Deploy Test AAP - 03 AAP Install"
         credentials:
-          - "hypervisor cred"
-          - "local vault cred of myvars"
+          - 3
+          - 5
         controller_host: "{{ ctrl_host }}"
         controller_username: "{{ ctrl_user }}"
         controller_password: "{{ ctrl_pass }}"
@@ -52,7 +52,7 @@
         inventory: "Localhost"
         playbook: "aap-autodeploy/04-aap-config.yml"
         credentials:
-          - "local vault cred of myvars"
+          - 5
         become_enabled: false
         ask_variables_on_launch: true
         verbosity: 1
