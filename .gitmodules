@@ -10,3 +10,6 @@
 [submodule "ServiceNow-ITSM-Integration"]
 	path = ServiceNow-ITSM-Integration
 	url = https://github.com/kvegh/ServiceNow-ITSM-Integration.git
+[submodule "intelligent-assistant"]
+	path = intelligent-assistant
+	url = https://github.com/kvegh/intelligent-assistant.git
