@@ -13,3 +13,6 @@
 [submodule "intelligent-assistant"]
 	path = intelligent-assistant
 	url = https://github.com/kvegh/intelligent-assistant.git
+[submodule "config_exceptions_ng"]
+	path = config_exceptions_ng
+	url = https://github.com/kvegh/config_exceptions_ng.git
