@@ -7,3 +7,6 @@
 [submodule "automation-orchestrator"]
 	path = automation-orchestrator
 	url = https://github.com/kvegh/automation-orchestrator.git
+[submodule "ServiceNow-ITSM-Integration"]
+	path = ServiceNow-ITSM-Integration
+	url = https://github.com/kvegh/ServiceNow-ITSM-Integration.git
