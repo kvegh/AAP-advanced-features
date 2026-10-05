@@ -45,7 +45,11 @@ for the CaC architecture, file layout, and variable naming.
 
 ## Secrets
 
-No cleartext secrets in any repo. Sensitive values are either ansible-vault
-encrypted (committed, decrypted at job runtime by an AAP vault credential) or
-left as placeholders: `YOURDOMAIN.tld`, `YOUR_AAP_USER`, `ANSIBLE_USER`,
-`ANSIBLE_PW`.
+No cleartext secrets in any repo. Sensitive values are ansible-vault encrypted
+and committed — an AAP vault credential decrypts them at job runtime, so the
+ciphertext has to be in the synced project.
+
+Playbooks reference them as variables from `myvars` at this repo's root, e.g.
+`vault_domain`, `vault_ansible_user`, `vault_ansible_password`,
+`vault_aap_install_user`. Where a value appears in documentation rather than
+code, it is written as a placeholder such as `YOURDOMAIN.tld`.
