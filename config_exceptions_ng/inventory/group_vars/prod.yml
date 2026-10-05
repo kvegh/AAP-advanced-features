@@ -1,0 +1,4 @@
+---
+satellite_content_view: "RHEL{{ rhel_major }}_Prod"
+satellite_activation_key: "ak-rhel{{ rhel_major }}-prod"
+satellite_lifecycle_env: "Production"

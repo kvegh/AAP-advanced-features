@@ -1,0 +1,11 @@
+# Collections installed by ansible-galaxy, not the requirements files
+# that declare them. A bare "collections/" also swallows
+# collections/requirements.yml, since git does not descend into ignored
+# directories.
+collections/ansible_collections/
+
+# Vault payloads stay out of the public repo (archive keeps them)
+myvars
+vars/vault.yml
+**/vars/vault.yml
+**/cac/base.yml
