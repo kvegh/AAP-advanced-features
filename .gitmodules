@@ -16,3 +16,6 @@
 [submodule "config_exceptions_ng"]
 	path = config_exceptions_ng
 	url = https://github.com/kvegh/config_exceptions_ng.git
+[submodule "disconnected-windows-patching"]
+	path = disconnected-windows-patching
+	url = https://github.com/kvegh/disconnected-windows-patching.git
