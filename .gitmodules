@@ -1,3 +1,3 @@
 [submodule "aap_autodeploy_configascode"]
 	path = aap_autodeploy_configascode
-	url = git@github.com:kvegh/aap_autodeploy_configascode.git
+	url = https://github.com/kvegh/aap_autodeploy_configascode.git
