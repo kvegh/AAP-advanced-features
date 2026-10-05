@@ -4,3 +4,6 @@
 [submodule "AIOps_selfhealing_demo"]
 	path = AIOps_selfhealing_demo
 	url = https://github.com/kvegh/aiops-selfhealing-demo.git
+[submodule "automation-orchestrator"]
+	path = automation-orchestrator
+	url = https://github.com/kvegh/automation-orchestrator.git
