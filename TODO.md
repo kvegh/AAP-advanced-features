@@ -56,8 +56,31 @@ plus one repository per project, wired in as submodules.
 - [ ] **Predecessor monorepo holds superseded generations** of the deploy and
       self-healing playbooks. Decide whether to retire them.
 
-- [ ] The stored API token is read-scoped; writes need admin basic auth.
-      Consider issuing a write-scoped token if API automation continues.
+## Authentication investigation
+
+- [ ] **Verify MCP port 8448 is inaccessible externally.** On 2026-10-06,
+      `https://aap.supercorp.at:8448/mcp` responded to an internal MCP request
+      with HTTP 401. Standard HTTPS port 443 served HTML and rejected the MCP
+      POST, so no MCP exposure was found there. Only 443 is intended to be
+      exposed externally; confirm firewall/proxy rules and test 8448 from an
+      external network. Internal hostname reachability does not establish
+      Internet exposure. If unintended exposure is found, restrict it while
+      preserving intended private MCP access.
+
+- [ ] **Understand the MCP-to-AAP authentication boundary.** On 2026-10-06,
+      the bearer token configured for the `aap-mcp` connection was also accepted
+      directly by the AAP controller API for reads and writes (project #34 and
+      job template #35). This contradicts the earlier assumption that the
+      stored API token was read-scoped; verify whether that note referred to
+      a different token. Do not record token values in investigation output.
+      Inspect the MCP server implementation and deployment configuration to
+      establish whether it forwards the client's token, uses a separate AAP
+      credential, or shares authentication with AAP. Identify the token issuer,
+      associated identity, scope, expiry, and intended audiences. Explain why
+      direct API access succeeds and whether MCP-only client authentication is
+      intended. Document the actual authentication flow and any changes needed
+      to enforce the intended boundary; do not rotate credentials or change
+      access controls as part of discovery without explicit authorization.
 
 ## Ongoing discipline
 
