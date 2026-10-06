@@ -15,7 +15,7 @@ holds no project files — only the index below and the submodule pointers.
 | `ServiceNow-ITSM-Integration/` | [ServiceNow-ITSM-Integration](https://github.com/kvegh/ServiceNow-ITSM-Integration) | ServiceNow ITSM integration playbooks (bootstrap pattern). |
 | `config_exceptions_ng/` | [config_exceptions_ng](https://github.com/kvegh/config_exceptions_ng) | Configuration drift detection and exception handling. |
 | `intelligent-assistant/` | [intelligent-assistant](https://github.com/kvegh/intelligent-assistant) | Intelligent Assistant / AI chatbot setup and issue tracking. |
-| `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | Windows patching and application deployment with WSUS and Chocolatey/Nexus; modular parallel setup and offline update transfer. |
+| `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | Windows patching and application deployment with WSUS and Chocolatey/Nexus; parallel service setup, offline update transfer, and application sync/export/import with baseline-to-current upgrades. |
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 
 ## Cloning
