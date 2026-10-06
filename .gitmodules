@@ -19,3 +19,6 @@
 [submodule "disconnected-windows-patching"]
 	path = disconnected-windows-patching
 	url = https://github.com/kvegh/disconnected-windows-patching.git
+[submodule "automation_portal_setup"]
+	path = automation_portal_setup
+	url = https://github.com/kvegh/automation_portal_setup.git

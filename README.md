@@ -16,6 +16,7 @@ holds no project files — only the index below and the submodule pointers.
 | `config_exceptions_ng/` | [config_exceptions_ng](https://github.com/kvegh/config_exceptions_ng) | Configuration drift detection and exception handling. |
 | `intelligent-assistant/` | [intelligent-assistant](https://github.com/kvegh/intelligent-assistant) | Intelligent Assistant / AI chatbot setup and issue tracking. |
 | `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | AAP and WSUS demo for Windows patching in a simulated disconnected environment. |
+| `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 
 ## Cloning
 
