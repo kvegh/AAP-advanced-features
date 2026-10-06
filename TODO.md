@@ -91,3 +91,18 @@ plus one repository per project, wired in as submodules.
 
 - Unscrubbed pre-split history lives in a private archive repo, including the
   previous standalone self-healing repo on its own branch. Do not merge it back.
+
+## Central CMDB and inventory source
+
+- [ ] Put a central CMDB/inventory source in place, either dynamically discovered
+      or statically maintained. Define the authoritative source for VM identities,
+      hostnames, roles, lifecycle, hypervisors, NIC MACs/names, networks, addresses,
+      and AAP connection settings.
+- [ ] Distinguish permanent infrastructure with stable assignments from ephemeral
+      test deployments. Discover or register new deployments and retire their
+      records when removed; ephemeral VMs do not require permanent IP reservations.
+- [ ] Decide how AAP inventory, VM deployment inputs, and network configuration
+      consume this source. The vaulted network YAML is an initial reference record,
+      not yet a live CMDB or automated inventory integration.
+- [ ] Keep sensitive/environment-specific values Vault-encrypted or in a protected
+      external system; never commit plaintext credentials or infrastructure mappings.
