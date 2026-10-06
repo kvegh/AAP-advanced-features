@@ -82,6 +82,21 @@ plus one repository per project, wired in as submodules.
       to enforce the intended boundary; do not rotate credentials or change
       access controls as part of discovery without explicit authorization.
 
+## Project synchronization performance
+
+- [ ] **Reduce collection installation delays during project synchronization.**
+      Windows demo retries on 2026-10-06 repeatedly ran collection installation
+      from `collections/requirements.yml`. One project update took about 48
+      seconds, followed by an execution-node content sync lasting over 100
+      seconds. Measure Git fetch, Galaxy installation, queueing, and content
+      transfer separately to identify the actual bottleneck.
+      Investigate a nonzero project cache timeout, disabling update-on-launch
+      with explicit synchronization after pushes, and baking pinned collections
+      into execution environments. Also investigate whether collection downloads
+      can be avoided or limited during project sync without losing required
+      dependencies. Check controller-wide versus per-project settings before
+      changing them, and preserve reliable use of the intended Git revision.
+
 ## Ongoing discipline
 
 - Submodules pin a commit. After pushing a child repo, bump the pointer here:
