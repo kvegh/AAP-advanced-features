@@ -43,3 +43,7 @@ The updated Windows reference includes `95cbd03` for Windows package-array
 validation and `cb629a0` for the verified application pipeline and retrospective
 history. Targeted recovery retained the successful VM and WSUS stages while
 verifying both internal release feeds and endnode upgrades.
+
+`06474a4` records the subsequent successful fresh-environment workflow 1252,
+which verified all 17 stages together after guarded Windows-only teardown and
+preservation checks. No design change was needed for that complete rerun.

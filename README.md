@@ -10,7 +10,8 @@ Significant decisions and their implementation commits are summarized in
 maintains its own README and decision history alongside its implementation.
 The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
-see its documentation for verification details and remaining workflow validation.
+see its documentation for verification details. Fresh-environment workflow 1252
+passed all 17 stages on 2026-10-07 after verified Windows-only teardown.
 
 ## Projects
 
