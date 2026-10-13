@@ -47,3 +47,16 @@ verifying both internal release feeds and endnode upgrades.
 `06474a4` records the subsequent successful fresh-environment workflow 1252,
 which verified all 17 stages together after guarded Windows-only teardown and
 preservation checks. No design change was needed for that complete rerun.
+
+## Snow demo plan review
+
+Commit `6509b3020c06d040a35fe3d0bb91d44a4daa6b4d` updates the Snow submodule reference to `f27d3d6`
+and describes its current planning status in the project index. The referenced
+project incorporates the user's approved corrections for repeatable setup,
+persistent incident correlation, verified integration permissions, Spoke setup
+feasibility, and standalone project dependencies. Its own decision history records
+the review rationale and plan-update commit `8feca9e`.
+
+The umbrella update was prepared in an isolated checkout with submodules left
+uninitialized, preserving the other project's concurrent working copies and
+their recorded references.
