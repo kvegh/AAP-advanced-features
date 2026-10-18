@@ -156,6 +156,16 @@ never completed manually.
 
 Deferred work: capture the requirement now; implement it later.
 
+## 9. Create a credential rotation mechanism — later
+
+- [ ] Design a mechanism to rotate credentials across the umbrella projects.
+      Identify credential owners, dependent systems, and rotation triggers.
+- [ ] Define how replacement credentials are propagated and verified before
+      retiring the old ones, including recovery if an update fails. Keep secrets
+      protected throughout rotation.
+
+Deferred work: define the scope and procedure before implementing rotation.
+
 ---
 
 # Tracked here for now — belongs in a project repo
