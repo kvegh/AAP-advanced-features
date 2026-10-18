@@ -3,6 +3,24 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Recover installer monitoring before configuring the new platform
+
+Autodeploy implementation: `64aec45`; verified-deployment documentation:
+`94705fa` (source version `0.5.10`).
+
+A Controller timeout stopped monitoring while the remote installer was still
+running. Starting another installer would have risked overlap, so Stage 03 now
+accepts the original async job identifier and observes it without host preparation,
+inventory edits, or another installer launch. The template time budget allows
+for host preparation as well as the installer's own async limit.
+
+Live recovery confirmed the original installer's successful exit and Controller
+health. Stage 04 then imported the subscription and applied only the platform
+organization and setting, with token and workspace cleanup verified. All four
+stages have therefore been verified as individually launched jobs; automatic
+handoff remains planned, and no use-case deployment was launched. This umbrella
+update changes only the Autodeploy reference and related documentation.
+
 ## Keep deployment fixes and encrypted demo captures independently reviewable
 
 Umbrella update: `e9ce160`; Autodeploy implementations: `97e3236`, `33f2575`,

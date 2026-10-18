@@ -56,14 +56,19 @@ dispatch role. See
 [Configuration_as_Code.md](https://github.com/kvegh/aap_autodeploy_configascode/blob/main/Configuration_as_Code.md)
 for the CaC architecture, file layout, and variable naming.
 
+The four deployment stages completed on a fresh environment as individually
+launched jobs on 2026-10-18, ending with subscription import and platform-only
+base configuration. Stage 03 can resume monitoring an existing installer after
+a Controller timeout without starting another installation. Automatic job
+handoff remains planned; the separate AIOps deployment template remains unrun.
+
 ## Secrets
 
 No cleartext secrets in any repo. Sensitive values are ansible-vault encrypted
-and committed — an AAP vault credential decrypts them at job runtime, so the
-ciphertext has to be in the synced project.
+and committed; an attached AAP Vault credential decrypts them at job runtime.
 
-Each project keeps its own vault file at its repo root, because AAP syncs a
-project from its own repository and a path outside it is not resolvable. For
+Existing playbooks keep runtime Vault files inside their project, because AAP
+syncs each project separately and a path outside it is not resolvable. For
 `aap_autodeploy_configascode` that file is `myvars`, supplying variables such
 as `vault_domain`, `vault_ansible_user`, `vault_ansible_password` and
 `vault_aap_install_user`. Where a value appears in documentation rather than
@@ -73,3 +78,5 @@ AAP configuration captures for demos are maintained as fully Vault-encrypted
 files in private secrets repositories. Plaintext working captures, ownership
 inventories, and export output stay outside Git. Demo configuration is imported
 separately after platform base setup; extracting configuration does not deploy it.
+The deployment playbooks download private CaC ciphertext through authenticated
+Git during execution, then decrypt it using the attached CaC Vault credential.
