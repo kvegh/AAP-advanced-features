@@ -3,6 +3,21 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Track independent Autodeploy versions and shared agent rules
+
+Autodeploy implementation: `f3efca9`; decision-history follow-up: `423bda5`.
+
+The user adopted per-commit versioning for the Autodeploy project alone and
+requested its `0.0.1` release. Feature commits increment minor and reset patch;
+other commits, including documentation, increment patch. The project provides
+generic empty CaC templates separately from its encrypted environment
+configuration. The subsequent documentation commit advances its branch version
+to `0.0.2` while the published source baseline remains tagged `v0.0.1`.
+
+The user also requested a future umbrella task to define general development
+rules for agents, using versioning as an example. TODO task 7 tracks that work;
+it does not impose a shared version number or new rules on other projects.
+
 ## Separate projects and reproducible references
 
 Commits `69b1fb0`, `ce277b1`, `708f380`, `c1d89db`, `a740487` and `2321b60`

@@ -129,6 +129,20 @@ Shape to work out when we get there:
 Blocked on task 2: there is no point automating a run of something that has
 never completed manually.
 
+## 7. Define shared development rules for agents
+
+- [ ] Define general development rules that agents can follow across the
+      umbrella projects, with explicit project-specific exceptions where needed.
+      Include per-project versioning, release publication, documentation and
+      decision-history updates, meaningful validation, and secret protection.
+      Use the newly adopted Autodeploy version policy as one concrete example:
+      each project owns its version; feature commits increment minor and reset
+      patch; other commits, including documentation, increment patch; published
+      releases require an annotated tag and matching GitHub release.
+- [ ] Decide where the shared rules live and how each project's `AGENTS.md`
+      references them. Keep Vault password files outside Git. Document agreed
+      rules before applying them to other projects; their versions stay independent.
+
 ---
 
 # Tracked here for now — belongs in a project repo
