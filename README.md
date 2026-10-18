@@ -59,7 +59,9 @@ No cleartext secrets in any repo. Sensitive values are ansible-vault encrypted
 and committed — an AAP vault credential decrypts them at job runtime, so the
 ciphertext has to be in the synced project.
 
-Playbooks reference them as variables from `myvars` at this repo's root, e.g.
-`vault_domain`, `vault_ansible_user`, `vault_ansible_password`,
+Each project keeps its own vault file at its repo root, because AAP syncs a
+project from its own repository and a path outside it is not resolvable. For
+`aap_autodeploy_configascode` that file is `myvars`, supplying variables such
+as `vault_domain`, `vault_ansible_user`, `vault_ansible_password` and
 `vault_aap_install_user`. Where a value appears in documentation rather than
 code, it is written as a placeholder such as `YOURDOMAIN.tld`.

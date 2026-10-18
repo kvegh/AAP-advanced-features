@@ -29,30 +29,24 @@ this repo is *for*, then make the docs say that. Known discrepancies:
 - [ ] **`collections/` is empty and untracked.** Leftover from the monorepo
       layout. Remove it or document why it must exist.
 
-- [ ] **The Secrets section goes stale with the `myvars` move.**
-      `README.md:62` states playbooks reference variables "from `myvars` at
-      this repo's root". Task 1 moves that file into
-      `aap_autodeploy_configascode`. Update the section in the same change.
+- [x] ~~**The Secrets section goes stale with the `myvars` move.**~~ Done
+      2026-10-17 alongside task 1: the section now states that each project
+      keeps its own vault file at its own repo root, and why.
 
 - [ ] **`README.md:11-14` carries Windows release notes** — per-project status
       embedded in the umbrella index. Decide whether project status belongs
       here at all, or only in each project's own README.
 
-## 1. Move `myvars` into `aap_autodeploy_configascode`
+## 1. Move `myvars` into `aap_autodeploy_configascode` — done 2026-10-17
 
-The split broke the path. Those playbooks load `../myvars`, which resolved to
-the umbrella root when that was the AAP project. Now the repo itself is the
-project root, so `..` points outside it and the vault file is not found.
-Only this repo uses it, so it is a move, not a copy:
+The split broke the path: those playbooks loaded `../myvars`, which resolved to
+the umbrella root when that was the AAP project. Once the repo itself became
+the project root, `..` pointed outside it and the vault file was never found.
+Nothing else referenced the file, so it moved rather than being copied, and the
+seven load paths were rewritten.
 
-    git mv myvars aap_autodeploy_configascode/myvars
-    ../myvars     → myvars      # 01-linux-vm-setup, 02-infra-config,
-                                # 03-aap-install (×3), 04-aap-config,
-                                # destroy-test-aap
-    ../../myvars  → ../myvars   # utils/tag_jts.yml
-
-Moving a file between a parent repo and a submodule is two commits in two
-repos, not one `git mv`. Update `README.md` Secrets in the same change.
+Still unverified: no playbook has actually run against the new path — see
+task 2.
 
 ## 2. Test-run every split repo
 
