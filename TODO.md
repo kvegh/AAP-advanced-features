@@ -166,11 +166,21 @@ Deferred work: capture the requirement now; implement it later.
 
 Deferred work: define the scope and procedure before implementing rotation.
 
-## 10. Review all playbooks for readability and clarity
+## 10. Review all Ansible content for readability and reliable collection use
 
-- [ ] Review all playbooks across the umbrella projects for readability and
-      clarity, including task names, variable names, structure, and explanations
-      of intent. Record any needed improvements in the owning project's TODO.
+- [ ] Review all Ansible playbook content across the umbrella projects, including
+      roles and included tasks, for readable code: clear task and variable names,
+      straightforward structure, and explanations of intent. Record needed
+      improvements in the owning project's TODO.
+- [ ] Identify custom code that reliable collection modules or roles could
+      express more clearly. Prefer certified, validated, or maintained community
+      collections where appropriate; using a collection is not sufficient by
+      itself to justify replacing working code.
+- [ ] Before recommending a collection, verify its maintenance, compatibility
+      with the project's AAP, Ansible and execution environment versions,
+      declared and pinned dependencies, and availability through PAH. Check its
+      actual behavior, including idempotence and failure handling, against the
+      use case. Validate any resulting changes in the owning project.
 
 ---
 

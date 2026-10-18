@@ -9,7 +9,8 @@ Significant decisions and their implementation commits are summarized in
 [design_decisions_history.md](design_decisions_history.md). Each changed project
 maintains its own README and decision history alongside its implementation.
 Umbrella planning lives in [TODO.md](TODO.md), including the pending definition
-of shared agent development rules such as per-project versioning.
+of shared agent development rules such as per-project versioning, and a review
+of Ansible content for readability and reliable collection use.
 The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
 see its documentation for verification details. Fresh-environment workflow 1252
