@@ -59,6 +59,22 @@ They are no longer one shared file and their contents differ per project. Work
 out which repo needs which keys. Note that a vault credential on a job template
 only supplies the decryption password — not the file, and not the variables.
 
+Two conventions are in use and should be reconciled:
+
+- `aap_autodeploy_configascode` — a vault file named `myvars` at the repo root.
+  As of 2026-10-17 it is the only repo using one.
+- `automation-orchestrator`, `ServiceNow-ITSM-Integration` — `vars/vault.yml`
+  with a committed `vars/vault.yml.example` alongside it.
+
+A third approach exists and may be the better default: `AIOps_selfhealing_demo`
+dropped its vault file entirely on 2026-10-09 (`ce4eced`) and now asserts the
+environment-specific values from inventory, so the repo carries no secrets and
+nothing to decrypt. Worth deciding whether that generalises before standardising
+on a filename.
+
+The README Secrets section currently states the root-level rule, which only
+describes autodeploy. Update it once this is settled.
+
 ## 4. Submodule pointer hygiene
 
 - [ ] `AIOps_selfhealing_demo` and `ServiceNow-ITSM-Integration` have both
@@ -131,13 +147,6 @@ them is itself a task.
       Same failure the orchestrator repo hit. Either sync the collection to
       private automation hub, or move the file off the magic path as was done
       there.
-
-## → `AIOps_selfhealing_demo`
-
-- [ ] **No `playbooks/myvars`.** Only `myvars.example` is committed, so
-      `deploy_zabbix_agent.yml` cannot run from this repo. Currently dormant:
-      the job template that deploys agents runs a different copy from another
-      project.
 
 ## → platform / infrastructure (no repo yet — decide on a home)
 
