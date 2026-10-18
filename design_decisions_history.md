@@ -3,6 +3,23 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Keep deployment fixes and encrypted demo captures independently reviewable
+
+Umbrella update: `e9ce160`; Autodeploy implementations: `97e3236`, `33f2575`,
+and `91b5fc6` (included through its `85b6cb0` reference).
+
+The Autodeploy reference now includes the declared DNS lookup collection,
+AIOps Event Stream-before-activation ordering, and a consistent CoP credential
+schema. Private configuration captures remain separate from reusable playbooks.
+The user requested additional private encrypted captures for Orchestrator,
+disconnected Windows, and Assistant Team. Plaintext captures, export output,
+and ownership inventories stay outside Git; capture work does not authorize
+deployment of those demos.
+
+Source validation is documented in the individual project. The DNS retry passed;
+the fresh AAP installation and platform-only configuration are tracked separately
+from the unlaunched AIOps entry point. No unrelated submodule references changed.
+
 ## Review Ansible readability and collection suitability together
 
 Planning update: `ea6953788ee24baead8ae251a6cb22e99257634c`.
