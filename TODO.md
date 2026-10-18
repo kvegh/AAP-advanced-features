@@ -86,6 +86,33 @@ only supplies the decryption password — not the file, and not the variables.
 - Unscrubbed pre-split history lives in a private archive repo, including the
   previous standalone self-healing repo on its own branch. Do not merge it back.
 
+## 6. End-to-end tests for every project — later
+
+Not near-term. A standing, re-runnable suite that exercises every project in
+this umbrella, so at any point we can confirm they all still work.
+
+Distinct from task 2: that one asks "has this ever run since the split?" and is
+answered once. This is the regression suite that keeps answering it — most
+valuable when a demo is imminent and nobody remembers what last touched what.
+
+Shape to work out when we get there:
+
+- [ ] Each project declares how it is exercised and what counts as a pass.
+      Some can run unattended; others cannot without a target environment.
+- [ ] Decide what each test needs and whether it is disposable. The autodeploy
+      pipeline can build and destroy a throwaway AAP, so it can host tests for
+      the projects that configure AAP — an obvious self-hosting opportunity.
+- [ ] Classify by external dependency, since these will not all be satisfiable
+      at once: OpenShift cluster (orchestrator), ServiceNow dev instance,
+      Windows endnodes and WSUS/Nexus, Zabbix and EDA. Note which ones hold
+      time-limited credentials that expire between runs.
+- [ ] Decide where the suite runs — an AAP workflow spanning the per-repo job
+      templates is the natural fit, versus external CI.
+- [ ] Decide how results are reported and where a failure is recorded.
+
+Blocked on task 2: there is no point automating a run of something that has
+never completed manually.
+
 ---
 
 # Tracked here for now — belongs in a project repo
