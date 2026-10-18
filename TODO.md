@@ -166,6 +166,12 @@ Deferred work: capture the requirement now; implement it later.
 
 Deferred work: define the scope and procedure before implementing rotation.
 
+## 10. Review all playbooks for readability and clarity
+
+- [ ] Review all playbooks across the umbrella projects for readability and
+      clarity, including task names, variable names, structure, and explanations
+      of intent. Record any needed improvements in the owning project's TODO.
+
 ---
 
 # Tracked here for now — belongs in a project repo
