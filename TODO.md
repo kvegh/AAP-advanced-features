@@ -143,6 +143,19 @@ never completed manually.
       references them. Keep Vault password files outside Git. Document agreed
       rules before applying them to other projects; their versions stay independent.
 
+## 8. Recreate the development workspace automatically — later
+
+- [ ] Automate rebuilding this agent development workspace on a fresh host:
+      directory layout, repository checkouts and submodules, required tools,
+      agent working rules, and configured integrations such as AAP MCP access.
+- [ ] Separate reusable bootstrap definitions from environment-specific inputs.
+      Keep sensitive inputs Vault-encrypted when stored in Git, and supply Vault
+      password files such as `vpf` outside Git.
+- [ ] Verify reconstruction on a clean host, including the required tools and
+      integration access. Document any operator authentication steps that remain.
+
+Deferred work: capture the requirement now; implement it later.
+
 ---
 
 # Tracked here for now — belongs in a project repo
