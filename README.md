@@ -68,3 +68,8 @@ project from its own repository and a path outside it is not resolvable. For
 as `vault_domain`, `vault_ansible_user`, `vault_ansible_password` and
 `vault_aap_install_user`. Where a value appears in documentation rather than
 code, it is written as a placeholder such as `YOURDOMAIN.tld`.
+
+AAP configuration captures for demos are maintained as fully Vault-encrypted
+files in private secrets repositories. Plaintext working captures, ownership
+inventories, and export output stay outside Git. Demo configuration is imported
+separately after platform base setup; extracting configuration does not deploy it.
