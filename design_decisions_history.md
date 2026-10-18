@@ -3,6 +3,19 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Review Ansible readability and collection suitability together
+
+Planning update: `ea6953788ee24baead8ae251a6cb22e99257634c`.
+
+The user expanded the existing readability review to cover all Ansible playbook
+content, including roles and included tasks, and to consider reliable collection
+modules and roles where appropriate. TODO task 10 now asks reviewers to prefer
+certified, validated, or maintained community collections while checking their
+maintenance, version compatibility, dependencies, PAH availability, and actual
+behavior. Collection use alone does not justify a replacement; improvements and
+validation remain owned by each project. This records future review work and
+does not claim that the content review has already been performed.
+
 ## Track independent Autodeploy versions and shared agent rules
 
 Autodeploy implementation: `f3efca9`; decision-history follow-up: `423bda5`.
