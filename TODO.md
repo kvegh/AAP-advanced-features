@@ -182,6 +182,21 @@ Deferred work: define the scope and procedure before implementing rotation.
       actual behavior, including idempotence and failure handling, against the
       use case. Validate any resulting changes in the owning project.
 
+## 11. Back up Git repositories for recovery — important, not urgent
+
+- [ ] Define automatic backups for the umbrella, project repositories, and
+      private secrets repositories. Preserve complete Git history and all refs,
+      including branches and tags, with retention outside the primary Git host.
+- [ ] Verify backup completeness and report failures. Decide how to include
+      repository content stored outside ordinary Git objects, if any.
+- [ ] Keep access credentials and Vault decryption material encrypted and
+      separate from repository backups, with a documented recovery procedure.
+- [ ] Test restoring repositories and their submodule references from backup,
+      including private encrypted configuration, before relying on the backups.
+
+Deferred work: plan and implement a recoverable backup process later; no backup
+service or schedule is configured by this task.
+
 ---
 
 # Tracked here for now — belongs in a project repo
