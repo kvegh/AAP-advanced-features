@@ -3,6 +3,27 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Define production replacement and encrypted seed credentials
+
+Autodeploy: `c51aede` (0.10.1), including administrator-password implementation
+`1216f38` and the existing-token importer correction `1926669`.
+
+The operator clarified that the goal is an AAP capable of assuming production
+tasks and deploying further AAP instances. A trusted seed needs independent
+initial Git and Vault access. The operator requested encrypted copies of those
+credential inputs in base for provisioning a trusted replacement. Actual target
+credential and deployment-template restoration remains unimplemented; the plan
+now tracks those gaps, complete production capture, job handoff, functional
+tests and controlled takeover. Separate use-case ownership is preserved.
+
+The Assistant Team importer and import template are prepared, with the provided
+token encrypted and attached using the existing Git-token type. Token validity
+does not establish private-repository permission: access verification still
+fails. No import was launched. The initial administrator-password rollout also
+stopped before target changes; its base Git credential was repaired, but live
+password verification remains pending. This documentation does not resume
+stopped jobs or establish takeover readiness.
+
 ## Verify Orchestrator configuration import
 
 Import implementation: Autodeploy `bf12d01` and `de5b54c`, verified from

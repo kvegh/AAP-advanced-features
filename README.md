@@ -57,6 +57,13 @@ dispatch role. See
 [Configuration_as_Code.md](https://github.com/kvegh/aap_autodeploy_configascode/blob/main/Configuration_as_Code.md)
 for the CaC architecture, file layout, and variable naming.
 
+The primary goal is a new AAP that can take over the production platform's
+tasks, including deploying further AAP instances. A trusted seed starts with
+independently supplied Git and Vault access. The encrypted base stores credential
+inputs for a trusted replacement, while automatic credential and deployment-template
+provisioning, complete production capture, functional verification and controlled
+takeover remain planned. Demo-specific configuration stays separate from base.
+
 The four deployment stages completed on a fresh environment as individually
 launched jobs on 2026-10-18, ending with subscription import and platform-only
 base configuration. Stage 03 can resume monitoring an existing installer after
@@ -99,7 +106,12 @@ validation remain pending.
 The Assistant Team capture follows its current public code and external
 encrypted configuration snapshots. Deployment and recovery definitions are
 separate from optional authentication maintenance, which needs authorization
-and CA trust for the target AAP. Its dedicated CaC importer is still pending.
+and CA trust for the target AAP. Its dedicated importer and import Job Template
+are created, using the existing CaC Git-token credential type. The supplied
+repository token is stored encrypted and attached to that template, but private
+repository access and target PAH preparation remain unresolved. The import has
+not run. Administrator-password management is also implemented in base, with
+live rollout verification still pending after repair of the base Git credential.
 
 ## Secrets
 
