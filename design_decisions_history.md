@@ -3,6 +3,23 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Align Orchestrator and refresh Assistant Team configuration captures
+
+Autodeploy documentation: `d64e336` (0.8.3). Private capture implementations:
+Orchestrator `0fd3b53`; Assistant Team `2c3a825`, with history `fbd7afd`.
+
+The operator selected `Orchestrator EE` consistently across its definition and
+references. Assistant Team now follows current public code and external encrypted
+configuration credentials. Its six deployment/recovery templates are separate
+from optional authentication maintenance requiring authorization for the target
+AAP. Existing encrypted authentication/configuration files were preserved.
+
+Native export, owned references, strict rendering, missing-input guards and
+private Vault round trips passed. The capture records PAH and image prerequisites;
+its importer and target preparation remain outstanding. No configuration import,
+runtime automation or provider authentication refresh was launched. This update
+tracks only the Autodeploy submodule and related documentation.
+
 ## Roll out PAH base sources and prepare the Orchestrator import
 
 Autodeploy implementations: `5fc2c98`, `40906b1`, `bf12d01`, and `de5b54c`;

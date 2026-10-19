@@ -86,9 +86,16 @@ Orchestrator deployment and cleanup now accept an explicit AAP target and runtim
 credentials instead of loading the original AAP connection vault. Their surveys
 match those inputs. Cleanup uses a temporary Gateway token and exact application
 names; its token is revoked afterward. The encrypted Orchestrator capture is
-aligned with that contract. A separate CaC import playbook and Job Template are
+aligned with that contract and consistently uses `Orchestrator EE` for its
+execution environment definition, project default, and Job Templates.
+A separate CaC import playbook and Job Template are
 now created with Git and Vault credentials attached. The import, Orchestrator
 deployment, and cleanup have not been run here.
+
+The Assistant Team capture follows its current public code and external
+encrypted configuration snapshots. Deployment and recovery definitions are
+separate from optional authentication maintenance, which needs authorization
+and CA trust for the target AAP. Its dedicated CaC importer is still pending.
 
 ## Secrets
 
