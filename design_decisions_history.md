@@ -3,6 +3,19 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Plan recoverable backups of public and private Git repositories
+
+Planning update: `841fc29`.
+
+The user requested Git backups as important, non-urgent recovery work. TODO
+task 11 now includes automatic backups of the umbrella, project repositories,
+and private secrets repositories, preserving complete history and all refs
+outside the primary Git host. Backup verification and restore tests are part
+of the requirement so that a successful copy alone does not imply recoverability.
+Access credentials and Vault decryption material remain encrypted and separate
+from repository backups. This records future work; no backup implementation or
+schedule was created.
+
 ## Deploy each demo's AAP configuration separately with explicit target inputs
 
 Autodeploy implementations: `a64e16c`, `a84bf09`, and `5ccb0ca`; referenced source
