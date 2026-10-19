@@ -3,6 +3,24 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Verify Orchestrator configuration import
+
+Import implementation: Autodeploy `bf12d01` and `de5b54c`, verified from
+`d64e336` (0.8.3). Encrypted configuration: private capture `0fd3b53`.
+
+The requested configuration import completed successfully. Independent read-only
+API verification checked all eight owned objects against the encrypted intended
+configuration, including project synchronization, inventory and execution
+environment references, credential and label attachments, surveys, and extra
+variables. Comparison accounts for Ansible rendering export wrappers and the
+local Python interpreter variable. All 147 checks passed; TLS verification was
+enabled and the temporary read-only token was revoked. The registry password
+is present and API-masked; its exact value cannot be read back for comparison.
+
+The imported deployment and cleanup templates have no job runs. This confirms
+configuration delivery; OpenShift runtime deployment and functional testing
+remain separate work. Verification output stays outside Git.
+
 ## Align Orchestrator and refresh Assistant Team configuration captures
 
 Autodeploy documentation: `d64e336` (0.8.3). Private capture implementations:
