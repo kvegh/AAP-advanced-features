@@ -108,10 +108,22 @@ encrypted configuration snapshots. Deployment and recovery definitions are
 separate from optional authentication maintenance, which needs authorization
 and CA trust for the target AAP. Its dedicated importer and import Job Template
 are created, using the existing CaC Git-token credential type. The supplied
-repository token is stored encrypted and attached to that template, but private
-repository access and target PAH preparation remain unresolved. The import has
-not run. Administrator-password management is also implemented in base, with
-live rollout verification still pending after repair of the base Git credential.
+repository token is stored encrypted and attached to that template. Private Git
+access, the pinned certified PAH collection and the cached execution image are
+verified. The import restored all 21 ordinary objects and six templates;
+independent comparison passed 396 checks. Imported runtime automation and optional
+authentication maintenance have not run. Base now mounts its generated CA trust
+read-only into project-update execution environments, preserving certificate
+verification for local PAH downloads.
+
+Administrator-password management is verified in base. The configured password
+works after rollout, the installer inventory stays aligned, and a repeat run
+authenticates directly with that password without installer bootstrap. Temporary
+configuration tokens and workspaces were removed after both successful jobs.
+
+The Autodeploy TODO now also tracks complete Intelligent Assistant/Lightspeed
+capture, including service setup, vaulted credentials and passwords, Gateway
+OAuth configuration and independent rebuild verification.
 
 ## Secrets
 

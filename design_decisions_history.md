@@ -3,6 +3,31 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Verify Assistant Team configuration import and shared base prerequisites
+
+Autodeploy documentation: `2858b56` (0.10.3), following verified administrator
+password rollout documentation `b80a1f0` (0.10.2). Encrypted configuration fixes:
+Assistant Team `094ee7f`, documented by `634f3ca`; shared base `63f08ff`.
+
+The requested Assistant Team import succeeded after omitting empty credential
+names from public code projects and making the generated platform CA available
+to project-update execution environments. The remote Podman runtime resolves
+volume sources on the host, so shared base declares the installer's host trust
+directory as a read-only mount while preserving existing mounts and certificate
+verification. The pinned certified collection was curated through local PAH and
+the existing execution image was verified in the Controller runtime store.
+
+Base job 2137 applied the trust setting, both project sync retries succeeded, and
+import job 2139 restored 21 ordinary objects and six templates. Independent
+trusted-TLS comparison passed 396 checks. Temporary tokens and workspaces were
+removed. The earlier administrator-password rollout and configured-login rerun
+also succeeded, with the installer inventory aligned. Runtime VM, recovery,
+provider and optional maintenance automation remain separate and were not run.
+
+The operator also requested a TODO for complete Intelligent Assistant/Lightspeed
+CaC capture and independent rebuild, including service/installer settings, vaulted
+credentials and passwords, and Gateway OAuth configuration. This is planning only.
+
 ## Define production replacement and encrypted seed credentials
 
 Autodeploy: `c51aede` (0.10.1), including administrator-password implementation
