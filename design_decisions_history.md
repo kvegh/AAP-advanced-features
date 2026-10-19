@@ -3,6 +3,35 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Deploy each demo's AAP configuration separately with explicit target inputs
+
+Autodeploy implementations: `a64e16c`, `a84bf09`, and `5ccb0ca`; referenced source
+documentation: `feab2eb`. Orchestrator implementation: `e3d32ba`; decision history:
+`69fe8fa`. Private capture updates: `d8c6aa1` for Orchestrator and `9d35857` for
+Windows.
+
+The AIOps import needed an explicit exclusion for the CoP Event Stream role,
+whose item schema differs from the dedicated module definitions. Its corrected
+import succeeded; independent API checks verified all 29 expected objects and
+both activations running. This verifies configuration import, with functional
+remediation tests still separate.
+
+The user then authorized Windows configuration import after its missing machine
+password was validated and saved in its encrypted capture. A dedicated playbook
+and Job Template load only that private capture, reject job-launch and schedule
+definitions, protect credential inputs during diagnostics, and clean temporary
+access afterward. Each private repository requires its own allowed read access;
+sanitized Git error categories make access failures visible without logging
+secrets. Importing definitions does not launch their Windows automation.
+
+The user also requested portable Orchestrator target inputs and cleanup. Source
+playbooks no longer load the old AAP vault implicitly; source template surveys
+and encrypted definitions now accept the intended target explicitly. Cleanup
+uses exact requested application names and a temporary Gateway token. The now
+unused playbook Vault attachment was removed from those two templates, retaining
+the shared credential for its other users. No Orchestrator deployment or cleanup
+was run. Only the Autodeploy and Orchestrator submodule references change here.
+
 ## Recover installer monitoring before configuring the new platform
 
 Autodeploy implementation: `64aec45`; verified-deployment documentation:

@@ -59,8 +59,23 @@ for the CaC architecture, file layout, and variable naming.
 The four deployment stages completed on a fresh environment as individually
 launched jobs on 2026-10-18, ending with subscription import and platform-only
 base configuration. Stage 03 can resume monitoring an existing installer after
-a Controller timeout without starting another installation. Automatic job
-handoff remains planned; the separate AIOps deployment template remains unrun.
+a Controller timeout without starting another installation. The separate AIOps
+configuration import is now verified: all 29 expected objects exist, its projects
+are synchronized, and both EDA activations are running. Automatic job handoff
+and functional remediation tests remain planned.
+
+Disconnected Windows has its own configuration import playbook and Job Template,
+which load its encrypted private capture without launching the imported jobs or
+workflow. The Git credential must have read access to each selected private
+configuration repository. Import diagnostics report fixed failure categories
+without exposing tokens or raw Git errors. See the Autodeploy README for current
+live verification results.
+
+Orchestrator deployment and cleanup now accept an explicit AAP target and runtime
+credentials instead of loading the original AAP connection vault. Their surveys
+match those inputs. Cleanup uses a temporary Gateway token and exact application
+names; its token is revoked afterward. The encrypted Orchestrator capture is
+aligned with that contract; its deployment and cleanup have not been run here.
 
 ## Secrets
 
