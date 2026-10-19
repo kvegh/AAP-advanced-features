@@ -3,6 +3,25 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Define PAH responsibilities and verify Windows configuration import
+
+Autodeploy implementation: `d2e6988`; decision documentation: `66152f6` (0.6.5).
+
+Base owns PAH repository and Controller content-source setup without collection
+synchronization. Each use case declares its collection needs. A complete
+step-by-step CaC guide and the remaining PAH setup are explicit project TODOs.
+Bootstrap Git credentials must be available before downloading a private vault;
+they are distinct from the target AAP's project Source Control credentials.
+
+With repository access supplied, the Windows import completed after a retry.
+Independent API verification found all 35 expected objects, the 17-node/16-link
+workflow, and the expected group memberships. No imported Windows automation
+ran. A regression reproduces the clean-target parent/child group race; the
+importer now creates all groups before linking them. That ordering fix has
+offline validation, while the successful live import used the preceding source.
+The target's default public Galaxy attachment still needs replacing as part
+of PAH base setup. Only the Autodeploy submodule reference changes here.
+
 ## Plan recoverable backups of public and private Git repositories
 
 Planning update: `841fc29`.
