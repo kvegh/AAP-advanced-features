@@ -3,6 +3,27 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Roll out PAH base sources and prepare the Orchestrator import
+
+Autodeploy implementations: `5fc2c98`, `40906b1`, `bf12d01`, and `de5b54c`;
+verified rollout documentation: `0777bec` (0.8.2). Encrypted base update: private
+configuration commit `82643da`.
+
+The base rollout succeeded with protected logging after correcting an API
+summary-field assumption and omitting upstream authentication fields until a
+Red Hat token is supplied. Independent checks verified ordered local PAH sources,
+unchanged collection versions, no collection sync, persistent read-token reuse,
+and temporary-token cleanup. Direct public Galaxy is no longer an organization
+source. This completes base repository setup, while collection preparation
+remains a use-case task.
+
+The user separately requested an Orchestrator CaC import playbook and Job
+Template. The entry point loads its existing encrypted capture, checks readiness,
+and imports definitions without launching deployment or cleanup. Tests and
+syntax passed, the managing AAP project synchronized, and the new template's
+Git and Vault attachments were verified. Its last job remains empty; neither
+configuration import nor OpenShift runtime deployment was launched.
+
 ## Define PAH responsibilities and verify Windows configuration import
 
 Autodeploy implementation: `d2e6988`; decision documentation: `66152f6` (0.6.5).

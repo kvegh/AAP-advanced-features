@@ -76,15 +76,19 @@ The Windows configuration import is now verified: all 35 expected objects exist,
 including 18 Job Templates and a workflow with 17 nodes and 16 links. None of the
 imported automation has run. Autodeploy now creates group skeletons before their
 memberships to avoid a dependency race on clean targets. Base PAH repository and
-Controller-source setup remains incomplete; base must not synchronize content,
-and each use case must declare its own collection requirements. The Autodeploy
+Controller-source setup is now deployed and independently verified: certified,
+validated, and community sources replace direct public Galaxy access, existing
+read tokens are preserved, and no collection content was synchronized. Each use
+case must declare and prepare its own collection requirements. The Autodeploy
 plan includes a TODO for a complete step-by-step CaC guide.
 
 Orchestrator deployment and cleanup now accept an explicit AAP target and runtime
 credentials instead of loading the original AAP connection vault. Their surveys
 match those inputs. Cleanup uses a temporary Gateway token and exact application
 names; its token is revoked afterward. The encrypted Orchestrator capture is
-aligned with that contract; its deployment and cleanup have not been run here.
+aligned with that contract. A separate CaC import playbook and Job Template are
+now created with Git and Vault credentials attached. The import, Orchestrator
+deployment, and cleanup have not been run here.
 
 ## Secrets
 
