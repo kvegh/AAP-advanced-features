@@ -3,6 +3,18 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Track recoverable MCP access for each deployed platform
+
+Autodeploy planning: `e1aaed8` (0.10.4).
+
+The operator requested future per-instance MCP token creation and recoverable
+Vault-encrypted connection values in the private base repository. That work needs
+a separately scoped Git write credential and protected client-side configuration
+with CA trust. Existing import access remains read-only. Token creation is manual
+for now; no persistent token provisioning, encrypted write-back or client trust
+automation is implemented by this planning change. The umbrella advances only
+the Autodeploy reference and related documentation.
+
 ## Verify Assistant Team configuration import and shared base prerequisites
 
 Autodeploy documentation: `2858b56` (0.10.3), following verified administrator

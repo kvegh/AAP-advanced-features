@@ -63,6 +63,9 @@ independently supplied Git and Vault access. The encrypted base stores credentia
 inputs for a trusted replacement, while automatic credential and deployment-template
 provisioning, complete production capture, functional verification and controlled
 takeover remain planned. Demo-specific configuration stays separate from base.
+Autodeploy also tracks automated MCP access and Vault-encrypted per-instance
+connection values as future work. Persistent API tokens are created manually for
+now; encrypted write-back and client trust setup remain unimplemented.
 
 The four deployment stages completed on a fresh environment as individually
 launched jobs on 2026-10-18, ending with subscription import and platform-only
