@@ -3,6 +3,31 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Publish monthly internal Windows baselines and guarded client patching
+
+Umbrella update: `858ccb7`. Windows implementations: `eae5cbd` for named monthly
+ceilings, `5e401ac` for managed update/reboot cycles, `63f4f1f` for removing
+repeated payload hashes and `257f5bf` for internal-only policy reconciliation.
+Evaluation prerequisites and subsequent client-source checks: `8f8539f`, with
+decision documentation `abbafcc`.
+
+The operator requested reproducible Ansible playbooks and Job Templates for a
+named 2026 monthly cutoff on internal WSUS, followed by client installation of
+the currently served baseline through any required reboots. Native Ansible
+handles orchestration, installation and rebooting; WSUS API operations and
+read-only guarded update searches use PowerShell through Ansible. External WSUS
+retains newer content. Existing verified content skips external preparation and
+transfer, and payload hashing stays at transfer boundaries instead of repeating
+during policy checks.
+
+Live publication verified the internal April 2026 ceiling and ready content.
+The client Check run stopped on an unreachable Server 2025 endnode. A later
+read-only WinRM audit confirmed both clients' internal WSUS settings and traced
+Server 2025 shutdowns to expired evaluation activation grace. Activation and
+network changes were not performed. Full client Check completion and actual OS
+installation remain unverified. This umbrella update advances only the Windows
+submodule reference and its documentation.
+
 ## Track recoverable MCP access for each deployed platform
 
 Autodeploy planning: `e1aaed8` (0.10.4).
