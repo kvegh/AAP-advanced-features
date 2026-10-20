@@ -23,6 +23,10 @@ reproducible Job Template configuration, installed-build assessment and managed
 OS update/reboot automation. April 2026 content publication and its internal
 approval cutoff have passed live validation; actual client OS installation
 remains unverified.
+Evaluation-image activation preparation and verified recovery with temporary
+connectivity are documented, including restoration of client isolation.
+The update template supports concurrent jobs with separate managed-host limits;
+the Windows guide includes measured runtimes for its ten latest successful jobs.
 
 ## Projects
 
