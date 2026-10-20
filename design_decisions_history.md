@@ -3,6 +3,24 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Increase Windows memory and repair modern WSUS payload delivery
+
+Umbrella update: `d4fc3dc`. Windows changes: `7e206ce` raises managed-guest
+memory to 4 GiB and documents a full clean VM stop/start for existing guests;
+`f9883a8` adds the inherited IIS MSU/WIM mappings required by Microsoft for UUP.
+Windows decision documentation is captured through `c6bb296`, including the
+requested review of Microsoft reboot guidance.
+
+The operator authorized restarting the complete VMs to apply memory changes.
+Wait for each client's active servicing to finish before shutting it down.
+Server 2022 reached the April baseline, passed its empty-update and reboot
+checks, then restarted with 4 GiB confirmed by libvirt and Windows. Server 2025
+was still downloading when the missing MIME mappings were diagnosed: the
+exact payload existed with its expected length but IIS returned HTTP 404.
+Apply the focused setup tag through the existing Job Template and verify HTTP
+delivery and actual client progress separately. These findings do not establish
+RAM as the cause of every long job.
+
 ## Recover evaluation activation and enable independent Windows patch jobs
 
 Umbrella update: `3bc2044`. Windows fixes: `a47bd1c` for remote-compatible reboot
