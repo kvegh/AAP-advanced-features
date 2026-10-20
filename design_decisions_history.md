@@ -35,7 +35,7 @@ its umbrella documentation change here.
 
 ## Review automation for simplicity while preserving functionality
 
-Planning update: `b8b0bab`.
+Planning updates: `b8b0bab` and `cd51d12`.
 
 The operator expanded the umbrella code review TODO to cover Ansible and its
 supporting languages. Requested review criteria include APME, applicable CoP
@@ -45,8 +45,10 @@ with a reason recorded for necessary direct API access.
 
 The review must also question overengineering, unnecessary steps and excessive
 verification. Cleanup and simplification must preserve required functionality,
-verified through focused checks. This update records review work; it does not
-change project implementations or deployed systems.
+verified through focused checks. The operator also requested checking speed
+optimization potential: use timings to identify slow steps and repeated work,
+and prefer simple improvements that preserve functionality. These updates record
+review work; they do not change project implementations or deployed systems.
 
 ## Publish monthly internal Windows baselines and guarded client patching
 
