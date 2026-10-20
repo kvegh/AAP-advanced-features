@@ -16,6 +16,11 @@ The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
 see its documentation for verification details. Fresh-environment workflow 1252
 passed all 17 stages on 2026-10-07 after verified Windows-only teardown.
+The Windows project also provides named monthly internal WSUS baselines,
+reproducible Job Template configuration, installed-build assessment and managed
+OS update/reboot automation. April 2026 content publication and its internal
+approval cutoff have passed live validation; actual client OS installation
+remains unverified.
 
 ## Projects
 
@@ -27,7 +32,7 @@ passed all 17 stages on 2026-10-07 after verified Windows-only teardown.
 | `ServiceNow-ITSM-Integration/` | [ServiceNow-ITSM-Integration](https://github.com/kvegh/ServiceNow-ITSM-Integration) | ServiceNow ITSM demo plan for incident management, catalog fulfillment, and CMDB reconciliation; implementation pending. |
 | `config_exceptions_ng/` | [config_exceptions_ng](https://github.com/kvegh/config_exceptions_ng) | Configuration drift detection and exception handling. |
 | `intelligent-assistant/` | [intelligent-assistant](https://github.com/kvegh/intelligent-assistant) | Intelligent Assistant / AI chatbot setup and issue tracking. |
-| `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | Windows patching and application deployment with WSUS and Chocolatey/Nexus; parallel service setup, offline update transfer, and application sync/export/import with baseline-to-current upgrades. |
+| `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | Windows OS and application patching with WSUS and Chocolatey/Nexus; named monthly internal baselines, verified offline transfer, managed OS install/reboot automation and application baseline-to-current upgrades. |
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 
 ## Cloning
