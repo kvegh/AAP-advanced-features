@@ -23,12 +23,16 @@ passed all 17 stages on 2026-10-07 after verified Windows-only teardown.
 The Windows project also provides named monthly internal WSUS baselines,
 reproducible Job Template configuration, installed-build assessment and managed
 OS update/reboot automation. April 2026 content publication and its internal
-approval cutoff have passed live validation; actual client OS installation
-remains unverified.
+approval cutoff have passed live validation. Server 2022 has now reached the
+April OS build with no applicable approved updates or pending reboot; Server
+2025 installation is still being verified.
 Evaluation-image activation preparation and verified recovery with temporary
 connectivity are documented, including restoration of client isolation.
 The update template supports concurrent jobs with separate managed-host limits;
 the Windows guide includes measured runtimes for its ten latest successful jobs.
+Managed guests now default to 4 GiB RAM. Existing guests need a clean full VM
+stop/start after patching to apply that persistent change. WSUS setup also
+provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 
 ## Projects
 
