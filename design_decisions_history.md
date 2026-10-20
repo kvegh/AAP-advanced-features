@@ -35,13 +35,18 @@ its umbrella documentation change here.
 
 ## Review automation for simplicity while preserving functionality
 
-Planning updates: `b8b0bab` and `cd51d12`.
+Planning updates: `b8b0bab`, `cd51d12` and `bb13308`.
 
 The operator expanded the umbrella code review TODO to cover Ansible and its
 supporting languages. Requested review criteria include APME, applicable CoP
 guidance, readability, suitable certified collections, Ansible wherever possible
 and minimal supporting code. Agent operations should prefer available MCP tools,
 with a reason recorded for necessary direct API access.
+
+The operator also requested strict Ansible linting across all Ansible content.
+The review must fix findings and keep rule exclusions minimal, with each
+exception explicitly justified. This records the review requirement; it does
+not claim existing content has passed linting.
 
 The review must also question overengineering, unnecessary steps and excessive
 verification. Cleanup and simplification must preserve required functionality,
