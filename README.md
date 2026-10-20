@@ -10,9 +10,10 @@ Significant decisions and their implementation commits are summarized in
 maintains its own README and decision history alongside its implementation.
 Umbrella planning lives in [TODO.md](TODO.md), including the pending definition
 of shared agent development rules such as per-project versioning, and an
-automation code review covering APME, CoP guidance, readability, reliable
-collections, Ansible use, MCP access, necessary verification and opportunities
-to reduce runtime. Simplification and optimization must preserve functionality.
+automation code review covering APME, CoP guidance, strict Ansible linting,
+readability, reliable collections, Ansible use, MCP access, necessary verification
+and opportunities to reduce runtime. Simplification and optimization must preserve
+functionality.
 It also tracks Git repository backups and restore testing as important future
 recovery work.
 The Windows project now records successful targeted application synchronization,

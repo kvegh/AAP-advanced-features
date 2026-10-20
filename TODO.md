@@ -173,6 +173,8 @@ Deferred work: define the scope and procedure before implementing rotation.
       shell code. Record needed improvements in the owning project's TODO.
   - [ ] Use APME as part of the review.
   - [ ] Review against applicable Ansible Community of Practice (CoP) guidelines.
+  - [ ] Run strict `ansible-lint` checks on all Ansible content and fix findings.
+        Keep rule exclusions minimal and explicitly justify each exception.
   - [ ] Review readability and simplicity: clear task and variable names,
         straightforward structure, and explanations of intent where needed.
   - [ ] Use certified collections wherever suitable. Where these cannot cover
