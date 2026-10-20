@@ -3,6 +3,32 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Complete Windows patching and verify per-clone activation automation
+
+Umbrella update: `e98d98a`, tracking Windows documentation through `70ec181`.
+The per-clone activation implementation `88b307b` and review fixes `f198c25`,
+`62d501e`, `a99cf7a` add a separate deployment stage after Windows basics and
+before repository preparation. Use existing encrypted credentials and approved
+temporary connectivity while preserving permanent adapters and verifying the
+original topology after cleanup. Licensed clones remain read-only. Inventory
+selection accepts the actual host alias; libvirt comparison excludes generated
+network port/bridge metadata while retaining network identity and other guards.
+
+Native Ansible controller configuration created the activation template and
+workflow handoff. Check job 2283 and normal job 2286 passed on all four existing
+licensed clones with zero changes; twenty regression tests cover guard and
+cleanup cases. Fresh unlicensed activation still needs a controlled full
+deployment to prove it end to end. The earlier successful complete workflow
+predates the new activation stage.
+
+Both Windows endnodes now meet their April OS and .NET baselines with no
+applicable updates or pending reboot. Both run with the requested 4 GiB memory,
+applied through clean full VM restarts at safe servicing boundaries. Record
+the download repair separately from actual update installation: Server 2025's
+successful 1h38m52s job includes earlier HTTP retries. Detailed results, actual
+restart counts and application-feed audits are in the Windows project. Only
+that submodule and umbrella documentation are changed here.
+
 ## Increase Windows memory and repair modern WSUS payload delivery
 
 Umbrella update: `d4fc3dc`. Windows changes: `7e206ce` raises managed-guest
