@@ -3,6 +3,21 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Review automation for simplicity while preserving functionality
+
+Planning update: `b8b0bab`.
+
+The operator expanded the umbrella code review TODO to cover Ansible and its
+supporting languages. Requested review criteria include APME, applicable CoP
+guidance, readability, suitable certified collections, Ansible wherever possible
+and minimal supporting code. Agent operations should prefer available MCP tools,
+with a reason recorded for necessary direct API access.
+
+The review must also question overengineering, unnecessary steps and excessive
+verification. Cleanup and simplification must preserve required functionality,
+verified through focused checks. This update records review work; it does not
+change project implementations or deployed systems.
+
 ## Publish monthly internal Windows baselines and guarded client patching
 
 Umbrella update: `858ccb7`. Windows implementations: `eae5cbd` for named monthly
