@@ -166,21 +166,33 @@ Deferred work: capture the requirement now; implement it later.
 
 Deferred work: define the scope and procedure before implementing rotation.
 
-## 10. Review all Ansible content for readability and reliable collection use
+## 10. Review all automation code for simplicity and reliable collection use
 
-- [ ] Review all Ansible playbook content across the umbrella projects, including
-      roles and included tasks, for readable code: clear task and variable names,
-      straightforward structure, and explanations of intent. Record needed
-      improvements in the owning project's TODO.
-- [ ] Identify custom code that reliable collection modules or roles could
-      express more clearly. Prefer certified, validated, or maintained community
-      collections where appropriate; using a collection is not sufficient by
-      itself to justify replacing working code.
-- [ ] Before recommending a collection, verify its maintenance, compatibility
-      with the project's AAP, Ansible and execution environment versions,
-      declared and pinned dependencies, and availability through PAH. Check its
-      actual behavior, including idempotence and failure handling, against the
-      use case. Validate any resulting changes in the owning project.
+- [ ] Review automation code across the umbrella projects, including Ansible
+      playbooks, roles, included tasks and supporting Python, PowerShell and
+      shell code. Record needed improvements in the owning project's TODO.
+  - [ ] Use APME as part of the review.
+  - [ ] Review against applicable Ansible Community of Practice (CoP) guidelines.
+  - [ ] Review readability and simplicity: clear task and variable names,
+        straightforward structure, and explanations of intent where needed.
+  - [ ] Use certified collections wherever suitable. Where these cannot cover
+        the requirement, consider validated or maintained community collections;
+        explain why custom code is still needed.
+  - [ ] Verify collection maintenance, compatibility with the project's AAP,
+        Ansible and execution environment versions, declared and pinned
+        dependencies, and availability through PAH. Check actual idempotence
+        and failure handling against the use case.
+  - [ ] Use Ansible wherever it can express the required automation. Keep
+        supporting Python, PowerShell, shell and other languages to the
+        necessary minimum.
+  - [ ] Prefer available MCP tools over direct API calls for agent operations.
+        Use direct API calls when MCP cannot perform the required operation,
+        and explain the fallback.
+  - [ ] Check for overengineering: are all steps really necessary? Remove
+        unnecessary layers, duplicate work and excessive verification; keep
+        checks proportionate to the change and its risks.
+  - [ ] Ensure cleanup and simplification preserve required functionality.
+        Validate affected behavior with focused checks before accepting changes.
 
 ## 11. Back up Git repositories for recovery — important, not urgent
 
