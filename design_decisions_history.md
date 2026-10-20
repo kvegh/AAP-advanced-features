@@ -3,6 +3,36 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Recover evaluation activation and enable independent Windows patch jobs
+
+Umbrella update: `3bc2044`. Windows fixes: `a47bd1c` for remote-compatible reboot
+assessment, `ce142d4` for native action argument types and exact filtering, and
+`476f4e8` for simultaneous host-limited jobs and measured runtime analysis.
+Windows decision documentation is captured through `bb215c5`.
+
+The operator authorized temporary connectivity for the existing Server 2025
+evaluation. Windows activated automatically with 180 days remaining; removal
+of the live-only adapter restored isolation, with internal WSUS policies still
+correct. Subsequent live patch attempts exposed a remote-restricted WUA interface
+and native-module argument/filter compatibility issues. Focused fixes preserve
+existing access controls, exact observed updates and license guards. Eight
+Python checks and fifty-one PowerShell assertions on each repository server
+passed after the fixes.
+
+The operator selected separate Job Template instances per managed host for
+concurrent patching. The playbook retains sequential client processing within
+each launch. Each limit also includes the internal WSUS group for shared
+read-only readiness checks; managed targets must remain disjoint. Controller
+settings and a targeted launch were independently verified through MCP. Client
+installation is in progress and final build/reboot verification remains pending.
+
+The ten most recent successful Windows jobs were analyzed from their AAP event
+timings. Long synchronization, transfer and combined verification/import phases
+dominate the historical sample; timings predate removal of redundant hashes.
+The guide separates measured facts from resource hypotheses and records startup
+costs without assigning an unsupported cause. Only the Windows submodule and
+its umbrella documentation change here.
+
 ## Review automation for simplicity while preserving functionality
 
 Planning update: `b8b0bab`.
