@@ -191,6 +191,9 @@ Deferred work: define the scope and procedure before implementing rotation.
   - [ ] Check for overengineering: are all steps really necessary? Remove
         unnecessary layers, duplicate work and excessive verification; keep
         checks proportionate to the change and its risks.
+  - [ ] Check for speed optimization opportunities. Use timings to identify
+        slow steps and avoidable repeated work; prefer simple improvements
+        that preserve functionality.
   - [ ] Ensure cleanup and simplification preserve required functionality.
         Validate affected behavior with focused checks before accepting changes.
 

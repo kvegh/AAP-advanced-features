@@ -11,9 +11,10 @@ maintains its own README and decision history alongside its implementation.
 Umbrella planning lives in [TODO.md](TODO.md), including the pending definition
 of shared agent development rules such as per-project versioning, and an
 automation code review covering APME, CoP guidance, readability, reliable
-collections, Ansible use, MCP access and necessary verification. Simplification
-must preserve functionality. It also tracks Git repository backups and restore
-testing as important future recovery work.
+collections, Ansible use, MCP access, necessary verification and opportunities
+to reduce runtime. Simplification and optimization must preserve functionality.
+It also tracks Git repository backups and restore testing as important future
+recovery work.
 The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
 see its documentation for verification details. Fresh-environment workflow 1252
