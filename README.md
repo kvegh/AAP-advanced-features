@@ -20,6 +20,12 @@ The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
 see its documentation for verification details. Fresh-environment workflow 1252
 passed all 17 stages on 2026-10-07 after verified Windows-only teardown.
+Fresh workflow 2303 subsequently passed the expanded 21-stage end-to-end test
+in 3h48m50s, finishing on 2026-10-21 at 01:01 UTC. It joins both content imports,
+applies the internal April ceiling, patches the two endnodes independently, and
+then deploys baseline and upgraded applications. Preservation checks before and
+after rebuilding confirmed seven unrelated VM definitions/states and both base
+images unchanged.
 The Windows project also provides named monthly internal WSUS baselines,
 reproducible Job Template configuration, installed-build assessment and managed
 OS update/reboot automation. April 2026 content publication and its internal
@@ -30,13 +36,15 @@ deployment stage after Windows basics: it preserves permanent adapters, uses
 approved temporary connectivity where needed, and verifies restoration of the
 original topology. Code, encrypted inputs and reproducible AAP configuration
 are documented in the Windows project.
-The activation Check and normal licensed skip path passed on all four existing
-clones with zero changes. The unlicensed path still needs a controlled fresh
-deployment to validate it end to end.
+The activation Check and normal licensed skip path passed on the existing clones.
+The fresh test also verified activation of an initially unlicensed Server 2025
+clone and restoration of its original topology. Application completion now checks
+installer reboot signals and Windows servicing markers before reporting success;
+the standalone assessment template receives the correct existing credentials.
 The update template supports concurrent jobs with separate managed-host limits;
-the Windows guide includes measured runtimes for its ten latest successful jobs.
-Managed guests now default to 4 GiB RAM; both existing endnodes have received
-the change through clean full VM restarts at safe patching boundaries. WSUS setup also
+the Windows guide records historical runtimes and all fresh-test stage timings.
+Managed guests default to 4 GiB RAM, and both fresh endnodes were created with
+that allocation, verified in libvirt and Windows. WSUS setup also
 provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 
 ## Projects
