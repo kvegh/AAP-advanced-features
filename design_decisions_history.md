@@ -3,6 +3,37 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Complete the fresh Windows end-to-end test and post-run verification
+
+Umbrella update: `fb41bad`, tracking Windows through `6c23d61`. Workflow ordering
+and metadata-only teardown checks were implemented in `07e1200`; application
+reboot completion and standalone assessment configuration were fixed in `95e29f1`.
+The operator authorized destruction only of the four Windows demo clones and
+their owned disks. A preservation baseline and independent verification proved
+the other seven VM definitions/states and both base images unchanged before
+and after the complete rebuild.
+
+Fresh workflow 2303 passed all 21 stages in 3h48m50s, including evaluation
+activation, both repository pipelines, the internal April ceiling, independent
+managed OS patch jobs and application baseline-to-current deployment. Actual
+Controller timestamps verify both imports converged before the ceiling and both
+patch jobs completed before baseline applications. Both endnodes were created
+with 4096 MiB, verified in libvirt and Windows. The fresh Server 2025 clone
+activated from an initially unlicensed state and returned to its original
+topology, closing the previous live-validation gap.
+
+Follow-up inspection found missing credentials on the standalone assessment
+template and a later Server 2025 reboot marker. Preserve the successful workflow,
+repair the reproducible template configuration and shared application reboot
+checks, then rerun only the affected stages. Corrected upgrade job 2346 passed
+with one changed task, the required Server 2025 reboot. Final assessment 2349
+confirmed both April builds and no pending reboot; Check job 2351 found zero
+applicable updates on Server 2025 after that restart. Five additional tests
+cover seven reboot-control scenarios, including clean skips and uncleared-marker
+failure. Detailed stage timings and original/follow-up evidence are recorded in
+the Windows test report. Only the Windows gitlink and umbrella documentation
+change here.
+
 ## Complete Windows patching and verify per-clone activation automation
 
 Umbrella update: `e98d98a`, tracking Windows documentation through `70ec181`.
