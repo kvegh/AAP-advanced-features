@@ -3,6 +3,20 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Create a dedicated repository for agent-generated code review rules
+
+Implementation commit: `330b0a6`.
+
+The repository owner requested `Agent_generated_code_review` as another
+independent repository and submodule, with its README reserved for rules for
+reviewing AI agent-generated Ansible code. Keeping the guidance separate allows
+it to evolve independently of the reviewed projects. The rules will be
+formulated after repository creation; this change does not introduce review
+tooling or modify any demo implementation.
+
+The new repository matches the public umbrella's visibility. Its committed
+submodule URL uses HTTPS for GitHub linking, while local Git access uses SSH.
+
 ## Complete the fresh Windows end-to-end test and post-run verification
 
 Umbrella update: `fb41bad`, tracking Windows through `6c23d61`. Workflow ordering
