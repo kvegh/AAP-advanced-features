@@ -464,3 +464,20 @@ the review rationale and plan-update commit `8feca9e`.
 The umbrella update was prepared in an isolated checkout with submodules left
 uninitialized, preserving the other project's concurrent working copies and
 their recorded references.
+
+## Publish the AIOps hostname revision on main — 2026-10-30
+
+The user prefers main and approved completing the website-hostname revision
+there. The submodule now points to source commit `094d427`, which includes
+implementation `89e113f` and the verified Vault-association rollout record.
+The project index describes the environment-selectable website checks. Other
+submodule references were left untouched; their working copies were already
+modified by separate work.
+
+Three local source tests pass. The existing restore and rearm templates received
+their existing project Vault credential before main was advanced, with machine
+credentials preserved and API readback verified. No lifecycle job was launched.
+The original hostname feature branch is merged and removed, so its completed
+progress is available through main.
+
+Submodule-reference and README implementation commit: `c58b1d5`.
