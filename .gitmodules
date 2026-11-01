@@ -28,3 +28,6 @@
 [submodule "Automation_Dashboard"]
 	path = Automation_Dashboard
 	url = https://github.com/kvegh/Automation_Dashboard.git
+[submodule "CMDB-for-AAP"]
+	path = CMDB-for-AAP
+	url = https://github.com/kvegh/CMDB-for-AAP.git

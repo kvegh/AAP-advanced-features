@@ -62,6 +62,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `disconnected-windows-patching/` | [disconnected-windows-patching](https://github.com/kvegh/disconnected-windows-patching) | Windows OS and application patching with WSUS and Chocolatey/Nexus; named monthly internal baselines, verified offline transfer, managed OS install/reboot automation and application baseline-to-current upgrades. |
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 | `Automation_Dashboard/` | [Automation_Dashboard](https://github.com/kvegh/Automation_Dashboard) | Usage statistics and ROI reporting for AAP: simulated maintenance jobs that generate realistic runtimes for Automation Analytics. |
+| `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
 
 ## Cloning
 
