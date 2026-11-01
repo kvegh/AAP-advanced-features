@@ -25,3 +25,6 @@
 [submodule "Agent_generated_code_review"]
 	path = Agent_generated_code_review
 	url = https://github.com/kvegh/Agent_generated_code_review.git
+[submodule "Automation_Dashboard"]
+	path = Automation_Dashboard
+	url = https://github.com/kvegh/Automation_Dashboard.git
