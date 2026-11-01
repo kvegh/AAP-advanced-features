@@ -3,7 +3,8 @@
 Demo and automation projects for Red Hat Ansible Automation Platform 2.7.
 
 Each project is its own repository, linked here as a git submodule. This repo
-holds no project files — only the index below and the submodule pointers.
+holds no playbooks or project data — only the index below, the submodule
+pointers, and umbrella-level planning and decision records.
 
 Significant decisions and their implementation commits are summarized in
 [design_decisions_history.md](design_decisions_history.md). Each changed project
