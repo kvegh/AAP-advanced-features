@@ -3,6 +3,26 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Consolidate registry reads on existing repository credentials — 2026-11-03
+
+Umbrella implementation `5e79976` advances AutoDeploy to `540594b` (0.28.9).
+Source implementation `328c982` follows the owner's approval to reuse the
+existing AutoDeploy secrets repository read credential for the registry.
+The action binds its repository to encrypted runtime configuration and ignores
+launch namespace overrides. Preparation retains the saved repository pair and
+adds only the pinned Machine credential.
+
+Companion implementation `e94e312` aligns five saved consumers, removes the
+redundant reader credential/type from base provisioning and updates extraction
+dependencies. The existing token read the actual registry ciphertext, and the
+protected runtime URL matches that same repository. All 171 tests and production
+lint pass. Writer inputs, token permissions and registry ciphertext are unchanged.
+
+The owner separately requested a real CMDB instead of the temporary Git/YAML
+registry. Beads `bead-wd-sc8` and the source work plan record that requirement;
+selection and migration require an agreed design. No CMDB implementation or
+allocation-writer change is part of this reader migration.
+
 ## Reuse one AutoDeploy CaC Vault for registry state — 2026-11-03
 
 Umbrella implementation `4db042d` advances AutoDeploy to `cafcc98` (0.28.7).
