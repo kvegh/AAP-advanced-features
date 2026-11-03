@@ -107,6 +107,13 @@ configuration fetch; it is separate from playbook SCM checkout and destination
 AAP API authentication.
 See the AutoDeploy [credential overview](aap_autodeploy_configascode/README.md).
 
+A [consolidation analysis](aap_autodeploy_configascode/docs/deployment-consolidation-analysis.md)
+recommends one generic CaC importer playbook for every project. Resource data and
+capture layouts can be normalized; necessary secret lifecycles and verified
+role-compatibility handling remain explicit. The selector that launches jobs is
+a separate orchestration function. This is a proposal; runtime playbooks are
+unchanged, and one playbook does not yet decide the Job Template binding model.
+
 Destination API credential selection remains the next discussion, tracked in
 Beads `bead-wd-72f`. The existing launchers still use the instance registry;
 inventory-based routing, workflow replacement and use-case execution wait for

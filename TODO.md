@@ -241,11 +241,20 @@ for all five private configuration repositories, implemented under
 bootstrap creates the same named entries on a replacement AAP. Live template
 assignments and stored CaC references have been reconciled.
 
+Analysis `bead-wd-72f.3` recommends consolidating the five CaC importers into one
+playbook using normalized resource data and only necessary resource-level
+handling. It leaves preparation and child-job orchestration explicit. This
+recommendation is documented, not implemented; the Job Template credential
+binding model remains a separate decision.
+
 Agree destination AAP API credential selection and authorization before
 implementing the replacement workflow. Public HTTPS API access is retained;
 API delegation and an execution node are not required for that connection.
 Use-case execution remains deferred. Before future repository rekeying, extend
 extractor Vault routing under `bead-wd-72f.2`.
+Before changing EDA imports, verify resolved module versions and disabled
+activation behavior under `bead-wd-72f.4`. Its offline finding does not establish
+that a production activation changed.
 
 ---
 
