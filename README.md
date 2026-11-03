@@ -93,8 +93,8 @@ the new pointer here:
 
 ## Config-as-Code
 
-The current use-case deployment redesign keeps the target instance name as a
-launch-time input. AAP inventory hosts store their explicit API `ansible_fqdn`;
+Use-case deployment keeps the target instance name as a launch-time input.
+AAP inventory hosts store their explicit API `ansible_fqdn`;
 shared VM groups carry `hypervisor_host`. Future AutoDeploy installations verify
 the nginx upstream certificate before publishing the API. Existing production
 SSL is unchanged.
@@ -107,17 +107,38 @@ configuration fetch; it is separate from playbook SCM checkout and destination
 AAP API authentication.
 See the AutoDeploy [credential overview](aap_autodeploy_configascode/README.md).
 
-A [consolidation analysis](aap_autodeploy_configascode/docs/deployment-consolidation-analysis.md)
-recommends one generic CaC importer playbook for every project. Resource data and
-capture layouts can be normalized; necessary secret lifecycles and verified
-role-compatibility handling remain explicit. The selector that launches jobs is
-a separate orchestration function. This is a proposal; runtime playbooks are
-unchanged, and one playbook does not yet decide the Job Template binding model.
+The five project deployment Job Templates share
+[`deploy-cac-project.yml`](aap_autodeploy_configascode/deploy-cac-project.yml).
+Each template fixes its project ID and repository Git/Vault credentials. The
+playbook derives `<project-id>-secrets` and
+`vaults/cac/<project-id>-cac-vault.yml` from that ID; the platform base capture
+remains separate. The existing templates keep their IDs and workflow links.
 
-Destination API credential selection remains the next discussion, tracked in
-Beads `bead-wd-72f`. The existing launchers still use the instance registry;
-inventory-based routing, workflow replacement and use-case execution wait for
-that decision.
+| Project ID | Deployment Job Template |
+|---|---|
+| `aiops-selfhealing-demo` | AIOps Selfhealing Demo |
+| `disconnected-windows-patching` | Disconnected Windows Patching |
+| `automation-orchestrator` | Automation Orchestrator |
+| `assistant-team` | Assistant Team |
+| `aap_autodeploy_configascode` | AAP Autodeploy Configascode |
+
+At launch, select the destination inventory host and supply a native AAP API
+credential for that destination. The playbook checks that its HTTPS endpoint
+matches the host's `ansible_fqdn`, verifies the certificate, and authenticates
+directly from the source execution environment. A missing credential fails
+before configuration changes. It does not read installer passwords over SSH or
+borrow the source controller's API token. Repository access and destination API
+access remain separate credentials. An instance can also target itself through
+its own verified API.
+
+Project captures declare their resource lists and any required service
+credentials. Imports update definitions without launching jobs; new EDA
+activations are disabled and existing activation states are preserved. The
+multi-project selector remains separate orchestration. See the
+[consolidation analysis](aap_autodeploy_configascode/docs/deployment-consolidation-analysis.md)
+for the reasons for sharing the implementation. Source validation and template
+installation do not establish a successful use-case import; deployment results
+are documented separately.
 
 AAP configuration is captured as variable files for the `infra.aap_configuration`
 dispatch role. See
@@ -134,6 +155,9 @@ Autodeploy also tracks automated MCP access and Vault-encrypted per-instance
 connection values as future work. Persistent API tokens are created manually for
 now; encrypted write-back and client trust setup remain unimplemented.
 
+The results below describe earlier deployments using the former per-project
+importers. They do not establish a successful run of the new generic importer.
+
 The four deployment stages completed on a fresh environment as individually
 launched jobs on 2026-10-18, ending with subscription import and platform-only
 base configuration. Stage 03 can resume monitoring an existing installer after
@@ -142,8 +166,8 @@ configuration import is now verified: all 29 expected objects exist, its project
 are synchronized, and both EDA activations are running. Automatic job handoff
 and functional remediation tests remain planned.
 
-Disconnected Windows has its own configuration import playbook and Job Template,
-which load its encrypted private capture without launching the imported jobs or
+Disconnected Windows has its own Job Template using the shared configuration
+import playbook. It loads its encrypted private capture without launching imported jobs or
 workflow. The Git credential must have read access to each selected private
 configuration repository. Import diagnostics report fixed failure categories
 without exposing tokens or raw Git errors. See the Autodeploy README for current
@@ -165,8 +189,8 @@ match those inputs. Cleanup uses a temporary Gateway token and exact application
 names; its token is revoked afterward. The encrypted Orchestrator capture is
 aligned with that contract and consistently uses `Orchestrator EE` for its
 execution environment definition, project default, and Job Templates.
-A separate CaC import playbook and Job Template are
-available with Git and Vault credentials attached. The configuration import
+A dedicated CaC Job Template uses the shared import playbook with its repository's
+Git and Vault credentials attached. The earlier configuration import
 completed successfully: independent verification found all eight owned objects,
 a synchronized project, and matching inventory, execution environment,
 credential, label, survey, and extra-variable definitions. The imported deployment
@@ -176,8 +200,8 @@ validation remain pending.
 The Assistant Team capture follows its current public code and external
 encrypted configuration snapshots. Deployment and recovery definitions are
 separate from optional authentication maintenance, which needs authorization
-and CA trust for the target AAP. Its dedicated importer and import Job Template
-are created, using the existing CaC Git-token credential type. The supplied
+and CA trust for the target AAP. Its dedicated Job Template uses the shared
+importer and existing CaC Git-token credential type. The supplied
 repository token is stored encrypted and attached to that template. Private Git
 access, the pinned certified PAH collection and the cached execution image are
 verified. The import restored all 21 ordinary objects and six templates;
