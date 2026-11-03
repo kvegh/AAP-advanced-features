@@ -108,6 +108,10 @@ AAP API authentication.
 See the AutoDeploy [credential overview](aap_autodeploy_configascode/README.md).
 The AutoDeploy repository's CaC Vault credential also encrypts and decrypts its
 shared instance registry; no separate registry Vault credential is required.
+Its existing repository read token reads that registry too. The redundant
+registry-reader credential/type is no longer provisioned or used by the jobs.
+Replacing this temporary Git/YAML registry with a real CMDB is tracked as
+Beads `bead-wd-sc8`; product selection and migration require an agreed design.
 
 The five project deployment Job Templates share
 [`deploy-cac-project.yml`](aap_autodeploy_configascode/deploy-cac-project.yml).
