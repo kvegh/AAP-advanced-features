@@ -3,6 +3,44 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Share project imports and derive their Job Template names — 2026-11-03
+
+Umbrella implementation `ba477f2` advances AutoDeploy to `ab805f0` (0.28.3).
+Source implementation `305b0cd` replaces the five import engines with one
+`deploy-cac-project.yml`; `3028df4` derives readable deployment template names
+from project IDs, preserving word order and the AIOps/AAP acronyms. The previous
+playbook filenames remain thin aliases. This keeps one implementation while
+each project retains its own saved repository Git and Vault credentials.
+
+Each fixed project ID determines its private `<project-id>-secrets` repository
+and `vaults/cac/<project-id>-cac-vault.yml`. All five encrypted companion captures
+are migrated, including their metadata, extraction references and documentation.
+Central implementation `0c3e1e0` aligns the final template names, selector keys,
+inventory references and protected-debug descriptions. Original secret values,
+all 43 literal template markers and unrelated encrypted files are preserved.
+
+The destination inventory host and a native AAP API credential are selected at
+launch. Its verified HTTPS origin must match the stored `ansible_fqdn`; source
+execution environments call the destination API directly. Project imports and
+prerequisite preparation no longer read installer passwords over SSH. Existing
+and self destinations are supported by the standalone importer; the optional
+multi-project selector retains its separate fresh-target preparation checks.
+No destination API credential is provisioned by this refactor.
+
+Generic resource handling creates group skeletons before memberships, preserves
+masked service credentials and existing activation states, and creates new
+activations disabled. The full implementation suite passes 170 tests; focused
+naming, extraction, real TLS and Ansible rendering checks cover the final
+references. Actual cached collection versions match the tested modules.
+Independent production readback preserves all 124 template IDs and all 37
+credentials. The seven intended template configuration updates and final five
+name changes preserve grants, schedules and all 76 workflow nodes.
+
+No use-case import, application job, VM operation, production SSL change or
+credential rotation is performed. The owner explicitly deferred review of the
+existing custom allocation/registry credential types until after this work;
+that discussion is tracked separately as `bead-wd-72f.6`.
+
 ## Analyse consolidation before replacing use-case importers — 2026-11-03
 
 Umbrella update `1937e69` publishes the recommendation from AutoDeploy analysis
