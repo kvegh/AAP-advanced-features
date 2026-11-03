@@ -3,6 +3,22 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Call one importer directly and name configuration deployments explicitly — 2026-11-03
+
+Umbrella implementation `ca095d4` advances AutoDeploy to `e2d4360` (0.28.5).
+Source implementation `b5fb34b` removes all five unused per-project wrappers;
+the five Job Templates call `deploy-cac-project.yml` directly with their fixed
+`aap_cac_project_id` in saved Extra Variables, as required by the owner.
+
+The owner also requires the Deploy prefix. An existing application deployment
+already uses an otherwise matching name, so the owner explicitly chose
+`Deploy <Project Name> CaC` for all five configuration imports. Companion
+implementation `35e3bc8` aligns the encrypted names, selector keys, survey title
+and extraction references. The naming helper and public overview use the same
+rule. Existing IDs, credentials, permissions, schedules and workflow links are
+preserved. Twenty-four focused checks and importer/selector syntax checks pass.
+No configuration import or application job is launched by this change.
+
 ## Share project imports and derive their Job Template names — 2026-11-03
 
 Umbrella implementation `ba477f2` advances AutoDeploy to `ab805f0` (0.28.3).
