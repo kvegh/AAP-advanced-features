@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Use one Git-token schema with a separate VM-state writer — 2026-11-03
+
+Implementation `42bd149` and naming update `2f90107` align the AutoDeploy source
+pin and overview with the approved writer change. The dedicated credential is
+named `VM allocation git Pseudo CMDB writer` and uses the existing
+`Cac_git_token_type`; repository read credentials keep their own read-only tokens.
+Encrypted base and saved templates use the same name and `inputs.token` field.
+The source derives the fixed repository URL from encrypted runtime configuration,
+so extraction also attaches its existing environment Vault.
+
+Controller refuses changing the type of credentials used by job history. The
+owner approved creating a production replacement, updating active assignments,
+verifying it and then deleting the retired credential; no job record is deleted.
+The unused writer on the existing test controller changes type/name in place.
+The source's 173-test suite and production lint pass; private comparisons preserve
+reader values, literal templates and allocator state. The temporary Git/YAML
+registry still has a separate backlog item for replacement by a real CMDB.
+
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
