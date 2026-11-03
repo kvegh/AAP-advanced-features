@@ -231,6 +231,9 @@ the owning projects. The review is pending; this entry changes no AAP templates.
 
 Tracked in Beads `bead-wd-72f`. The target instance remains a launch-time input,
 and VM placement is now recorded by inventory group variable `hypervisor_host`.
+The intended address lookup uses the selected host's explicit `ansible_fqdn`
+to form a verified HTTPS origin. The metadata is saved; launcher changes follow
+the credential decision.
 Agree how target AAP API credentials and each use case's Git/Vault credentials
 are selected and authorized before implementing the replacement workflow.
 Public HTTPS API access is retained; no API delegation or execution node is
