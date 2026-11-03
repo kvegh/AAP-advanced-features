@@ -3,6 +3,18 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Review the number of Job Templates across projects — 2026-11-03
+
+Planning update: `57412d1`; authoritative task: Beads `bead-wd-1kf`.
+
+After the production label audit, the owner considered the number of Job
+Templates excessive and requested a review in the umbrella overview. The README
+and planning overview now reference a review of purpose, usage, duplication and
+consolidation opportunities across projects. Recommendations must preserve
+required functionality, workflow dependencies, access boundaries, recovery paths
+and useful independently rerunnable stages. The review remains open; this
+planning update changes no deployed templates or project implementations.
+
 ## Create a dedicated repository for agent-generated code review rules
 
 Implementation commit: `330b0a6`.
