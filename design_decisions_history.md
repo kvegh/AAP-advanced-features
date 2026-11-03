@@ -3,6 +3,28 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Analyse consolidation before replacing use-case importers — 2026-11-03
+
+Umbrella update `1937e69` publishes the recommendation from AutoDeploy analysis
+`96ce498`, documented in `5e4293a` (0.26.3). All five CaC importers share the same
+basic mechanism. Their resource schemas, names and ordinary validation should
+be data for one generic playbook. Existing Event Stream and workflow support
+removes reasons for duplicate API passes. Pinned EDA project field omissions and
+asynchronous inventory group ordering need reusable resource-level handling.
+
+Durable target service credentials require explicit lifecycle handling or
+equivalent prepared inputs. Content/server preparation and the selector's child
+job orchestration remain distinct from configuration import. One shared playbook
+does not decide how AAP binds repository and destination credentials before
+launch; that contract remains open under `bead-wd-72f`.
+
+The analysis checked source references, vendor role/module behavior and an
+illustrative schema. A zero-API synthetic probe found a local EDA activation
+compatibility issue, tracked in `bead-wd-72f.4`; no production behavior was
+attested or changed. The proposal does not require a new planner and distinguishes
+disabled schedule definitions from enabling automated execution. Only
+documentation and version metadata changed; no import or deployment job ran.
+
 ## Give each CaC repository its own credential pair — 2026-11-03
 
 Umbrella implementation `8ea60c1` advances AutoDeploy to `8865506` and documents
