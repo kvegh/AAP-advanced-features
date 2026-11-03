@@ -17,6 +17,13 @@ and opportunities to reduce runtime. Simplification and optimization must preser
 functionality.
 It also tracks Git repository backups and restore testing as important future
 recovery work.
+
+The number of AAP Job Templates across projects needs review: identify obsolete
+or duplicate entries and opportunities to consolidate them while preserving
+required functionality and useful independent stages. This pending review is
+tracked as Beads `bead-wd-1kf`; see
+[the umbrella overview](TODO.md#12-review-the-number-of-aap-job-templates).
+
 The Windows project now records successful targeted application synchronization,
 export, internal import, baseline installation and upgrades on both endnodes;
 see its documentation for verification details. Fresh-environment workflow 1252

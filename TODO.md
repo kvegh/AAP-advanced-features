@@ -214,6 +214,19 @@ Deferred work: define the scope and procedure before implementing rotation.
 Deferred work: plan and implement a recoverable backup process later; no backup
 service or schedule is configured by this task.
 
+## 12. Review the number of AAP Job Templates
+
+Tracked in Beads `bead-wd-1kf`; this section summarizes that open review.
+
+The current number of Job Templates appears excessive. Review their purpose and
+usage per project, distinguishing operator entry points, workflow stages and
+diagnostic or test helpers. Identify obsolete or duplicate templates and cases
+where parameters or consolidation would provide a simpler interface. Check
+workflow dependencies and other references before recommending changes, and
+preserve required functionality, credential and permission boundaries, recovery
+paths and useful independently rerunnable stages. Document recommendations in
+the owning projects. The review is pending; this entry changes no AAP templates.
+
 ---
 
 # Tracked here for now — belongs in a project repo
