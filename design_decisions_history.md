@@ -1,5 +1,17 @@
 # Design decisions history
 
+## Add RHEL-sniperpatching as a project submodule — 2026-11-03
+
+Umbrella implementation: `eb4f7ebe02dbd135bb48eefa503adf443c006cc3`. Project initialization:
+`a3c7cdfa6ae10c97f2b637c75f5a44193248e457`, with decision documentation in `28decaff64affcb4fc4c2f6c3116ddd894cce2ef`.
+
+The user requested the public `RHEL-sniperpatching` repository as a submodule
+of AAP Advanced Features. Its initial documentation provides the commit needed
+for a pinned submodule reference, and the umbrella README lists the project.
+The committed submodule URL uses HTTPS for public cloning and GitHub linking;
+agent-side Git operations use SSH. Patching scope and implementation remain
+undecided.
+
 ## Use one Git-token schema with a separate VM-state writer — 2026-11-03
 
 Implementation `42bd149` and naming update `2f90107` align the AutoDeploy source
