@@ -110,14 +110,15 @@ The AutoDeploy repository's CaC Vault credential also encrypts and decrypts its
 shared instance registry; no separate registry Vault credential is required.
 Its existing repository read token reads that registry too. The redundant
 registry-reader credential/type is no longer provisioned or used by the jobs.
-The separate allocation writer uses the existing `Cac_git_token_type` with its
+The `VM allocation git Pseudo CMDB writer` credential uses the existing `Cac_git_token_type` with its
 own write token; repository readers retain their separate read-only tokens.
 The writer token is stored as `inputs.token` in its encrypted shared-base
 credential entry. Allocation and extraction derive the repository URL from
 encrypted runtime configuration and use the existing environment Vault.
 Existing controllers require credential migration before using this updated
-code. A writer with job history needs an approved replacement; retain the old
-credential for history. An unused writer can change type in place.
+code. A writer with job history needs an approved replacement. The owner chose
+`VM allocation git Pseudo CMDB writer` and deletion of the retired credential
+after verification. An unused writer can change type in place.
 Replacing this temporary Git/YAML registry with a real CMDB is tracked as
 Beads `bead-wd-sc8`; product selection and migration require an agreed design.
 
