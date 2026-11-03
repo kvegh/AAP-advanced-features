@@ -106,6 +106,8 @@ The reusable `Cac_git_token_type` injects `CAC_GIT_TOKEN` for the private
 configuration fetch; it is separate from playbook SCM checkout and destination
 AAP API authentication.
 See the AutoDeploy [credential overview](aap_autodeploy_configascode/README.md).
+The AutoDeploy repository's CaC Vault credential also encrypts and decrypts its
+shared instance registry; no separate registry Vault credential is required.
 
 The five project deployment Job Templates share
 [`deploy-cac-project.yml`](aap_autodeploy_configascode/deploy-cac-project.yml).
