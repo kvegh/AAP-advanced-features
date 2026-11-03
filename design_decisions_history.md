@@ -3,6 +3,20 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Store AAP API DNS names in inventory — 2026-11-03
+
+Umbrella update `5ae7136` advances AutoDeploy to `81c7a2b` and documents the
+explicit `ansible_fqdn` contract. Companion implementation `720710d`, documented
+in `e143ebf`, saves the same metadata in the encrypted shared inventory capture.
+The owner confirmed the numbered instance was an example; only the existing
+verified AAP inventory entry was updated. Live readback and a decrypted capture
+comparison confirm preservation of other variables, groups and literal tags.
+
+The intended lookup uses the launch-time instance name and its stored DNS name
+to form a verified HTTPS origin. Credential selection and replacement launcher
+implementation remain deferred under Beads `bead-wd-72f`. No use-case job ran,
+and this umbrella update changes only AutoDeploy's submodule pointer.
+
 ## Implement placement and future TLS before deciding use-case credentials — 2026-11-03
 
 AutoDeploy implementation `aaafed2`, documented in `ada63ca`, adds the inventory
