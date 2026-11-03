@@ -3,6 +3,30 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Give each CaC repository its own credential pair — 2026-11-03
+
+Umbrella implementation `8ea60c1` advances AutoDeploy to `8865506` and documents
+the repository-specific read-token and CaC Vault pairs. Source implementation
+`7e5f672` provisions all five pairs through encrypted bootstrap inputs; companion
+capture `4ab587f`, documented in `3dc217a`, updates template bindings, source pins
+and extraction ownership references. Each importer receives its repository's
+pair. Runtime environment and instance-registry credentials retain their roles.
+
+The owner authorized changes on production and the existing fresh test instance.
+Existing readers were renamed in place; the base Vault was retained and four
+repository Vault entries were added on each controller. Independent readback
+verified all 124 production templates, the fourteen affected assignments, both
+controllers' named pairs and unchanged unrelated configuration. Existing access
+boundaries and secret inputs are preserved. Protected before/after evidence is
+stored in the encrypted companion migration record. A tracked-file scan covering
+decrypted configuration found no active old-name references; historical evidence
+remains factual. Paired-bootstrap fixtures, selector checks and the corrected
+example validate the source changes without a deployment or use-case import.
+
+Destination API credential selection and inventory-based launcher replacement
+remain pending under `bead-wd-72f`. Future extractor credential routing before
+repository rekeying is tracked in `bead-wd-72f.2`.
+
 ## Store AAP API DNS names in inventory — 2026-11-03
 
 Umbrella update `5ae7136` advances AutoDeploy to `81c7a2b` and documents the
