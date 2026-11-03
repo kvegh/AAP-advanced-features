@@ -227,6 +227,16 @@ preserve required functionality, credential and permission boundaries, recovery
 paths and useful independently rerunnable stages. Document recommendations in
 the owning projects. The review is pending; this entry changes no AAP templates.
 
+## 13. Agree credentials for selected-instance use-case deployment
+
+Tracked in Beads `bead-wd-72f`. The target instance remains a launch-time input,
+and VM placement is now recorded by inventory group variable `hypervisor_host`.
+Agree how target AAP API credentials and each use case's Git/Vault credentials
+are selected and authorized before implementing the replacement workflow.
+Public HTTPS API access is retained; no API delegation or execution node is
+needed for that connection. Credential changes and use-case execution are
+deferred until the owner returns for this discussion.
+
 ---
 
 # Tracked here for now — belongs in a project repo

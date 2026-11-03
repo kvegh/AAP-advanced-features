@@ -3,6 +3,20 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Implement placement and future TLS before deciding use-case credentials — 2026-11-03
+
+AutoDeploy implementation `aaafed2`, documented in `ada63ca`, adds the inventory
+placement contract and future upstream certificate verification. Companion
+capture `e3a171b` preserves the shared inventory's existing variables and groups
+while adding per-hypervisor VM placement. The target instance remains a required
+launch-time input. This umbrella update advances only the AutoDeploy submodule.
+
+The owner retained public API access for the UI, declined API delegation and
+prohibited production SSL changes. Existing deployments remain unchanged. Real
+TLS refusal cases, Ansible publication/rollback and nginx syntax checks validate
+the future code; no new VM or use-case deployment was run. Credential management
+is deliberately deferred in Beads `bead-wd-72f`, before workflow replacement.
+
 ## Review the number of Job Templates across projects — 2026-11-03
 
 Planning update: `57412d1`; authoritative task: Beads `bead-wd-1kf`.

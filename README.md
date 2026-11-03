@@ -93,6 +93,13 @@ the new pointer here:
 
 ## Config-as-Code
 
+The current use-case deployment redesign keeps the target instance name as a
+launch-time input. Shared inventory VM groups now carry `hypervisor_host`, and
+future AutoDeploy installations verify the nginx upstream certificate before
+publishing the API. Existing production SSL is unchanged. Credential management
+is the next discussion, tracked in Beads `bead-wd-72f`; workflow replacement and
+use-case execution stop until that decision is agreed.
+
 AAP configuration is captured as variable files for the `infra.aap_configuration`
 dispatch role. See
 [Configuration_as_Code.md](https://github.com/kvegh/aap_autodeploy_configascode/blob/main/Configuration_as_Code.md)
