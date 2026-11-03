@@ -18,6 +18,8 @@ are migrated, including their metadata, extraction references and documentation.
 Central implementation `0c3e1e0` aligns the final template names, selector keys,
 inventory references and protected-debug descriptions. Original secret values,
 all 43 literal template markers and unrelated encrypted files are preserved.
+Companion correction `322e86a` also matches the destination-host survey help
+text to production exactly, preserving all other configuration values.
 
 The destination inventory host and a native AAP API credential are selected at
 launch. Its verified HTTPS origin must match the stored `ansible_fqdn`; source
