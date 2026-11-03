@@ -3,6 +3,22 @@
 This retrospective records significant decisions from Git history and available
 session requirements. Implementation details belong in the individual projects.
 
+## Reuse one AutoDeploy CaC Vault for registry state — 2026-11-03
+
+Umbrella implementation `4db042d` advances AutoDeploy to `cafcc98` (0.28.7).
+Source implementation `eb6b214` follows the owner's instruction to reuse the
+existing AutoDeploy secrets repository CaC Vault for registry encryption and
+decryption. Preparation retains that saved Vault and adds only the registry
+reader and pinned Machine; no distinct registry Vault is selected.
+
+Companion implementation `79ff338` removes the redundant Vault from desired
+bootstrap, selector associations and extraction dependencies. The existing
+registry decrypts with the maintained shared password, so its ciphertext and
+reservation history remain unchanged. Forty-nine focused checks, selector
+syntax and production lint pass. This change does not delete credential objects,
+rotate keys or alter either custom Git credential type. The five direct project
+imports and their fixed `aap_cac_project_id` Extra Variables remain unchanged.
+
 ## Call one importer directly and name configuration deployments explicitly — 2026-11-03
 
 Umbrella implementation `ca095d4` advances AutoDeploy to `e2d4360` (0.28.5).
