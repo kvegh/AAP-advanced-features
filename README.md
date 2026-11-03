@@ -113,14 +113,16 @@ Each template fixes its project ID and repository Git/Vault credentials. The
 playbook derives `<project-id>-secrets` and
 `vaults/cac/<project-id>-cac-vault.yml` from that ID; the platform base capture
 remains separate. The existing templates keep their IDs and workflow links.
+Each template stores `aap_cac_project_id` in Extra Variables and calls the shared
+playbook directly. The unused per-project wrappers have been removed.
 
 | Project ID | Deployment Job Template |
 |---|---|
-| `aiops-selfhealing-demo` | AIOps Selfhealing Demo |
-| `disconnected-windows-patching` | Disconnected Windows Patching |
-| `automation-orchestrator` | Automation Orchestrator |
-| `assistant-team` | Assistant Team |
-| `aap_autodeploy_configascode` | AAP Autodeploy Configascode |
+| `aiops-selfhealing-demo` | Deploy AIOps Selfhealing Demo CaC |
+| `disconnected-windows-patching` | Deploy Disconnected Windows Patching CaC |
+| `automation-orchestrator` | Deploy Automation Orchestrator CaC |
+| `assistant-team` | Deploy Assistant Team CaC |
+| `aap_autodeploy_configascode` | Deploy AAP Autodeploy Configascode CaC |
 
 At launch, select the destination inventory host and supply a native AAP API
 credential for that destination. The playbook checks that its HTTPS endpoint
