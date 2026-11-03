@@ -227,18 +227,25 @@ preserve required functionality, credential and permission boundaries, recovery
 paths and useful independently rerunnable stages. Document recommendations in
 the owning projects. The review is pending; this entry changes no AAP templates.
 
-## 13. Agree credentials for selected-instance use-case deployment
+## 13. Finish credentials for selected-instance use-case deployment
 
 Tracked in Beads `bead-wd-72f`. The target instance remains a launch-time input,
 and VM placement is now recorded by inventory group variable `hypervisor_host`.
 The intended address lookup uses the selected host's explicit `ansible_fqdn`
 to form a verified HTTPS origin. The metadata is saved; launcher changes follow
-the credential decision.
-Agree how target AAP API credentials and each use case's Git/Vault credentials
-are selected and authorized before implementing the replacement workflow.
-Public HTTPS API access is retained; no API delegation or execution node is
-needed for that connection. Credential changes and use-case execution are
-deferred until the owner returns for this discussion.
+the destination API credential decision.
+
+Repository read tokens and CaC Vault credentials are now separate named pairs
+for all five private configuration repositories, implemented under
+`bead-wd-72f.1`. Each importer uses its repository's pair, and encrypted base
+bootstrap creates the same named entries on a replacement AAP. Live template
+assignments and stored CaC references have been reconciled.
+
+Agree destination AAP API credential selection and authorization before
+implementing the replacement workflow. Public HTTPS API access is retained;
+API delegation and an execution node are not required for that connection.
+Use-case execution remains deferred. Before future repository rekeying, extend
+extractor Vault routing under `bead-wd-72f.2`.
 
 ---
 

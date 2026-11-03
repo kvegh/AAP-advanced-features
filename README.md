@@ -97,9 +97,20 @@ The current use-case deployment redesign keeps the target instance name as a
 launch-time input. AAP inventory hosts store their explicit API `ansible_fqdn`;
 shared VM groups carry `hypervisor_host`. Future AutoDeploy installations verify
 the nginx upstream certificate before publishing the API. Existing production
-SSL is unchanged. Credential management
-is the next discussion, tracked in Beads `bead-wd-72f`; workflow replacement and
-use-case execution stop until that decision is agreed.
+SSL is unchanged.
+
+Each of the five private CaC repositories has separate credentials named
+`<repo-name> CaC repo read token` and `<repo-name> CaC vault cred`. Encrypted base
+bootstrap provisions these pairs, and each importer uses its repository's pair.
+The reusable `Cac_git_token_type` injects `CAC_GIT_TOKEN` for the private
+configuration fetch; it is separate from playbook SCM checkout and destination
+AAP API authentication.
+See the AutoDeploy [credential overview](aap_autodeploy_configascode/README.md).
+
+Destination API credential selection remains the next discussion, tracked in
+Beads `bead-wd-72f`. The existing launchers still use the instance registry;
+inventory-based routing, workflow replacement and use-case execution wait for
+that decision.
 
 AAP configuration is captured as variable files for the `infra.aap_configuration`
 dispatch role. See
