@@ -31,3 +31,6 @@
 [submodule "CMDB-for-AAP"]
 	path = CMDB-for-AAP
 	url = https://github.com/kvegh/CMDB-for-AAP.git
+[submodule "RHEL-sniperpatching"]
+	path = RHEL-sniperpatching
+	url = https://github.com/kvegh/RHEL-sniperpatching.git
