@@ -188,9 +188,19 @@ For AIOps, both new MCP installations have passed real read-only queries against
 their matching testserver and monitoring instance. Website, monitoring and MCP
 settings and guest ownership live in its private companion repository rather than AutoDeploy's
 AAP configuration. Zabbix deployment, quarantine, DNS and trusted HTTPS also
-passed independent verification. Website deployment and the full remediation
-loop remain separate from the successful configuration import. MCP remains
-private and uses the existing on-demand stdio transport.
+passed independent verification. Website deployment and its restore/rearm
+loop were verified separately from the configuration import: normal deployment
+and both a controlled fault and a real website button press completed automatic
+restore and rearm. The scoped agent deployment and a passive ping from the new
+monitoring VM also passed. Copied testserver monitoring and the model-directed
+agent remediation path still need review and activation. MCP remains private
+and uses the existing on-demand stdio transport.
+
+Repeat imports also preserve serialized activation variables, including their
+original formatting. The corrected import was verified while the website
+activation stayed running, preserving existing template identities and the
+selected Event Stream. Real definition changes still follow the native API's
+update rules.
 
 The results below describe earlier deployments using the former per-project
 importers. Current shared-importer results are described above.
