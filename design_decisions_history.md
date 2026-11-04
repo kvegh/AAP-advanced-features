@@ -1,5 +1,24 @@
 # Design decisions history
 
+## Reference preparation before all selected security advisories — 2026-11-04
+
+Umbrella implementation: `45093f2e4bb3c82dbf36fbcff7fdc0ecd712f9ec`. The RHEL source reference
+advances to `9cb3d73592edc37463087430391eb48edebcf150`, including preparation
+implementation `7a0a2fd` (version 0.3.0).
+
+Preparation now derives a baseline cutoff before the earliest outstanding RHSA
+on the explicit host pair, validates the selected repository metadata, and
+publishes in Library before checking that the complete selected advisory set is
+absent. Only then does it initialize Test/Prod and reassign the pair. Recovery
+revalidates the recorded initial baseline, while established later versions are
+preserved. This makes the full advisory set available for separate minor-update
+demonstration stages without silently including the earliest fixes in baseline.
+
+All 67 tests, including five simulated real Ansible prep runs, seven syntax
+checks and production-profile lint pass. No remote preparation, content change,
+host reassignment, patching or snapshot was executed. Other project references
+and working changes are preserved.
+
 ## Reference the corrected RHEL advisory verification — 2026-11-04
 
 Umbrella implementation: `177722711fc5dc9967bb94228dd56b01fa0085f8`. The RHEL reference advances
