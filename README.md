@@ -18,6 +18,15 @@ functionality.
 It also tracks Git repository backups and restore testing as important future
 recovery work.
 
+The [agreed recovery and deployment targets](aap_autodeploy_configascode/docs/recovery-and-use-case-targets.md)
+describe external-AAP recovery, independent versioned environments, retained
+older templates, self/remote CaC installation and use-case runtime destinations.
+Current tasks are listed in [AutoDeploy's backlog](aap_autodeploy_configascode/TODO.md)
+and [Hactar's backlog](https://github.com/kvegh/hactarconfig/blob/main/TODO.md).
+The [Hactar recovery proof](https://github.com/kvegh/hactarconfig/blob/main/docs/recovery-proof.md)
+defines the full acceptance checks; agreed targets and successful CaC imports
+do not establish that the complete recovery cycle has passed.
+
 The number of AAP Job Templates across projects needs review: identify obsolete
 or duplicate entries and opportunities to consolidate them while preserving
 required functionality and useful independent stages. This pending review is
@@ -140,14 +149,15 @@ playbook directly. The unused per-project wrappers have been removed.
 | `assistant-team` | Deploy Assistant Team CaC |
 | `aap_autodeploy_configascode` | Deploy AAP Autodeploy Configascode CaC |
 
-At launch, select the destination inventory host and supply a native AAP API
-credential for that destination. The playbook checks that its HTTPS endpoint
-matches the host's `ansible_fqdn`, verifies the certificate, and authenticates
-directly from the source execution environment. A missing credential fails
-before configuration changes. It does not read installer passwords over SSH or
-borrow the source controller's API token. Repository access and destination API
-access remain separate credentials. An instance can also target itself through
-its own verified API.
+At launch, select the destination inventory host. The saved **AAP API/MCP Auth
+Token Store** supplies that instance's bearer token and matches its HTTPS
+endpoint to the host's `ansible_fqdn`. The playbook verifies the certificate and
+authenticates directly from the source execution environment; missing or
+mismatched access stops before configuration changes. Repository access and
+destination API access remain separate credentials. An instance can also target
+itself through its own verified API. See
+[instance token storage](aap_autodeploy_configascode/docs/instance-token-store.md)
+for the encrypted records and token selection.
 
 Project captures declare their resource lists and any required service
 credentials. Imports update definitions without launching jobs; new EDA
@@ -179,10 +189,15 @@ own hypervisor, with persistent firewall rules and identity checks.
 The shared importer has now successfully applied AIOps, Assistant Team,
 Disconnected Windows Patching and Automation Orchestrator configuration to a
 new test instance. Their objects, credentials and relationships were checked
-independently, preserving earlier imports. AutoDeploy's own import awaits a
-decision about rebinding or excluding older deployment jobs whose saved
-hypervisor connection belongs to another environment. Importing configuration
-does not run the imported application jobs.
+independently, preserving earlier imports. The four older AAP deployment stages
+will stay on production and be excluded from future CaC installations. Future
+environments use the newer four-stage templates, which still need verification
+against both their source AAP's own hypervisor and a selected remote hypervisor.
+The original production hypervisor is excluded from that versioned test chain.
+Related legacy destroy, workflow, inventory and key dependencies are under
+review; this does not authorize deleting existing production objects.
+AutoDeploy's own import remains unfinished. Importing configuration does not run
+the imported application jobs.
 
 For AIOps, both new MCP installations have passed real read-only queries against
 their matching testserver and monitoring instance. Website, monitoring and MCP
@@ -271,12 +286,14 @@ OAuth configuration and independent rebuild verification.
 No cleartext secrets in any repo. Sensitive values are ansible-vault encrypted
 and committed; an attached AAP Vault credential decrypts them at job runtime.
 
-Existing playbooks keep runtime Vault files inside their project, because AAP
-syncs each project separately and a path outside it is not resolvable. For
-`aap_autodeploy_configascode` that file is `myvars`, supplying variables such
-as `vault_domain`, `vault_ansible_user`, `vault_ansible_password` and
-`vault_aap_install_user`. Where a value appears in documentation rather than
-code, it is written as a placeholder such as `YOURDOMAIN.tld`.
+AutoDeploy still loads its encrypted runtime `myvars` from its code checkout,
+including variables such as `vault_domain`, `vault_ansible_user`,
+`vault_ansible_password` and `vault_aap_install_user`. AIOps and Assistant Team
+keep their current runtime configuration in their separate private companion
+repositories and supply encrypted settings or configuration files to the job.
+Each project documents its delivery mechanism and required Vault credential;
+independent AAP project checkouts do not share filesystem paths. Plaintext
+examples use placeholders such as `YOURDOMAIN.tld`.
 
 AAP configuration captures for demos are maintained as fully Vault-encrypted
 files in private secrets repositories. Plaintext working captures, ownership
