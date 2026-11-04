@@ -1,5 +1,18 @@
 # Design decisions history
 
+## Keep inventory examples separate from runnable RHEL stages — 2026-11-04
+
+Umbrella implementation: `e67abab701fb0e0352c2a82917c21d9013ed290e`. The RHEL source pin advances
+to `8ff8e509d845eda9db7ee77a28947b670af30495`, including inventory-format
+fix `224a8b12c9ff9474567c3491b9439c8024237a40` (0.1.2).
+
+AAP discovered the YAML inventory example as an extra playbook after source
+synchronization. Its INI replacement keeps the project menu focused on the six
+actual demonstration stages while preserving generic local inventory examples.
+The playbooks, declared runtime collection, and later live-validation boundary
+remain unchanged. Other project references and local working changes are
+preserved.
+
 ## Separate RHEL source sync from runtime dependency installation — 2026-11-04
 
 Umbrella implementation: `64b26b74564dcc508b44aca3127d8bc8834ef33d`. The project pin advances to
