@@ -193,18 +193,22 @@ determines its trusted API URL and token for the shared importer. The normal
 base job also configures the selected AAP guest's exact SSH connection to its
 own hypervisor, with persistent firewall rules and identity checks.
 
-The shared importer has now successfully applied AIOps, Assistant Team,
-Disconnected Windows Patching and Automation Orchestrator configuration to a
+The shared importer has now successfully applied all five supported captures:
+AIOps, Assistant Team, Disconnected Windows Patching, Automation Orchestrator and
+AutoDeploy configuration to a
 new test instance. Their objects, credentials and relationships were checked
 independently, preserving earlier imports. The four older AAP deployment stages
-will stay on production and be excluded from future CaC installations. Future
+stay on production and are excluded from future CaC installations. Future
 environments use the newer four-stage templates, which still need verification
 against both their source AAP's own hypervisor and a selected remote hypervisor.
 The original production hypervisor is excluded from that versioned test chain.
-Related legacy destroy, workflow, inventory and key dependencies are under
-review; this does not authorize deleting existing production objects.
-AutoDeploy's own import remains unfinished. Importing configuration does not run
-the imported application jobs.
+The future bundle also excludes the old destroy template, workflow, provisioning
+inventory and original Machine key, without deleting existing production objects.
+Its normal import added fourteen templates and retained all fifty-five existing
+templates, with credential and resource bindings independently checked. Importing
+configuration does not run the imported application jobs or prove a new-VM cycle.
+The receiving AAP also completed its normal self-target selector, including the
+existing prerequisite and AutoDeploy import jobs, with trusted API access.
 
 For AIOps, both new MCP installations have passed real read-only queries against
 their matching testserver and monitoring instance. Website, monitoring and MCP
@@ -214,8 +218,12 @@ passed independent verification. Website deployment and its restore/rearm
 loop were verified separately from the configuration import: normal deployment
 and both a controlled fault and a real website button press completed automatic
 restore and rearm. The scoped agent deployment and a passive ping from the new
-monitoring VM also passed. Copied testserver monitoring and the model-directed
-agent remediation path still need review and activation. MCP remains private
+monitoring VM also passed. The normal monitoring deployment now enables the
+selected testserver's Linux and ICMP checks, with fresh data, while disabling
+irrelevant inherited Apache checks in place. The model-directed agent repair
+path remains disabled pending its Claude runtime, provider authentication,
+workspace instructions, private AAP MCP and reviewed provider egress. A tested
+problem-only event guard rejects recovery and unknown events. MCP remains private
 and uses the existing on-demand stdio transport.
 
 Repeat imports also preserve serialized activation variables, including their

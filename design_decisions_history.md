@@ -909,3 +909,28 @@ This verifies the generic deployment hook for the selected guest. Other guest
 restrictions and complete recovery/version-to-version acceptance remain open.
 The four older production stage templates and the older destroy template were
 preserved; unrelated working submodule changes remain separate.
+
+## Verify portable AutoDeploy configuration and monitoring — 2026-11-04
+
+The AutoDeploy reference advances to `ce2ab03`, documenting implementation
+`a522e7b`, native-rule/group correction `1e89880` and trusted self-targeting fix
+`2ef4d42`. Normal remote imports installed fourteen templates while preserving
+fifty-five existing templates. The receiving AAP then completed selector 84,
+prerequisite job 86 and importer 88 on `8c5a05c`, preserving all sixty-nine
+template IDs and bindings. The older production-only family remains on its
+original controller and outside future bundles. A complete successor VM cycle
+and independent recovery remain separate acceptance requirements.
+
+The AIOps reference advances to `55bf093`. Normal monitoring jobs enabled the
+selected minimal guest's Linux/ICMP checks, with fresh data, and disabled copied
+Apache checks in place. Problem guard `ba7785d` rejects recovery and unknown
+events. General AI repair remains disabled pending the concrete private-runtime
+prerequisites in `bead-wd-72f.33`; website recovery stays active and verified.
+
+The inventory display rename preserves physical VM, DNS, allocation and token
+identities. Its normal AIOps refresh retained runtime ciphertext and activation
+state. Future shared-capture cleanup removes fourteen project-runtime fields;
+older live production consumers still retain their required variables. Hactar
+publication `26ea548` preserves the exact verified permissions, independent
+deployment evidence and full encrypted task recovery records. Unrelated working
+submodule references are preserved.
