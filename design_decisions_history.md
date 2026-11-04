@@ -1,5 +1,21 @@
 # Design decisions history
 
+## Track bounded RHEL publications and configured stage surveys — 2026-11-04
+
+The RHEL submodule now tracks `f57008d7b3de23696e58c44451cfe825ca13a894` (version 0.5.1).
+Implementation `59e9e8c` adds optional issue-date caps and
+verification in Library before exact Test promotion. Implementation
+`17593e5` publishes the configured generic stage surveys.
+The separate private companion stores whole-file encrypted AAP configuration;
+public source retains automation and generic definitions.
+
+Existing regression tests and eight new cutoff tests, seven syntax checks,
+production lint and actual JT metadata/prerequisite readbacks passed. Live
+patching validation remains separate. Unrelated submodule working changes
+were preserved.
+
+Umbrella implementation commit: `ea8732b458699f9989b22fadb3da716b6b988a4a`.
+
 ## Reference dynamic multiple-CVE survey input — 2026-11-04
 
 Umbrella implementation: `50df934990518b26064550d707798d729fbab3e2`. The RHEL reference advances
