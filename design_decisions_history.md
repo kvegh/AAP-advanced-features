@@ -1,5 +1,24 @@
 # Design decisions history
 
+## Validate the RHEL project using an existing Satellite EE — 2026-11-04
+
+Umbrella implementation: `f0092187172315a4876d2af61723215fca8998be`. The RHEL reference advances to
+`e27e14651560c4724f90ab688233bd7cf3aeb7ba`, including read-only diagnostic
+`1c9c73e0b6c1e551abdfe37738a532873555419f` and existing-collection compatibility
+fix `524f835` (version 0.2.1).
+
+The user chose a trial with the existing EE, whose live diagnostic reported
+Core 2.15.11, Python 3.9.19 and redhat.satellite 3.14.0 and read Satellite over
+verified HTTPS with zero changes. The source now uses that collection's filter
+argument and declares its version explicitly. The diagnostic also checks
+module argument names, required module availability and all six stage syntaxes.
+Forty-four offline tests, seven syntax checks and production-profile lint pass.
+
+This records runtime inspection and compatibility work; actual Content View
+publication, host reassignment, patching and reboots remain unrun. The separate
+snapshot and rollback task stays on hold. All other project references and
+working changes are preserved.
+
 ## Keep inventory examples separate from runnable RHEL stages — 2026-11-04
 
 Umbrella implementation: `e67abab701fb0e0352c2a82917c21d9013ed290e`. The RHEL source pin advances
