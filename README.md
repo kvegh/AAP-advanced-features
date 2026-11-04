@@ -86,7 +86,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 | `Automation_Dashboard/` | [Automation_Dashboard](https://github.com/kvegh/Automation_Dashboard) | Usage statistics and ROI reporting for AAP: simulated maintenance jobs that generate realistic runtimes for Automation Analytics. |
 | `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
-| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, an advisory/CVE catalog and authoritative RPM proof; live patching validation pending. |
+| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; live patching validation pending. |
 
 ## Cloning
 
