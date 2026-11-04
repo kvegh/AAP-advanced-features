@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Reference the RHEL advisory and CVE catalog — 2026-11-04
+
+Umbrella documentation implementation: `24a1f304299fd2926f14b38d5ced46d05483d022`.
+The RHEL reference advances to `4d0c2cfdf73bebc128eef94cd848149edf054e63`,
+including catalog documentation `8d4e255`. Runtime version remains 0.3.0.
+
+The project README now contains fourteen public RHEL 7 advisory candidates
+with issue dates, components, severity, CVEs and Red Hat advisory links.
+It explains CVE resolution through Satellite, including a CVE that selects
+two Python advisories, and RHSA input for selecting exactly one advisory.
+The catalog also records how its earliest issue date determines the initial
+cutoff. Only public advisory metadata is included; runtime behavior is unchanged.
+
+Catalog completeness and CVE associations were reconciled against the captured
+advisory metadata, the example lookup was verified with a read-only Satellite
+query, and whitespace checks pass. No preparation or patching ran. Other project
+references and working changes are preserved.
+
 ## Reference preparation before all selected security advisories — 2026-11-04
 
 Umbrella implementation: `45093f2e4bb3c82dbf36fbcff7fdc0ecd712f9ec`. The RHEL source reference
