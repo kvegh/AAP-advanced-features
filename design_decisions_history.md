@@ -893,3 +893,19 @@ existing encrypted runtime file. CaC installation and actual use-case behavior
 remain separately verified; these documentation changes authorize no live rebuild
 or original-host modification. Relative links, privacy patterns and diff checks
 passed.
+
+## Verify the selected guest release through normal automation
+
+The AutoDeploy reference advances to `d5ddc2a`, including shared verifier fix
+`d2d7254` and normal source job 3282 acceptance. Assistant revision `6098490`
+ran the configuration-only path without provisioning or package updates.
+Independent live/saved-policy, guest-connectivity and VM/service preservation
+checks passed; production access remained blocked. The three encrypted captures
+and source inventory match the intended transition, with tokens, allocation
+history and existing literal template tags preserved. Hactar evidence update
+`9d7e835` also refreshes the full encrypted task recovery copy.
+
+This verifies the generic deployment hook for the selected guest. Other guest
+restrictions and complete recovery/version-to-version acceptance remain open.
+The four older production stage templates and the older destroy template were
+preserved; unrelated working submodule changes remain separate.

@@ -27,6 +27,13 @@ The [Hactar recovery proof](https://github.com/kvegh/hactarconfig/blob/main/docs
 defines the full acceptance checks; agreed targets and successful CaC imports
 do not establish that the complete recovery cycle has passed.
 
+The generic Linux deployment has passed automatic recovery-isolation release
+for one existing test guest through its normal configuration job. Independent
+checks confirmed the exact saved/live policy, working public connectivity,
+blocked production access and unchanged VM definitions and normal host services.
+Encrypted configuration and source inventory were verified separately. Other
+guest restrictions and the complete recovery cycle remain open.
+
 The number of AAP Job Templates across projects needs review: identify obsolete
 or duplicate entries and opportunities to consolidate them while preserving
 required functionality and useful independent stages. This pending review is
