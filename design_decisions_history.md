@@ -1,5 +1,15 @@
 # Design decisions history
 
+## Verify monitoring and both private MCP integrations — 2026-11-03
+
+Public AIOps implementations `ef7af00`, `06f64ba` and `ef45ec7` have now been
+verified through their normal deployment jobs and independent read-only checks.
+Monitoring DNS, trusted HTTPS, authentication, quarantine and proxy backend pass.
+Both TRA MCP integrations reach their matching new targets while preserving
+private configuration and existing client settings. The overview records this
+actual state separately from website and remediation-loop work still pending.
+No public MCP endpoint, new workflow or credential architecture is added.
+
 ## Describe the verified shared importer and automatic base access — 2026-11-03
 
 Umbrella implementation `a5b56b1` advances AutoDeploy to `3a29555` and replaces

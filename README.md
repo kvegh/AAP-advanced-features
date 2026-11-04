@@ -184,12 +184,13 @@ decision about rebinding or excluding older deployment jobs whose saved
 hypervisor connection belongs to another environment. Importing configuration
 does not run the imported application jobs.
 
-For AIOps, the new Linux MCP installation has also passed a real read-only
-query to its matching testserver. Website, monitoring and MCP settings and guest
-ownership live in its private companion repository rather than AutoDeploy's
-AAP configuration. Actual monitoring and website deployment checks are tracked
-separately from the successful configuration import. MCP remains private and
-uses the existing on-demand stdio transport.
+For AIOps, both new MCP installations have passed real read-only queries against
+their matching testserver and monitoring instance. Website, monitoring and MCP
+settings and guest ownership live in its private companion repository rather than AutoDeploy's
+AAP configuration. Zabbix deployment, quarantine, DNS and trusted HTTPS also
+passed independent verification. Website deployment and the full remediation
+loop remain separate from the successful configuration import. MCP remains
+private and uses the existing on-demand stdio transport.
 
 The results below describe earlier deployments using the former per-project
 importers. Current shared-importer results are described above.
