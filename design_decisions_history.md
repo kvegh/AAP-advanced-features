@@ -1,5 +1,25 @@
 # Design decisions history
 
+## Reference dynamic multiple-CVE survey input — 2026-11-04
+
+Umbrella implementation: `50df934990518b26064550d707798d729fbab3e2`. The RHEL reference advances
+to `384adc19520c18183baa218dea831c18282905f5`, including implementation
+`01aa887` (version 0.4.0).
+
+The user requested multiple CVEs in the JT survey and live Satellite mapping.
+A required textarea accepts comma, space or newline separators. Each CVE is
+resolved through live queries in the selected repositories, associations are
+confirmed against full advisory details, and every requested CVE receives its
+own installed-fix proof. Unknown IDs stop the run and shared RHSAs are deduplicated.
+The public README catalog is never used for runtime resolution.
+
+All 81 tests, seven syntax checks, production lint and legacy host-Python
+grammar checks pass. Real Ansible fixture runs prove identical input follows
+changed server metadata, and read-only live queries verified a two-CVE lookup
+and rejection of an unmatched extra input. No actual preparation, Content View
+update, patching, reboot or snapshot ran. Other references and changes remain
+preserved.
+
 ## Reference the RHEL advisory and CVE catalog — 2026-11-04
 
 Umbrella documentation implementation: `24a1f304299fd2926f14b38d5ced46d05483d022`.
