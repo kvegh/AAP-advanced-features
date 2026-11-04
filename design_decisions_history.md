@@ -1,5 +1,22 @@
 # Design decisions history
 
+## Reference the corrected RHEL advisory verification — 2026-11-04
+
+Umbrella implementation: `177722711fc5dc9967bb94228dd56b01fa0085f8`. The RHEL reference advances
+to `2dca2bdd381fca799fce14c7dc5962f98ffe19cc`, including epoch correction
+`9199670f987932bcfec9179934da64625d3ec3e7` (version 0.2.2).
+
+Advisory filenames omit epochs, so the project now resolves authoritative epochs
+from exact packages in the selected repositories before native RPM comparison.
+Missing or ambiguous metadata stops verification. Fifty-four tests, seven
+syntax checks, production lint and direct read-only checks on the selected two
+hosts pass. All fourteen inspected advisories remain outstanding; earlier
+fixed results for nonzero-epoch packages were false positives.
+
+No patching, reboot, Content View change or snapshot ran. Later AAP CaC and
+live patching validation remain separate. Other project references and
+working changes are preserved.
+
 ## Reference the verified AIOps deployment and repeat importer — 2026-11-04
 
 Umbrella implementation `16216be` advances only the AIOps and AutoDeploy
