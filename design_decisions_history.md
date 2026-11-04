@@ -1,5 +1,26 @@
 # Design decisions history
 
+## Reference the verified AIOps deployment and repeat importer — 2026-11-04
+
+Umbrella implementation `16216be` advances only the AIOps and AutoDeploy
+references, retaining all other project references and working changes.
+AIOps source `321341a` includes monitoring implementation `1172d8a` and its
+deployment records; AutoDeploy source `295e5a3` records version 0.34.3 and
+variable-preservation fix `8c0af1c`.
+
+The normal monitoring job and independent readbacks passed. Both a controlled
+fault and a real website button press produced successful automatic restore and
+rearm. The scoped agent installation and passive ping passed separately. The
+fixed normal configuration import also passed while preserving the running
+website activation, Event Stream and existing template identities. Protected
+resource and job evidence remains encrypted in the private companion repository.
+
+These references make the tested deployment reproducible. Per-VM isolation
+removal, copied testserver monitoring and model-directed remediation, the older
+AutoDeploy template family and inventory naming remain separate unfinished work.
+Private-only MCP exposure and the existing shared deployment playbook design are
+retained.
+
 ## Validate the RHEL project using an existing Satellite EE — 2026-11-04
 
 Umbrella implementation: `f0092187172315a4876d2af61723215fca8998be`. The RHEL reference advances to
