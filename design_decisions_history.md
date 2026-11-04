@@ -1,5 +1,18 @@
 # Design decisions history
 
+## Separate RHEL source sync from runtime dependency installation — 2026-11-04
+
+Umbrella implementation: `64b26b74564dcc508b44aca3127d8bc8834ef33d`. The project pin advances to
+`5a01e8265986c29a3f9915dc9a01d460b98c7d31`, including source fix
+`f528087bd55a7117eb2fee86860bb2888549ad9d` (0.1.1).
+
+AAP also discovers a root requirements.yml during SCM updates. The collection
+declaration now lives in dependencies/satellite.yml so runtime preparation is
+intentional. The required certified collection and execution-environment
+prerequisites are unchanged; no controller source settings or dependencies were
+modified. Forty-two offline tests and production-profile lint pass. All other
+project references and working changes remain preserved.
+
 ## Publish independently launched RHEL patching stages — 2026-11-04
 
 Umbrella implementation: `976c50de2d522a6c3044e07e785b47174f9a7b51`. The RHEL-sniperpatching
