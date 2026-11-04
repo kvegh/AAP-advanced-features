@@ -1,5 +1,24 @@
 # Design decisions history
 
+## Describe the verified shared importer and automatic base access — 2026-11-03
+
+Umbrella implementation `a5b56b1` advances AutoDeploy to `3a29555` and replaces
+the outdated manual-token description. Normal base deployment publishes
+per-instance API/MCP authentication and configures the selected AAP guest's
+exact connection to its own hypervisor. Source implementations `931edb8` and
+`3a29555` document the management automation and its validation.
+
+The current shared importer has successfully restored AIOps, Assistant Team,
+Windows Patching and Orchestrator configuration on a fresh test instance with
+independent object and preservation checks. AutoDeploy's own import remains
+pending the owner's choice about older jobs' hypervisor settings. AIOps
+application data is held by its private companion; Linux MCP has passed an
+actual read-only query. These results are distinguished from earlier importers
+and from application jobs still requiring their own deployment checks.
+
+Existing unrelated submodule working changes are preserved. No deployment,
+new credential design or application workflow is introduced by this overview.
+
 ## Add RHEL-sniperpatching as a project submodule — 2026-11-03
 
 Umbrella implementation: `eb4f7ebe02dbd135bb48eefa503adf443c006cc3`. Project initialization:
