@@ -165,16 +165,34 @@ for the CaC architecture, file layout, and variable naming.
 
 The primary goal is a new AAP that can take over the production platform's
 tasks, including deploying further AAP instances. A trusted seed starts with
-independently supplied Git and Vault access. The encrypted base stores credential
-inputs for a trusted replacement, while automatic credential and deployment-template
-provisioning, complete production capture, functional verification and controlled
-takeover remain planned. Demo-specific configuration stays separate from base.
-Autodeploy also tracks automated MCP access and Vault-encrypted per-instance
-connection values as future work. Persistent API tokens are created manually for
-now; encrypted write-back and client trust setup remain unimplemented.
+independently supplied Git and Vault access. The encrypted base provisions
+credentials for a trusted replacement; the selected project imports create their
+deployment templates. Complete production capture, functional verification and
+controlled takeover remain separate work. Demo-specific configuration stays
+separate from base.
+Normal base deployment now creates and publishes each new instance's API/MCP
+token in encrypted per-instance configuration. The selected instance name
+determines its trusted API URL and token for the shared importer. The normal
+base job also configures the selected AAP guest's exact SSH connection to its
+own hypervisor, with persistent firewall rules and identity checks.
+
+The shared importer has now successfully applied AIOps, Assistant Team,
+Disconnected Windows Patching and Automation Orchestrator configuration to a
+new test instance. Their objects, credentials and relationships were checked
+independently, preserving earlier imports. AutoDeploy's own import awaits a
+decision about rebinding or excluding older deployment jobs whose saved
+hypervisor connection belongs to another environment. Importing configuration
+does not run the imported application jobs.
+
+For AIOps, the new Linux MCP installation has also passed a real read-only
+query to its matching testserver. Website, monitoring and MCP settings and guest
+ownership live in its private companion repository rather than AutoDeploy's
+AAP configuration. Actual monitoring and website deployment checks are tracked
+separately from the successful configuration import. MCP remains private and
+uses the existing on-demand stdio transport.
 
 The results below describe earlier deployments using the former per-project
-importers. They do not establish a successful run of the new generic importer.
+importers. Current shared-importer results are described above.
 
 The four deployment stages completed on a fresh environment as individually
 launched jobs on 2026-10-18, ending with subscription import and platform-only
