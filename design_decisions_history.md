@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Publish independently launched RHEL patching stages — 2026-11-04
+
+Umbrella implementation: `976c50de2d522a6c3044e07e785b47174f9a7b51`. The RHEL-sniperpatching
+submodule advances to `88425187e5ecbd83225a7aede03b8c3d403bf142`, including
+implementation `ba33c694edd16334a29126b4684a4c3a2d26a624` (0.1.0).
+
+The user requested gradual demonstration stages: isolated preparation, a genuine
+minor Content View update, host patching with reboot and fix proof, full
+publication, explicit production promotion and read-only checks. Production
+receives the exact tested version. Supported Satellite operations use the
+certified collection; incremental creation uses the documented API because the
+collection does not expose it. All other submodule references are preserved.
+
+Forty-one offline tests, six syntax checks and production-profile lint pass.
+Source validation and SCM synchronization do not establish live host patching
+or restore readiness. AAP configuration-as-code integration remains later work.
+The project README describes required runtime inputs and execution prerequisites.
+
 ## Verify monitoring and both private MCP integrations — 2026-11-03
 
 Public AIOps implementations `ef7af00`, `06f64ba` and `ef45ec7` have now been
