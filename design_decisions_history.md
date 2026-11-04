@@ -856,3 +856,20 @@ The original hostname feature branch is merged and removed, so its completed
 progress is available through main.
 
 Submodule-reference and README implementation commit: `c58b1d5`.
+
+## Link durable task records and clarify deployment destinations
+
+The operator requires tasks and decisions to remain available from Git after
+reinstalling the original host. Implementation `f77b43b` links the current
+AutoDeploy task/decision/restart documents and Hactar recovery records, preserving
+unrelated submodule changes. The AutoDeploy reference includes the public task
+overview and encrypted full-record export tooling.
+
+The overview now describes instance-selected API/MCP authentication, retaining
+the older four production stages while excluding them from future installations,
+and verifying newer stages against their own or selected remote hypervisors.
+It distinguishes current private runtime Vault locations from AutoDeploy's
+existing encrypted runtime file. CaC installation and actual use-case behavior
+remain separately verified; these documentation changes authorize no live rebuild
+or original-host modification. Relative links, privacy patterns and diff checks
+passed.
