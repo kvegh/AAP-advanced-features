@@ -33,14 +33,22 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-The current AutoDeploy reference includes the concise demo guide and existing
-shared release/retirement helpers. The Windows reference includes the existing
-baseline, five-guest reset and final AAP-interface cleanup sequence. Its live
-functional/reset test is still in progress; code publication alone is not a pass.
+The current AutoDeploy reference includes the concise demo guide, shared
+release/retirement helpers and selected private AAP MCP trust metadata. The
+Windows reference includes the baseline, five-guest reset and final AAP-interface
+cleanup sequence. All five guest creation stages passed; AD configuration is
+being repaired after a guest shutdown during updates. The full functional/reset
+test is still in progress; code publication alone is not a pass.
 The Assistant software validation and normal retirement have passed. Native
 Claude also passed one provider-backed read-only test using the intended private
 Linux and Zabbix MCP servers. Controlled agent repair and complete successor
 recovery remain separate acceptance steps.
+
+The AIOps reference adds bounded agent repair and native recovery checks. Its
+private AAP MCP installation and repair loop still need live verification. The
+existing production AIOps project is deliberately pinned to its previously tested
+commit so the new demo code can advance without changing that older runner.
+Shared desired configuration for new demo instances continues to use `main`.
 
 The Windows demo retains its approved HTTPS/NTLM certificate-validation
 exception, recorded as false. Authenticated Windows facts, exact clone ownership
