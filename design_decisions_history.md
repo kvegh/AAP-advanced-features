@@ -1,5 +1,27 @@
 # Design decisions history
 
+## Track canonical Controller port validation — 2026-11-05
+
+Umbrella implementation: `4545143`. AutoDeploy advances to `c1a7404`
+(implementation `6de45e0`, version 0.42.3); Windows advances to `65b7024`
+(implementation `12605b8`, version 1.0.10). Other project references remain
+unchanged.
+
+A real configuration continuation found the same SSH port serialized as text
+by Controller while its independently registered pin held an integer. The
+shared publisher now accepts only a valid integer or canonical positive ASCII
+decimal text, then compares the exact port. It rejects booleans, floats, signs,
+whitespace, leading zeroes, out-of-range values and different ports. Machine,
+user, host-key, job, TLS and policy checks retain their existing behavior.
+
+All 61 affected shared checks, the actual read-only planning replay, nine
+Windows consumer tests and scoped production lint passed. The following live
+Assistant continuation passed that guard and durably published only its
+approved HTTPS bootstrap; software validation, full release and retirement are
+still separate acceptance steps. Both consumers use the existing pinned role,
+with existing credentials and port settings. Source references were verified
+against their SSH remotes; whitespace checks passed.
+
 ## Reference the Windows baseline release hooks — 2026-11-05
 
 Umbrella implementation: `3bcbf93`. Only the Windows project reference advances,
