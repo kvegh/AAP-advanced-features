@@ -116,7 +116,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 | `Automation_Dashboard/` | [Automation_Dashboard](https://github.com/kvegh/Automation_Dashboard) | Usage statistics and ROI reporting for AAP: simulated maintenance jobs that generate realistic runtimes for Automation Analytics. |
 | `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
-| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; single-advisory Test/Prod patching and receiving-AAP import/runtime verified. |
+| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; complete single-RHSA/cutoff/full Test/Prod cycle and receiving-AAP import/runtime verified. |
 
 ## Cloning
 
@@ -193,8 +193,8 @@ The RHEL first interval has verified its cutoff baseline, single-advisory minor,
 targeted Test/Prod patches and exact tested-minor reuse. The date-bounded
 publication preserves that fix and excludes the next RHSA. Configuration import
 and the receiving-runtime diagnostic also passed. The first cutoff has no
-additional eligible package upgrade; full-host handling of that no-update case
-is recorded separately.
+additional eligible package upgrade; both full host updates completed as verified
+already-current runs.
 
 
 At launch, select the destination inventory host. The saved **AAP API/MCP Auth
