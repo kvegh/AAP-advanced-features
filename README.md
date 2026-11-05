@@ -36,7 +36,8 @@ guest restrictions and the complete recovery cycle remain open.
 
 The current project references include the shared guest release and retirement
 implementation, AIOps instance-settings preparation, the Claude/private-MCP
-installer, and isolated Windows test configuration. A repeat AIOps configuration
+installer, and isolated Windows baseline jobs with per-guest release hooks.
+A repeat AIOps configuration
 import preserved existing runtime settings and event credentials. The final AAP
 installation release hook has passed automated checks; its next full installation
 still needs live verification. Assistant, Claude and Windows functional tests and
