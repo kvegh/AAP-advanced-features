@@ -1,5 +1,36 @@
 # Design decisions history
 
+## Reference approved Windows infrastructure and recovery records — 2026-11-05
+
+Umbrella implementation: `e777033b355c3ccd5f80a2d11a6921767be5db3d`. AutoDeploy advances to
+`2c154de2628b7eb5c3cf76d59caef1d1f5e548d3` (documentation checkpoint 0.45.2,
+code implementation `eb806b7`); Windows advances to
+`fe96b38ef71f8bcc46c1d229a9c0e658794271c1`. The latest RHEL integration commits,
+its existing project reference and every other submodule reference are preserved.
+
+The owner approved the existing Windows infrastructure job preparing both the
+selected AAP's isolated virtual NIC and persistent RHEL connection from the
+private Windows runtime profile. Shared AAP ownership records retain the exact
+verified interface so normal identity checks and complete cleanup remain strict.
+CaC import remains API-only. Repeated native publisher calls now resolve their
+current checkout while retaining source authentication and cleanup.
+
+The shared merged tree passed 54 scoped checks; the coordinator independently
+repeated the 17 supplemental-interface tests. Windows independently passed 38
+checks. Published implementation remains separate from live NIC setup, functional
+Windows checks and complete teardown. Five inherited Windows inventory rows were
+adopted in place and the selected configuration import was in progress at this
+checkpoint. The existing Assistant guest's approved bounded HTTP bootstrap passed;
+its software continuation and full release remain separate acceptance. OpenShift
+work remains on hold.
+
+The maintained generators and check mode refreshed and verified 139 scoped task
+records in the separate encrypted recovery export, published in Hactar
+`207daf91b506ec3da515be654579a4ff19fc7ab8`. Public task metadata was already
+current. The AutoDeploy README clarifies approved plans, published code and actual
+runtime verification. Git references were checked through the existing SSH
+remotes. This checkpoint launched no job and made no host or network change.
+
 ## Track the approved Windows demo policy and native Claude readiness — 2026-11-05
 
 Umbrella implementation: `5fd3459`. AutoDeploy advances to `e0ebd1a`
