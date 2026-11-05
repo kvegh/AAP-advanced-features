@@ -1,5 +1,19 @@
 # Design decisions history
 
+## Reference Windows runtime fixes and private MCP support — 2026-11-05
+
+Implementation `76327e4` advances only AutoDeploy to `35bd88d` (0.46.1),
+Windows to `e6027b2` (1.0.38), and AIOps to `0f16827`. Other project references
+are preserved. All five Windows guest creation stages passed; AD update/reboot
+handling and the complete functional/reset workflow remain unverified.
+
+Private AAP MCP metadata and bounded agent repair use the existing jobs and
+encrypted records. Their live installation and repair test are still pending.
+The operator approved pinning the existing production AIOps project to its
+previously tested commit before publishing the new code. That pin and its SCM
+update passed; shared desired configuration for new instances retains `main`.
+Hactar checkpoint `5449038` preserves the refreshed encrypted task records.
+
 ## Keep the demonstration repeatable — 2026-11-05
 
 Umbrella implementation `3ed6571c6a20fb4323d7dcf38fc171522fcb3faf` advances only AutoDeploy to `0213d01`
