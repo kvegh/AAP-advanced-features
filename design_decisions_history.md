@@ -1085,3 +1085,10 @@ together. No additional package upgrade is available in the first interval,
 so handling that full-host no-update case remains a separate decision.
 
 Umbrella implementation commit: `3e0fc2a4ab7e93b0b3e8c9faa3f0a0f38ff58c55`.
+
+## 2026-11-05 — Complete the lean RHEL workflow
+
+The RHEL reference advances to0.5.7 with the witness framework removed and
+observed-failure protections retained. One complete RHSA then cutoff full-update
+cycle passed on Test and Prod, including already-current runs and exact version
+promotion. Other project references are unchanged. Implementation: `cf1b0f374fc16cc4ce01fd76c3375d4be8b0bf4f`.
