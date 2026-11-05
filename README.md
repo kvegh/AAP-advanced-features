@@ -109,7 +109,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `automation_portal_setup/` | [automation_portal_setup](https://github.com/kvegh/automation_portal_setup) | Ansible automation portal self-service catalog: RHEL appliance on KVM, deployed by cloud-init. |
 | `Automation_Dashboard/` | [Automation_Dashboard](https://github.com/kvegh/Automation_Dashboard) | Usage statistics and ROI reporting for AAP: simulated maintenance jobs that generate realistic runtimes for Automation Analytics. |
 | `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
-| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; live patching validation pending. |
+| `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; single-advisory Test/Prod patching and receiving-AAP import/runtime verified. |
 
 ## Cloning
 
@@ -139,9 +139,11 @@ shared VM groups carry `hypervisor_host`. Future AutoDeploy installations verify
 the nginx upstream certificate before publishing the API. Existing production
 SSL is unchanged.
 
-Each of the five private CaC repositories has separate credentials named
+Each reviewed private CaC repository has separate credentials named
 `<repo-name> CaC repo read token` and `<repo-name> CaC vault cred`. Encrypted base
 bootstrap provisions these pairs, and each importer uses its repository's pair.
+The original five bootstrap pairs remain required; supply both optional RHEL
+entries together.
 The reusable `Cac_git_token_type` injects `CAC_GIT_TOKEN` for the private
 configuration fetch; it is separate from playbook SCM checkout and destination
 AAP API authentication.
@@ -162,7 +164,7 @@ after verification. An unused writer can change type in place.
 Replacing this temporary Git/YAML registry with a real CMDB is tracked as
 Beads `bead-wd-sc8`; product selection and migration require an agreed design.
 
-The five project deployment Job Templates share
+The six project deployment Job Templates share
 [`deploy-cac-project.yml`](aap_autodeploy_configascode/deploy-cac-project.yml).
 Each template fixes its project ID and repository Git/Vault credentials. The
 playbook derives `<project-id>-secrets` and
@@ -178,6 +180,15 @@ playbook directly. The unused per-project wrappers have been removed.
 | `automation-orchestrator` | Deploy Automation Orchestrator CaC |
 | `assistant-team` | Deploy Assistant Team CaC |
 | `aap_autodeploy_configascode` | Deploy AAP Autodeploy Configascode CaC |
+| `RHEL-sniperpatching` | Deploy RHEL Sniperpatching CaC |
+
+The RHEL first interval has verified its cutoff baseline, single-advisory minor,
+targeted Test/Prod patches and exact tested-minor reuse. The date-bounded
+publication preserves that fix and excludes the next RHSA. Configuration import
+and the receiving-runtime diagnostic also passed. The first cutoff has no
+additional eligible package upgrade; full-host handling of that no-update case
+is recorded separately.
+
 
 At launch, select the destination inventory host. The saved **AAP API/MCP Auth
 Token Store** supplies that instance's bearer token and matches its HTTPS
