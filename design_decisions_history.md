@@ -1,5 +1,17 @@
 # Design decisions history
 
+## Keep the demonstration repeatable — 2026-11-05
+
+Umbrella implementation `3ed6571c6a20fb4323d7dcf38fc171522fcb3faf` advances only AutoDeploy to `0213d01`
+(0.45.6) and Windows to `2ff2f50` (1.0.18), preserving all other references.
+The operator prioritizes the existing deploy, demonstrate and reset sequence;
+observed failures must be fixed in automation. The concise guide keeps target
+and production safeguards, while longer run evidence stays in protected records.
+Assistant installation/retirement and the private Claude/Linux/Zabbix read-only
+model test passed; Windows functional/reset acceptance is still in progress.
+OpenShift runtime verification is deferred. Hactar checkpoint `17ae678` preserves
+the encrypted task records and current saved policy without changing user edits.
+
 ## Reference approved Windows infrastructure and recovery records — 2026-11-05
 
 Umbrella implementation: `e777033b355c3ccd5f80a2d11a6921767be5db3d`. AutoDeploy advances to
