@@ -42,6 +42,9 @@ import preserved existing runtime settings and event credentials. The final AAP
 installation release hook has passed automated checks; its next full installation
 still needs live verification. Assistant, Claude and Windows functional tests and
 their cleanup remain separate acceptance steps, not implied by these references.
+The shared publisher accepts an integer SSH port or canonical decimal API text
+and compares its numeric value with the saved pin; other identity checks remain
+exact. Windows uses that same reviewed implementation.
 
 The number of AAP Job Templates across projects needs review: identify obsolete
 or duplicate entries and opportunities to consolidate them while preserving
