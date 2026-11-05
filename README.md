@@ -46,6 +46,17 @@ The shared publisher accepts an integer SSH port or canonical decimal API text
 and compares its numeric value with the saved pin; other identity checks remain
 exact. Windows uses that same reviewed implementation.
 
+The Windows demo keeps its approved HTTPS/NTLM certificate-validation exception.
+Its producer and the shared release transaction record validation as false while
+still requiring authenticated Windows facts and exact native clone ownership.
+The operator skipped extra predeployment image and WinRM inspection. Source
+checks passed; the selected runtime import and functional tests remain separate.
+The original AAP topology includes an isolated-network NIC for those clients;
+restoring that interface on fresh instances still needs the operator's decision.
+The separate native Claude installation has passed its normal software and
+private MCP checks. A provider model call and full environment proof remain
+outstanding.
+
 The number of AAP Job Templates across projects needs review: identify obsolete
 or duplicate entries and opportunities to consolidate them while preserving
 required functionality and useful independent stages. This pending review is
