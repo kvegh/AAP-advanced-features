@@ -9,7 +9,7 @@ pointers, and umbrella-level planning and decision records.
 Significant decisions and their implementation commits are summarized in
 [design_decisions_history.md](design_decisions_history.md). Each changed project
 maintains its own README and decision history alongside its implementation.
-Umbrella planning lives in [TODO.md](TODO.md), including the pending definition
+Beads tracks active work; the existing [TODO.md](TODO.md) overview includes the pending definition
 of shared agent development rules such as per-project versioning, and an
 automation code review covering APME, CoP guidance, strict Ansible linting,
 readability, reliable collections, Ansible use, MCP access, necessary verification
@@ -27,42 +27,26 @@ The [Hactar recovery proof](https://github.com/kvegh/hactarconfig/blob/main/docs
 defines the full acceptance checks; agreed targets and successful CaC imports
 do not establish that the complete recovery cycle has passed.
 
-The generic Linux deployment has passed automatic recovery-isolation release
-for one existing test guest through its normal configuration job. Independent
-checks confirmed the exact saved/live policy, working public connectivity,
-blocked production access and unchanged VM definitions and normal host services.
-Encrypted configuration and source inventory were verified separately. Other
-guest restrictions and the complete recovery cycle remain open.
+The current delivery focus is a repeatable demonstration: deploy through the
+existing jobs, demonstrate visible behavior, reset owned resources, and fix any
+failed automation step before repeating the sequence. Keep intended-resource and
+production safeguards; avoid adding generic recovery layers or duplicating run
+history in the operator instructions. OpenShift runtime verification is deferred.
 
-The current project references include the shared guest release and retirement
-implementation, AIOps instance-settings preparation, the Claude/private-MCP
-installer, and isolated Windows baseline jobs with per-guest release hooks.
-A repeat AIOps configuration
-import preserved existing runtime settings and event credentials. The final AAP
-installation release hook has passed automated checks; its next full installation
-still needs live verification. Assistant, Claude and Windows functional tests and
-their cleanup remain separate acceptance steps, not implied by these references.
-The shared publisher accepts an integer SSH port or canonical decimal API text
-and compares its numeric value with the saved pin; other identity checks remain
-exact. Windows uses that same reviewed implementation.
+The current AutoDeploy reference includes the concise demo guide and existing
+shared release/retirement helpers. The Windows reference includes the existing
+baseline, five-guest reset and final AAP-interface cleanup sequence. Its live
+functional/reset test is still in progress; code publication alone is not a pass.
+The Assistant software validation and normal retirement have passed. Native
+Claude also passed one provider-backed read-only test using the intended private
+Linux and Zabbix MCP servers. Controlled agent repair and complete successor
+recovery remain separate acceptance steps.
 
-The Windows demo keeps its approved HTTPS/NTLM certificate-validation exception.
-Its producer and the shared release transaction record validation as false while
-still requiring authenticated Windows facts and exact native clone ownership.
-The operator skipped extra predeployment image and WinRM inspection. Source
-checks passed. The approved Windows infrastructure job prepares the selected
-existing AAP's additional isolated NIC and persistent RHEL connection from the
-private Windows runtime profile. The shared AAP ownership record retains the
-exact interface for native validation and complete cleanup. CaC import remains
-API-only. This implementation is published; live interface setup, Windows
-functionality and complete teardown still require their own verification.
-The shared publisher also supports repeated native role calls after an earlier
-checkout was removed, retaining source authentication and exact ownership checks.
-The existing Assistant guest's approved bounded HTTP bootstrap has passed;
-software configuration, full release and cleanup remain separate acceptance.
-The separate native Claude installation has passed its normal software and
-private MCP checks. A provider model call and full environment proof remain
-outstanding.
+The Windows demo retains its approved HTTPS/NTLM certificate-validation
+exception, recorded as false. Authenticated Windows facts, exact clone ownership
+and the pinned test hypervisor remain required. Its infrastructure job owns the
+selected AAP's additional isolated NIC and persistent RHEL connection; CaC import
+remains API-only. Production access and private MCP boundaries remain protected.
 
 The number of AAP Job Templates across projects needs review: identify obsolete
 or duplicate entries and opportunities to consolidate them while preserving
