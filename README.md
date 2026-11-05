@@ -50,9 +50,16 @@ The Windows demo keeps its approved HTTPS/NTLM certificate-validation exception.
 Its producer and the shared release transaction record validation as false while
 still requiring authenticated Windows facts and exact native clone ownership.
 The operator skipped extra predeployment image and WinRM inspection. Source
-checks passed; the selected runtime import and functional tests remain separate.
-The original AAP topology includes an isolated-network NIC for those clients;
-restoring that interface on fresh instances still needs the operator's decision.
+checks passed. The approved Windows infrastructure job prepares the selected
+existing AAP's additional isolated NIC and persistent RHEL connection from the
+private Windows runtime profile. The shared AAP ownership record retains the
+exact interface for native validation and complete cleanup. CaC import remains
+API-only. This implementation is published; live interface setup, Windows
+functionality and complete teardown still require their own verification.
+The shared publisher also supports repeated native role calls after an earlier
+checkout was removed, retaining source authentication and exact ownership checks.
+The existing Assistant guest's approved bounded HTTP bootstrap has passed;
+software configuration, full release and cleanup remain separate acceptance.
 The separate native Claude installation has passed its normal software and
 private MCP checks. A provider model call and full environment proof remain
 outstanding.
