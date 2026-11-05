@@ -1037,3 +1037,20 @@ older live production consumers still retain their required variables. Hactar
 publication `26ea548` preserves the exact verified permissions, independent
 deployment evidence and full encrypted task recovery records. Unrelated working
 submodule references are preserved.
+
+## 2026-11-05 — Track verified RHEL patching and configuration deployment
+
+The umbrella now tracks RHEL `9383e56bef6b8c3366077f357f8a5b7bec5f8838` (0.5.6) and
+AutoDeploy `0442d43c2790ec5f8b51868334b5c4999f540637` (0.44.2). Other project references are preserved.
+
+The first RHSA interval verified baseline exclusion, one-advisory minor updates,
+native RPM fix checks on Test and Prod, and reuse of the exact tested minor.
+The midpoint cutoff was published and verified before Test promotion, preserving
+the earlier fix and excluding the next RHSA. No automatic midpoint calculation
+is claimed. The RHEL CaC import, seven-template readback and receiving-runtime
+diagnostic also passed through the shared importer and protected companion.
+The original five bootstrap pairs remain required; RHEL inputs are optional
+together. No additional package upgrade is available in the first interval,
+so handling that full-host no-update case remains a separate decision.
+
+Umbrella implementation commit: `3e0fc2a4ab7e93b0b3e8c9faa3f0a0f38ff58c55`.
