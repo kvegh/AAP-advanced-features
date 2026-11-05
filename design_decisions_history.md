@@ -1,5 +1,27 @@
 # Design decisions history
 
+## Reference recovery lifecycle and use-case preparation — 2026-11-05
+
+Umbrella implementation: `132df06`. Only the AutoDeploy, AIOps and Windows
+references advance; other project references remain unchanged. The README
+separates published implementation from outstanding live acceptance so the
+recovery checkout records both the current code and its practical limits.
+
+AutoDeploy `9ddb82f` includes shared typed guest release/retirement, AIOps
+instance-settings preparation and the final normal-installation release hook.
+The hook runs only after successful configuration, credential publication and
+cleanup. Its implementation `75639c5` passed 75 regression/version checks and
+production lint; a complete live AAP installation remains unverified.
+A repeat import using the instance-settings preparation preserved existing
+runtime ciphertext and event credentials.
+
+AIOps `86d3cb5` provides the Claude installer with private Linux and Zabbix MCP
+configuration. Windows `4754d98` includes the isolated test profile and guarded
+directory/trust cleanup preparation. Their live functional tests and subsequent
+decommissioning remain separate requirements. Referenced commits were verified
+against the public repositories over the existing SSH transport; whitespace
+checks passed. No VM or application job was launched by this umbrella update.
+
 ## Track bounded RHEL publications and configured stage surveys — 2026-11-04
 
 The RHEL submodule now tracks `f57008d7b3de23696e58c44451cfe825ca13a894` (version 0.5.1).
