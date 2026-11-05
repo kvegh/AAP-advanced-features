@@ -1,5 +1,28 @@
 # Design decisions history
 
+## Track the approved Windows demo policy and native Claude readiness — 2026-11-05
+
+Umbrella implementation: `5fd3459`. AutoDeploy advances to `e0ebd1a`
+(version 0.42.6, code implementation `276ad84`); Windows advances to `c06aa9e`
+(version 1.0.12, code implementation `b0bf1af`). Every other project reference is
+preserved.
+
+The operator retained the Windows demo's HTTPS/NTLM certificate-validation
+exception and skipped the additional predeployment inspection. The producer and
+shared release transaction now record certificate validation truthfully as false;
+authenticated Windows facts and native ownership checks remain required.
+Fifty-one shared lifecycle/version checks and 141 Windows checks passed, along
+with Windows syntax and scoped lint. Runtime import and functional testing are
+still outstanding. The documented original AAP has a second interface on the
+isolated Windows network; restoring that topology awaits the operator's decision.
+
+The separately published native Claude installer passed its normal deployment,
+actual-user binary checks and both private MCP diagnostics while preserving
+existing client data. No model call or full isolation release occurred. These
+results establish software readiness, not complete instance recovery. Source
+references were verified over the existing SSH transport; no base image was
+changed or rebuilt by this umbrella update.
+
 ## Track canonical Controller port validation — 2026-11-05
 
 Umbrella implementation: `4545143`. AutoDeploy advances to `c1a7404`
