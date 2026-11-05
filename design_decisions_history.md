@@ -1,5 +1,25 @@
 # Design decisions history
 
+## Reference the Windows baseline release hooks — 2026-11-05
+
+Umbrella implementation: `3bcbf93`. Only the Windows project reference advances,
+to `600bc64` (implementation `45f4692`, version 1.0.9). Its completed baseline
+jobs now join authenticated Windows identity with exact native clone ownership
+before invoking the existing shared release role in the same job. Partial or
+check runs cannot release a guest.
+
+The selected private configuration reuses existing credentials for the two
+baseline jobs. Existing passwords, Vault identities, other Job Templates and
+legacy targets remain unchanged. Native execution-environment checks verified
+credential precedence, HTTPS/CA settings and both existing Vault keys without
+network calls. All 136 tests, 35 playbook syntax checks and scoped production
+lint passed. The reference was checked against the published SSH remote.
+
+Actual Windows image inspection, certificate authentication, deployment and
+teardown remain unverified. This umbrella change neither imports the selected
+configuration nor launches a Windows job. The README preserves that acceptance
+boundary; all other project references remain unchanged.
+
 ## Reference recovery lifecycle and use-case preparation — 2026-11-05
 
 Umbrella implementation: `132df06`. Only the AutoDeploy, AIOps and Windows
