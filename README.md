@@ -36,24 +36,24 @@ history in the operator instructions. OpenShift runtime verification is deferred
 The current AutoDeploy reference includes the concise demo guide, shared
 release/retirement helpers, selected private AAP MCP issuer trust and explicit
 target prompts for the three later infrastructure stages. Its public overview
-includes unresolved integration inputs; full records remain in the separate
-encrypted Hactar checkpoint.
+includes the closed agent-remediation acceptance and current integration inputs;
+full records remain in the separate encrypted Hactar checkpoint. This reference
+uses AutoDeploy source 0.47.7.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
-stages and AD preparation/updates passed. Full Windows functional/reset testing
-and an AAP API-responsiveness follow-up remain unfinished.
-The Assistant software validation and normal retirement have passed. Native
-Claude also passed one provider-backed read-only test using the intended private
-Linux and Zabbix MCP servers. Controlled agent repair and complete successor
-recovery remain separate acceptance steps.
+stages and AD preparation/updates passed. Source 1.1.2 also passed the selected
+evaluation activation, temporary-network cleanup and focused baseline. Full
+Windows functional/reset testing and the remaining AD/AAP configuration checks
+remain separate. The Assistant software validation and normal retirement passed.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
-and checked the Linux and Zabbix MCP connections, without inference. A controlled
-runner test
-stopped before inference and its cleanup recovered service and fresh monitoring;
-the complete model-driven repair loop remains unproved. The existing production
-AIOps project is deliberately pinned to its previously tested
+and checked the Linux and Zabbix MCP connections. The controlled service-outage
+rehearsal then passed: a real monitoring event reached EDA, one bounded agent
+invocation launched one saved repair, and native service/fresh recovery checks
+passed. The scoped agent and website activations remain running. This tests a
+stopped service, not package removal or complete independent successor recovery.
+The existing production AIOps project is deliberately pinned to its previously tested
 commit so the new demo code can advance without changing that older runner.
 Shared desired configuration for new demo instances continues to use `main`.
 
@@ -260,11 +260,11 @@ and both a controlled fault and a real website button press completed automatic
 restore and rearm. The scoped agent deployment and a passive ping from the new
 monitoring VM also passed. The normal monitoring deployment now enables the
 selected testserver's Linux and ICMP checks, with fresh data, while disabling
-irrelevant inherited Apache checks in place. The model-directed agent repair
-path remains disabled pending its Claude runtime, provider authentication,
-workspace instructions, private AAP MCP and reviewed provider egress. A tested
-problem-only event guard rejects recovery and unknown events. MCP remains private
-and uses the existing on-demand stdio transport.
+irrelevant inherited Apache checks in place. The selected model-directed repair
+also passed its controlled service-outage rehearsal with native recovery proof.
+Its reviewed scoped activation is enabled; a tested problem-only event guard
+rejects recovery and unknown events. MCP remains private and uses the existing
+on-demand stdio transport.
 
 Repeat imports also preserve serialized activation variables, including their
 original formatting. The corrected import was verified while the website
