@@ -1,5 +1,27 @@
 # Design decisions history
 
+## Reference verified controlled agent recovery — 2026-11-06
+
+Implementation `09496c8` advances only AutoDeploy to `e06122c` (source 0.47.7),
+Windows to `50f687d` (source 1.1.2), and AIOps to `c69097e`. Independent SSH
+reads verified all three publications. Every unrelated project reference,
+including RHEL and ServiceNow, and every HTTPS submodule URL is preserved.
+
+The controlled isolated service-outage chain passed on AIOps runtime `3da21af`:
+one real monitoring event launched one bounded agent invocation and one successful
+saved repair, with native target, service and fresh original-trigger recovery
+checks. The scoped agent and website activations remain running. The production
+tested-commit pin was untouched. Package removal, complete independent recovery
+and formal code review are not inferred from this rehearsal.
+
+The Windows reference includes successful selected evaluation activation,
+temporary-network cleanup and focused baseline; the remaining functional/reset
+and AD/AAP checks stay distinct. AutoDeploy's overview reflects closed acceptance.
+Hactar checkpoint `3904f20` preserves the actual aggregate and all 146 complete
+selected task records encrypted. The original shared worktree and its unrelated
+working changes were left intact. This publication changes no live job, VM,
+credential, firewall or DNS state.
+
 ## Reference the current portable demo publication checkpoint — 2026-11-06
 
 Implementation `0cf80f0333d75c654c2cdc34bcac226c1aee490d` advances only
