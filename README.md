@@ -34,19 +34,25 @@ production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
 The current AutoDeploy reference includes the concise demo guide, shared
-release/retirement helpers and selected private AAP MCP trust metadata. The
-Windows reference includes the baseline, five-guest reset and final AAP-interface
-cleanup sequence. All five guest creation stages passed; AD configuration is
-being repaired after a guest shutdown during updates. The full functional/reset
-test is still in progress; code publication alone is not a pass.
+release/retirement helpers, selected private AAP MCP issuer trust and explicit
+target prompts for the three later infrastructure stages. Its public overview
+includes unresolved integration inputs; full records remain in the separate
+encrypted Hactar checkpoint.
+The Windows reference includes the baseline, approved evaluation activation,
+five-guest reset and final AAP-interface cleanup sequence. All five guest creation
+stages and AD preparation/updates passed. Full Windows functional/reset testing
+and an AAP API-responsiveness follow-up remain unfinished.
 The Assistant software validation and normal retirement have passed. Native
 Claude also passed one provider-backed read-only test using the intended private
 Linux and Zabbix MCP servers. Controlled agent repair and complete successor
 recovery remain separate acceptance steps.
 
-The AIOps reference adds bounded agent repair and native recovery checks. Its
-private AAP MCP installation and repair loop still need live verification. The
-existing production AIOps project is deliberately pinned to its previously tested
+The AIOps reference adds bounded agent repair and native recovery checks. Normal
+Claude installation verified private AAP MCP with trusted application-scoped TLS
+and checked the Linux and Zabbix MCP connections, without inference. A controlled runner test
+stopped before inference and its cleanup recovered service and fresh monitoring;
+the complete model-driven repair loop remains unproved. The existing production
+AIOps project is deliberately pinned to its previously tested
 commit so the new demo code can advance without changing that older runner.
 Shared desired configuration for new demo instances continues to use `main`.
 
