@@ -1,5 +1,21 @@
 # Design decisions history
 
+## Reference the verified Windows regression milestone — 2026-11-06
+
+Implementation `ef05ba2` advances AutoDeploy to the already published `8f41761`
+(source 0.47.9) and Windows to `2dfb9c0` (source 1.1.5). AIOps remains at
+`c69097e`; all other references and HTTPS submodule URLs are preserved.
+
+The selected Windows activation/cleanup, AD and WSUS stages passed, followed by
+the six-suite native regression on both selected guests. Full results remain in
+the existing encrypted task notes, refreshed in Hactar checkpoint `aee7ac0`
+without losing any of the 147 current task IDs. The AutoDeploy public overview
+was unchanged, so its version and source were left untouched.
+
+Configuration-import completion, the unapplied Nexus ACL awaiting approval and
+complete Windows demo/reset acceptance remain distinct. This reference update
+performs no runtime operation or additional job inspection.
+
 ## Reference verified controlled agent recovery — 2026-11-06
 
 Implementation `09496c8` advances only AutoDeploy to `e06122c` (source 0.47.7),
