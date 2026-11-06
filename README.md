@@ -39,14 +39,17 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.47.9.
+uses AutoDeploy source 0.47.10.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
 stages and AD preparation/updates passed. Source 1.1.5 also passed selected
 evaluation activation/cleanup, AD and WSUS stages, and the six-suite native
-regression on both selected guests. Configuration-import completion, the Nexus
-ACL awaiting approval and full Windows functional/reset acceptance remain
-separate. The Assistant software validation and normal retirement passed.
+regression on both selected guests. Both OS patch jobs reached their exact April
+builds with zero remaining approved updates or reboots. Windows acceptance now
+waits only on the remaining Nexus package-access approval; the prepared rule is
+unapplied and the remaining package chain/combined proof are open. Full
+functional/reset acceptance is not inferred. The Assistant software validation
+and normal retirement passed.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
