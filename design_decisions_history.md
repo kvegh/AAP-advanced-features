@@ -1,5 +1,24 @@
 # Design decisions history
 
+## Reference completed Windows OS work without closing package acceptance — 2026-11-06
+
+Implementation `7207221` advances AutoDeploy to `cd38cf7` (source 0.47.10) and
+Windows documentation to `0626bd5` (source 1.1.5). The executable actually tested
+remains `2dfb9c0`; AIOps stays at `c69097e`. All unrelated project references and
+HTTPS submodule URLs are preserved.
+
+Both selected Windows OS patch jobs reached their exact April builds with zero
+remaining approved updates or reboots, alongside the verified AD and WSUS work.
+The Windows task is now blocked only on the existing Nexus package-access
+approval. Its prepared rule is unapplied; the remaining package chain/combined
+proof and full use-case/reset acceptance remain open.
+
+Hactar checkpoint `ed5a152` retains all 147 complete encrypted task records,
+including the final OS proof and handoff notes. Exporter/mirror checks passed and
+the user's handover and unrelated evidence were preserved. AutoDeploy needed
+one metadata-only status-change commit; no runtime or extra job read was used
+for this checkpoint.
+
 ## Reference the verified Windows regression milestone — 2026-11-06
 
 Implementation `ef05ba2` advances AutoDeploy to the already published `8f41761`
