@@ -1,5 +1,21 @@
 # Design decisions history
 
+## Reference the current portable demo publication checkpoint — 2026-11-06
+
+Implementation `0cf80f0333d75c654c2cdc34bcac226c1aee490d` advances only
+AutoDeploy to `d332ecc` (0.47.5), Windows to `a8951dc` (1.1.0), and AIOps to
+`1632ab3`. All other project references, including RHEL and ServiceNow, and the
+HTTPS submodule URLs are preserved.
+
+The public task overview includes transferred integration work and the Windows
+API-responsiveness follow-up. Hactar checkpoint `dabae0b` retains the existing
+145-record encrypted recovery copy without another ciphertext rewrite. The
+normal Claude installer verified private AAP MCP trust and Linux/Zabbix MCP
+connections without inference. A controlled runner attempt stopped before a
+model call and cleanup recovered service and fresh monitoring; complete agent
+repair, Windows functional/reset acceptance and successor deployment remain
+unfinished. This publication changes no live job, credential or VM state.
+
 ## Reference Windows runtime fixes and private MCP support — 2026-11-05
 
 Implementation `76327e4` advances only AutoDeploy to `35bd88d` (0.46.1),

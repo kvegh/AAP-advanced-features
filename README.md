@@ -49,7 +49,8 @@ recovery remain separate acceptance steps.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
-and checked the Linux and Zabbix MCP connections, without inference. A controlled runner test
+and checked the Linux and Zabbix MCP connections, without inference. A controlled
+runner test
 stopped before inference and its cleanup recovered service and fresh monitoring;
 the complete model-driven repair loop remains unproved. The existing production
 AIOps project is deliberately pinned to its previously tested
