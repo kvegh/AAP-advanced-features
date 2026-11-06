@@ -36,15 +36,17 @@ history in the operator instructions. OpenShift runtime verification is deferred
 The current AutoDeploy reference includes the concise demo guide, shared
 release/retirement helpers, selected private AAP MCP issuer trust and explicit
 target prompts for the three later infrastructure stages. Its public overview
-includes the closed agent-remediation acceptance and current integration inputs;
+includes the closed agent-remediation acceptance, deferred independent CloudCLI
+CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.47.7.
+uses AutoDeploy source 0.47.9.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
-stages and AD preparation/updates passed. Source 1.1.2 also passed the selected
-evaluation activation, temporary-network cleanup and focused baseline. Full
-Windows functional/reset testing and the remaining AD/AAP configuration checks
-remain separate. The Assistant software validation and normal retirement passed.
+stages and AD preparation/updates passed. Source 1.1.5 also passed selected
+evaluation activation/cleanup, AD and WSUS stages, and the six-suite native
+regression on both selected guests. Configuration-import completion, the Nexus
+ACL awaiting approval and full Windows functional/reset acceptance remain
+separate. The Assistant software validation and normal retirement passed.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
