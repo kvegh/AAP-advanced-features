@@ -1,5 +1,26 @@
 # Design decisions history
 
+## Reference the approved deployment and completed functional milestones — 2026-11-07
+
+Implementation `aa499c6` advances AutoDeploy to `c7eddc7` (source 0.48.3) and
+Windows to `b4305b5` (source 1.1.11), and registers Command Center at published
+`428cc004` (source 0.31.3). Its public HTTPS submodule URL follows the existing
+GitHub-link convention. All other project references and existing URLs remain
+unchanged; the independent publication checkout preserves the original shared
+workspace drafts.
+
+The README removes the resolved package-access approval blocker and records the
+passed Windows OS/application chain separately from unfinished final teardown.
+It also separates Command Center preparation and CaC import from application
+deployment, newer backend HTTPS support and browser acceptance. The owner
+approved the four existing deployment choices; this checkpoint adds no new
+architecture or live operation.
+
+The referenced source publications were independently verified. Metadata and
+diff checks passed, and Hactar checkpoint `3a768c2` preserves all 150 prior full
+encrypted task records and the actual user answers without changing the user's
+handover. This reference update does not claim complete successor recovery.
+
 ## Reference completed Windows OS work without closing package acceptance — 2026-11-06
 
 Implementation `7207221` advances AutoDeploy to `cd38cf7` (source 0.47.10) and
