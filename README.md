@@ -39,17 +39,21 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.47.10.
+uses AutoDeploy source 0.48.3.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
-stages and AD preparation/updates passed. Source 1.1.5 also passed selected
-evaluation activation/cleanup, AD and WSUS stages, and the six-suite native
-regression on both selected guests. Both OS patch jobs reached their exact April
-builds with zero remaining approved updates or reboots. Windows acceptance now
-waits only on the remaining Nexus package-access approval; the prepared rule is
-unapplied and the remaining package chain/combined proof are open. Full
-functional/reset acceptance is not inferred. The Assistant software validation
-and normal retirement passed.
+stages, AD, evaluation activation, WSUS, exact April OS builds and the complete
+application baseline-to-upgrade chain passed. The approved repository firewall
+rule was applied and tested; it is no longer an unanswered prerequisite. The
+current Windows reference is source 1.1.11, including the Python 3.9 file-check
+correction. Final teardown is still being tested and must not be inferred from
+the functional results. The Assistant software validation and normal retirement
+passed.
+
+Command Center is registered below with its published 0.31.3 deployment repair.
+Its shared CaC importer and target prerequisites are prepared; application
+deployment and browser acceptance remain separate. The newer backend HTTPS
+configuration must use its own tested published revision before activation.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
@@ -121,6 +125,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `Automation_Dashboard/` | [Automation_Dashboard](https://github.com/kvegh/Automation_Dashboard) | Usage statistics and ROI reporting for AAP: simulated maintenance jobs that generate realistic runtimes for Automation Analytics. |
 | `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
 | `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; complete single-RHSA/cutoff/full Test/Prod cycle and receiving-AAP import/runtime verified. |
+| `command-center-ng/` | [command-center-ng](https://github.com/kvegh/command-center-ng) | Local agent command center with a RHEL 9 installer and AAP deployment playbook; its encrypted private CaC companion uses the shared AutoDeploy importer. |
 
 ## Cloning
 

@@ -34,3 +34,6 @@
 [submodule "RHEL-sniperpatching"]
 	path = RHEL-sniperpatching
 	url = https://github.com/kvegh/RHEL-sniperpatching.git
+[submodule "command-center-ng"]
+	path = command-center-ng
+	url = https://github.com/kvegh/command-center-ng.git
