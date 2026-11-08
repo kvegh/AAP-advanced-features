@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.16, including the guest SSH connection correction
+uses AutoDeploy source 0.48.17, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -72,12 +72,14 @@ resources were removed, with unrelated guests and golden images preserved.
 This repaired, staged reset does not establish fresh unattended provisioning.
 The earlier instance's Assistant software validation and normal retirement passed.
 
-Command Center is registered below at published source 0.34.0, including the
+Command Center is registered below at published source 0.35.0, including the
 approval-button sizing and SSH-tunnel origin fixes. The existing installation's
 backend HTTPS and strict nginx trust passed verification; the operator confirmed
 both external and localhost access work. Its shared CaC importer and target
-prerequisites are prepared. The separate AAP-driven test deployment still waits
-for the initial-password and mandatory first-login password-change feature.
+prerequisites are prepared. The AAP-driven test deployment now follows the chosen
+password policy: require a protected operator password for a fresh setup and
+preserve existing user authentication. The shared-default/first-login proposal
+was withdrawn; private configuration and secure input verification have resumed.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
