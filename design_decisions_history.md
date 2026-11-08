@@ -1,5 +1,17 @@
 # Design decisions history
 
+## Separate configured monitoring from its real outage result — 2026-11-08
+
+AutoDeploy `0d02373` (0.48.24) documents the successful normal monitoring
+deployment and testserver agent installation on AIOps `3420f92` (1.1.7).
+The same owned clone and trusted HTTPS Basic gate passed verification; private
+configuration `0db59ca` preserves the final selected-instance settings.
+The real website outage then exposed a connection timeout in its monitoring
+probe before an event could reach EDA. That active repair is not represented
+as a completed recovery demonstration. Hactar `62d6c87` retains the refreshed
+encrypted recovery records and sanitized task mirror. This index update
+preserves other project references and introduces no runtime operation.
+
 ## Allow the observed DNS cache to expire during monitoring setup — 2026-11-08
 
 Implementation `f80756f` advances the AIOps reference to `3420f92` (1.1.7).
