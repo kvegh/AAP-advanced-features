@@ -39,7 +39,11 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.7, including the guest SSH connection correction.
+uses AutoDeploy source 0.48.8, including the guest SSH connection correction.
+An AAP-only successor deployment completed all four stages with trusted API
+access, valid license and original guests preserved. The first stage required
+a repair and continuation; fresh unattended provisioning and the successor's
+additional service tests remain unverified.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
 stages, AD, evaluation activation, WSUS, exact April OS builds and the complete
