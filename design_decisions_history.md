@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reference independent EE-only prerequisite support — 2026-11-08
+
+Implementation `e4cfd45` advances AutoDeploy to `3783cae` (source 0.48.16).
+Fix `7d8a59b` removes only the nonempty PAH repository assertion for reviewed
+cases whose existing execution image supplies collections. Exact versions,
+review status, repository uniqueness and execution-image readiness remain
+validated. The real admission-task regression, selector tests, strict lint and
+syntax checks passed; normal successor metadata setup is not inferred from
+those source checks.
+
+Hactar `5d9baa0` retains 163 full encrypted records, preserving prior IDs/scope
+and the active disposable test, pending outage and deferred runtime boundaries.
+Other project references and HTTPS submodule URLs are unchanged. This reference
+update performs no live configuration or VM operation.
+
 ## Reference the website result and Linux registration correction — 2026-11-08
 
 Implementation `25beff7` advances AutoDeploy to `e39202f` (source 0.48.14).
