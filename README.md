@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.22, including the guest SSH connection correction
+uses AutoDeploy source 0.48.23, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -51,8 +51,8 @@ those definitions does not deploy the website, monitoring or private MCP service
 Windows, Assistant, Automation Orchestrator and RHEL configuration setup passed
 on the successor through their prerequisite/import jobs. RHEL's independent
 EE-only preparation was verified live. These imports do not test OpenShift or
-external patching workloads. Windows runtime testing is active during the
-approved temporary source-AAP outage, with the other core guests preserved.
+external patching workloads. The staged Windows functional test and its normal
+owned cleanup have passed, preserving unrelated guests and source images.
 The successor website now passes normal DNS and trusted HTTPS checks with
 monitoring and auto-arm off. Separate Assistant test settings and the existing
 minimal Linux provisioning template are imported, preserving predecessor data;
@@ -61,33 +61,28 @@ pinned Assistant source 1.11.8. All five original guests and golden images were
 preserved. This excludes provider-authentication transfer and model inference.
 The source also fixes verified Linux SSH user/port publication for AIOps imports;
 published [Assistant source 1.11.11](https://github.com/kvegh/assistant-team/commit/9d7640257e9ff4f26de1d4e4f148b1d59c737975)
-now pins that helper fix. Actual new-guest publication and AIOps consumption
-remain separate runtime checks. Reviewed EE-only cases can prepare independently
+now pins that helper fix. Successor testserver and TRA deployment, native/source
+publication and normal AIOps resource refresh have passed. Complete AIOps
+services and outage/repair acceptance remain open. Reviewed EE-only cases prepare independently
 with no PAH repository prerequisites.
-The Windows reference includes the baseline, approved evaluation activation,
-five-guest reset and final AAP-interface cleanup sequence. The earlier-instance
-run passed all five guest creation stages, AD, evaluation activation, WSUS, exact
-April OS builds and the complete application baseline-to-upgrade chain. The approved repository firewall
-rule was applied and tested; it is no longer an unanswered prerequisite. The
-current Windows reference is source 1.1.14. Its completion order keeps guests
-isolated until evaluation activation and temporary-network cleanup succeed.
-Production is pinned to its previously tested source; this newer fix is for
-versioned test environments. The successor's staged continuation has passed AD
-activation, updates, promotion, LDAPS and actual login/RBAC checks, plus the
-managed Windows Server April update checks. Application checks and owned
-cleanup are still required. The owner withdrew the source AAP restart and
-directed retiring only that AAP after Windows baseline verification, preserving
-the other predecessor guests. Existing decommission covers the whole environment;
-a safe AAP-only path must be selected before use. The original workflow failed;
-this is not a fresh unattended workflow pass.
-AutoDeploy fix `e0a96b1` adds a bounded wait for the existing native release lock
-and safe busy diagnostics. Thirty-seven focused checks passed; the historical
-failure's precise cause remains unproved. The Windows caller update and actual
-consumption remain separately tracked.
-Earlier-instance final teardown passed: all five Windows guests and their owned
-resources were removed, with unrelated guests and golden images preserved.
-This repaired, staged reset does not establish fresh unattended provisioning.
-The earlier instance's Assistant software validation and normal retirement passed.
+The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
+login/RBAC, both exact April OS baselines, application baseline/upgrades and
+combined verification. Normal cleanup on `a11695c` then removed all five owned
+guests and the Windows-only AAP connection. Production retains its tested pin.
+The new dependency `e0a96b1` has 37 focused lock/diagnostic checks; cleanup consumed
+that reviewed dependency, while live lock contention and the original masked
+failure's cause remain unproved. The original workflow required continuation,
+so fresh unattended execution is still an acceptance gap.
+
+After Windows baseline verification, the owner directed one-off removal of only
+the predecessor AAP VM and its runtime clone. Survivor checks passed; its DNS,
+proxy and credential records remain for later scoped cleanup. Other predecessor
+guests remain running. No partial-decommission framework was introduced.
+Private Windows configuration `512e247` (0.0.2) now includes the already registered
+selected issuer when missing, with legacy/current bundles unchanged and eight
+native rendering checks passed. Next-instance runtime verification remains open.
+The 22 MCP artifact files also have a verified immutable offhost copy and
+encrypted restore metadata in Hactar's existing download-evidence Vault.
 
 Command Center is registered below at published source 0.35.0, including the
 approval-button sizing and SSH-tunnel origin fixes. The existing installation's
