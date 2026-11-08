@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Reference the demonstrated lock repair and staged Windows progress — 2026-11-08
+
+Implementation `6cfbce7` advances AutoDeploy to `7710c03` (0.48.21) and Windows
+to `c54d4d4` (1.1.14). AutoDeploy functional fix `e0a96b1` replaces immediate
+failure on a busy native release lock with the existing bounded-wait pattern
+and a fixed safe diagnostic. Thirty-seven focused checks and strict role lint
+passed. The original failure's exception was not retained, so its precise cause
+is unproved; caller updates and live consumption remain separate work.
+
+Windows fix `d768210` reuses the full guarded evaluation-activation procedure
+before the AD licensing gate. The successor then passed AD updates, promotion,
+LDAPS and real login/RBAC checks, and managed Server 2022 passed its April update
+check. These are staged continuation results, not a fresh unattended workflow
+pass or completed cleanup/source restoration. Production remains pinned to its
+tested source. Hactar `64cde82` retains all 164 encrypted recovery records, the
+closed historical database follow-up and pending helper cleanup after functional
+tests. Other submodule references and HTTPS URLs are preserved.
+
 ## Reference the first-opening correction and approved Windows window — 2026-11-08
 
 Implementation `7a6ead2` advances AutoDeploy to `4a3310a` (source 0.48.19).
