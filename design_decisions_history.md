@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reference the corrected guest SSH setup — 2026-11-07
+
+Implementation `ecdc4b6fe86961965065366d6bcbe7e3ecb2ee7b` advances only the
+AutoDeploy reference and its README version to `30629f7` (source 0.48.7).
+The underlying fix `34b40d1` corrects hypervisor connection facts overriding
+guest SSH settings, while retaining the pinned route and unsafe-override checks
+and restoring the hypervisor settings afterward.
+
+The native regression covers the actual fact precedence, connection restoration
+and the existing start-at-task continuation. All 26 focused checks passed. The
+partially completed live first stage then passed its normal remaining tasks;
+this is a repaired run, not proof of a fresh unattended complete deployment.
+All other project references, submodule URLs and live systems remain unchanged
+by this umbrella update.
+
 ## Record completed reset and working Command Center access — 2026-11-07
 
 Implementation `e19e13111c7f9618d5a388d2e92fe8fc522753fd` advances AutoDeploy to
