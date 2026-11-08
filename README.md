@@ -183,7 +183,7 @@ after verification. An unused writer can change type in place.
 Replacing this temporary Git/YAML registry with a real CMDB is tracked as
 Beads `bead-wd-sc8`; product selection and migration require an agreed design.
 
-The six project deployment Job Templates share
+The seven project deployment Job Templates share
 [`deploy-cac-project.yml`](aap_autodeploy_configascode/deploy-cac-project.yml).
 Each template fixes its project ID and repository Git/Vault credentials. The
 playbook derives `<project-id>-secrets` and
@@ -200,8 +200,10 @@ playbook directly. The unused per-project wrappers have been removed.
 | `assistant-team` | Deploy Assistant Team CaC |
 | `aap_autodeploy_configascode` | Deploy AAP Autodeploy Configascode CaC |
 | `RHEL-sniperpatching` | Deploy RHEL Sniperpatching CaC |
+| `command-center-ng` | Deploy Command Center NG CaC |
 
-The RHEL first interval has verified its cutoff baseline, single-advisory minor,
+RHEL Sniperpatching runs against an existing remote Satellite and its managed
+Test/Prod RHEL hosts. Its first interval has verified its cutoff baseline, single-advisory minor,
 targeted Test/Prod patches and exact tested-minor reuse. The date-bounded
 publication preserves that fix and excludes the next RHSA. Configuration import
 and the receiving-runtime diagnostic also passed. The first cutoff has no
