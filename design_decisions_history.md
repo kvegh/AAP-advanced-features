@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Reference completed successor software and metadata checks — 2026-11-08
+
+Implementation `f3d2ef8` advances AutoDeploy to `8b71f4c` (source 0.48.18).
+The overview distinguishes the completed model-free Assistant software test
+on pinned `73a74ac` (1.11.8) and normal owned retirement from untested model
+inference and other runtime workflows. All five original guests and golden
+images were preserved. Assistant caller fix `1ee9e4b`, documented at `9d76402`
+(1.11.11), is published in its own repository; actual new-guest consumption
+remains pending. No unrelated submodule reference was changed.
+
+Normal Automation Orchestrator and independent RHEL configuration setup passed
+on `ead5a05` (0.48.17), including the standalone EE-only prerequisite path.
+External OpenShift and patching workloads were not run. Hactar `1f2bb43`
+preserves all 163 encrypted task records, prior IDs and export scope. The CCNG
+candidate still needs protected password input and retains source 0.35.0's
+compatible 12–1024-character range. This checkpoint changes documentation and
+source references only; it performs no guest or service operation.
+
 ## Reconcile the chosen CCNG password policy — 2026-11-08
 
 Implementation `403ee04` references AutoDeploy `ead5a05` (0.48.17) and reviewed
