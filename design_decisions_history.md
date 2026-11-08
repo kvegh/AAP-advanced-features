@@ -1,5 +1,17 @@
 # Design decisions history
 
+## Align the project list and remote RHEL target description — 2026-11-07
+
+Implementation `c35e88cdfa7ddb2e3fa30405f188a1186c195081` adds the already
+registered Command Center importer to the existing CaC table and corrects its
+count to seven, matching AutoDeploy's current catalog. It also clarifies the
+owner's reminder that RHEL Sniperpatching operates against an existing remote
+Satellite and its managed Test/Prod hosts. These are documentation corrections,
+not additional deployment capabilities or a new local lab.
+
+The table was checked against the common importer's supported IDs and operator
+guide; diff checks passed. Project references and live configuration are unchanged.
+
 ## Reference the corrected guest SSH setup — 2026-11-07
 
 Implementation `ecdc4b6fe86961965065366d6bcbe7e3ecb2ee7b` advances only the
