@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.19, including the guest SSH connection correction
+uses AutoDeploy source 0.48.21, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -51,7 +51,8 @@ those definitions does not deploy the website, monitoring or private MCP service
 Windows, Assistant, Automation Orchestrator and RHEL configuration setup passed
 on the successor through their prerequisite/import jobs. RHEL's independent
 EE-only preparation was verified live. These imports do not test OpenShift or
-external patching workloads; Windows' fresh runtime still needs sufficient RAM.
+external patching workloads. Windows runtime testing is active during the
+approved temporary source-AAP outage, with the other core guests preserved.
 The successor website now passes normal DNS and trusted HTTPS checks with
 monitoring and auto-arm off. Separate Assistant test settings and the existing
 minimal Linux provisioning template are imported, preserving predecessor data;
@@ -68,14 +69,19 @@ five-guest reset and final AAP-interface cleanup sequence. The earlier-instance
 run passed all five guest creation stages, AD, evaluation activation, WSUS, exact
 April OS builds and the complete application baseline-to-upgrade chain. The approved repository firewall
 rule was applied and tested; it is no longer an unanswered prerequisite. The
-current Windows reference is source 1.1.12. Its completion order keeps guests
+current Windows reference is source 1.1.14. Its completion order keeps guests
 isolated until evaluation activation and temporary-network cleanup succeed.
 Production is pinned to its previously tested source; this newer fix is for
-versioned test environments and still needs a fresh runtime test.
-The bounded temporary source-AAP outage for successor Windows testing is now
-approved. Only the selected source AAP may be gracefully stopped; test execution,
-owned cleanup, source restart and service/EDA checks remain separately verified.
-Final teardown passed: all five Windows guests and their owned
+versioned test environments. The successor's staged continuation has passed AD
+activation, updates, promotion, LDAPS and actual login/RBAC checks, plus the
+managed Server 2022 April update check. Remaining functional checks, owned
+cleanup and source restoration are still required. The original workflow failed;
+this is not a fresh unattended workflow pass.
+AutoDeploy fix `e0a96b1` adds a bounded wait for the existing native release lock
+and safe busy diagnostics. Thirty-seven focused checks passed; the historical
+failure's precise cause remains unproved. The Windows caller update and actual
+consumption remain separately tracked.
+Earlier-instance final teardown passed: all five Windows guests and their owned
 resources were removed, with unrelated guests and golden images preserved.
 This repaired, staged reset does not establish fresh unattended provisioning.
 The earlier instance's Assistant software validation and normal retirement passed.
