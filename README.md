@@ -39,21 +39,24 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.3.
+uses AutoDeploy source 0.48.5.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. All five guest creation
 stages, AD, evaluation activation, WSUS, exact April OS builds and the complete
 application baseline-to-upgrade chain passed. The approved repository firewall
 rule was applied and tested; it is no longer an unanswered prerequisite. The
 current Windows reference is source 1.1.11, including the Python 3.9 file-check
-correction. Final teardown is still being tested and must not be inferred from
-the functional results. The Assistant software validation and normal retirement
-passed.
+correction. Final teardown passed: all five Windows guests and their owned
+resources were removed, with unrelated guests and golden images preserved.
+This repaired, staged reset does not establish fresh unattended provisioning.
+The Assistant software validation and normal retirement passed.
 
-Command Center is registered below with its published 0.31.3 deployment repair.
-Its shared CaC importer and target prerequisites are prepared; application
-deployment and browser acceptance remain separate. The newer backend HTTPS
-configuration must use its own tested published revision before activation.
+Command Center is registered below at published source 0.34.0, including the
+approval-button sizing and SSH-tunnel origin fixes. The existing installation's
+backend HTTPS and strict nginx trust passed verification; the operator confirmed
+both external and localhost access work. Its shared CaC importer and target
+prerequisites are prepared. The separate AAP-driven test deployment still waits
+for the initial-password and mandatory first-login password-change feature.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
