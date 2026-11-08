@@ -1,5 +1,26 @@
 # Design decisions history
 
+## Reference verified reset, narrow retirement and offhost recovery — 2026-11-08
+
+Implementation `81b0afd` advances AutoDeploy to `4f171f4` (0.48.23) and public
+Windows to `de0687c` (1.1.16). The overview now distinguishes successful staged
+functional tests on `c54d4d4`, normal cleanup on `a11695c`, and the separately
+authorised predecessor AAP VM-only removal. Original test baselines and later
+survivors were verified at their respective boundaries. Fresh unattended
+execution and the original masked error's exact cause remain unproved.
+
+The normal Linux deployment and AIOps refresh accepted the new testserver and
+TRA, exercising SSH-field publisher fix `785e613`. Private Windows `512e247`
+(0.0.2) adds the already trusted selected issuer only when absent; eight native
+checks and unchanged current/legacy rendering passed. No private submodule or
+new credential architecture was added.
+
+Hactar implementation `7def85f`, documented at `3ff9247`, preserves all 168
+encrypted task records and the verified 22-file offhost artifact restore record
+in its existing download-evidence Vault. Other project references and HTTPS
+submodule URLs are unchanged. This checkpoint changes references/documentation,
+not platform resources or the remaining recovery acceptance requirements.
+
 ## Continue testing on the successor and retire only the old AAP — 2026-11-08
 
 Implementation `c121133` advances AutoDeploy to `05f7353` (0.48.22). The owner
