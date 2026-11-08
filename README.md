@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.21, including the guest SSH connection correction
+uses AutoDeploy source 0.48.22, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -74,8 +74,11 @@ isolated until evaluation activation and temporary-network cleanup succeed.
 Production is pinned to its previously tested source; this newer fix is for
 versioned test environments. The successor's staged continuation has passed AD
 activation, updates, promotion, LDAPS and actual login/RBAC checks, plus the
-managed Server 2022 April update check. Remaining functional checks, owned
-cleanup and source restoration are still required. The original workflow failed;
+managed Windows Server April update checks. Application checks and owned
+cleanup are still required. The owner withdrew the source AAP restart and
+directed retiring only that AAP after Windows baseline verification, preserving
+the other predecessor guests. Existing decommission covers the whole environment;
+a safe AAP-only path must be selected before use. The original workflow failed;
 this is not a fresh unattended workflow pass.
 AutoDeploy fix `e0a96b1` adds a bounded wait for the existing native release lock
 and safe busy diagnostics. Thirty-seven focused checks passed; the historical
