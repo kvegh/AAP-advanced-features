@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Record completed reset and working Command Center access — 2026-11-07
+
+Implementation `e19e13111c7f9618d5a388d2e92fe8fc522753fd` advances AutoDeploy to
+`9cabe998` (source 0.48.5), Windows to `be5689e` (source 1.1.11), and Command
+Center to `7693f05c` (source 0.34.0). Other references and HTTPS submodule URLs
+remain unchanged.
+
+The README now distinguishes the completed five-guest Windows teardown from
+fresh unattended provisioning, which remains unverified. It records verified
+backend HTTPS and strict nginx trust alongside the operator's confirmation of
+external and localhost access. The separate AAP-driven Command Center test
+deployment still depends on the first-login password feature; a working existing
+installation does not establish that deployment acceptance.
+
+The referenced publications were independently verified. This update changes
+documentation and project references only, without changing any live service,
+listener, password or production configuration.
+
 ## Reference the approved deployment and completed functional milestones — 2026-11-07
 
 Implementation `aa499c6` advances AutoDeploy to `c7eddc7` (source 0.48.3) and
