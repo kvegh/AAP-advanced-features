@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reconcile the chosen CCNG password policy — 2026-11-08
+
+Implementation `403ee04` references AutoDeploy `ead5a05` (0.48.17) and reviewed
+CCNG `e5e1232` (0.35.0). The owner withdrew the shared-default/access-choice
+proposal: fresh setup requires a chosen protected password, while existing
+user authentication is preserved. The published AAP password task enforces
+this before service readiness, so the rollout no longer waits on that feature.
+
+The retained private candidate matches the reviewed application source and
+passes twelve native loader tasks and five policy checks. It remains unpublished
+for the existing secure password input; actual app deployment is unperformed.
+Hactar `e5b482c` preserves all 163 encrypted task records and the corrected
+dependency/input state. Other project references and submodule URLs are
+unchanged. These are documentation/reference updates, not runtime changes.
+
 ## Reference independent EE-only prerequisite support — 2026-11-08
 
 Implementation `e4cfd45` advances AutoDeploy to `3783cae` (source 0.48.16).
