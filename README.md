@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.24, including the guest SSH connection correction
+uses AutoDeploy source 0.48.25, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -63,15 +63,17 @@ The source also fixes verified Linux SSH user/port publication for AIOps imports
 published [Assistant source 1.11.11](https://github.com/kvegh/assistant-team/commit/9d7640257e9ff4f26de1d4e4f148b1d59c737975)
 now pins that helper fix. Successor testserver and TRA deployment, native/source
 publication and normal AIOps resource refresh have passed. Complete AIOps
-services and outage/repair acceptance remain open. AIOps source 1.1.7 extends
-the existing monitoring frontend DNS check to cover the observed ten-minute
-negative cache, retaining address, IPv6 and trusted-certificate checks. Its 14
-focused regressions and strict task lint passed. The owned monitoring deployment
-retry and exact testserver agent installation passed, with the same clone and
-trusted HTTPS Basic gate verified. A real website outage then exposed a probe
-connection timeout before any event reached EDA; that runtime repair is still
-open. Reviewed EE-only cases prepare independently with no PAH repository
-prerequisites.
+services and outage/repair acceptance remain open. AIOps source 1.1.8 retains
+the bounded DNS correction and adds a fresh website-sample gate before forwarding,
+with standard retry failure handling. Fifteen focused tests and strict lint
+passed. The normal monitoring deployment on 1.1.7 and exact testserver agent
+installation passed, with the same clone and trusted HTTPS Basic gate verified.
+A real outage exposed a missing monitoring-guest permission to the hypervisor
+bridge on HTTPS, before any event reached EDA. Applying that permission is held
+on shared-firewall-record ownership; unattended publication from the saved-image
+job is not implemented. The website is restored and disarmed, both activations
+are disabled, and live acceptance of the new guard remains open. Reviewed
+EE-only cases prepare independently with no PAH repository prerequisites.
 The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
 login/RBAC, both exact April OS baselines, application baseline/upgrades and
 combined verification. Normal cleanup on `a11695c` then removed all five owned

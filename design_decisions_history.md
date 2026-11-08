@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reference the sample-readiness correction and safe held state — 2026-11-08
+
+AutoDeploy `b22e413` (0.48.25) documents the proved missing monitoring-guest
+HTTPS permission and pending ownership choice. AIOps implementation `f1b5d64`,
+documented at `7e761f1` (1.1.8), requires a fresh successful website sample and
+removes failure overrides that masked exhausted retries. Fifteen focused tests
+and strict lint passed; live verification is held. The website is restored and
+disarmed, and both EDA activations remain disabled.
+
+Hactar `81e6780` preserves the refreshed full encrypted records and public
+overview, including both unanswered ownership and MCP artifact-key choices.
+The existing saved-image job has no automatic shared-policy publisher; this
+limitation is explicit. Other project references are retained. No firewall
+permission, credential mechanism or hardware reinstall is applied by this update.
+
 ## Separate configured monitoring from its real outage result — 2026-11-08
 
 AutoDeploy `0d02373` (0.48.24) documents the successful normal monitoring
