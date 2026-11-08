@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.18, including the guest SSH connection correction
+uses AutoDeploy source 0.48.19, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -72,6 +72,9 @@ current Windows reference is source 1.1.12. Its completion order keeps guests
 isolated until evaluation activation and temporary-network cleanup succeed.
 Production is pinned to its previously tested source; this newer fix is for
 versioned test environments and still needs a fresh runtime test.
+The bounded temporary source-AAP outage for successor Windows testing is now
+approved. Only the selected source AAP may be gracefully stopped; test execution,
+owned cleanup, source restart and service/EDA checks remain separately verified.
 Final teardown passed: all five Windows guests and their owned
 resources were removed, with unrelated guests and golden images preserved.
 This repaired, staged reset does not establish fresh unattended provisioning.
@@ -82,12 +85,14 @@ approval-button sizing and SSH-tunnel origin fixes. The existing installation's
 backend HTTPS and strict nginx trust passed verification; the operator confirmed
 both external and localhost access work. Its shared CaC importer and target
 prerequisites are prepared. The AAP-driven test deployment now follows the chosen
-password policy: require a protected operator password for a fresh setup and
-preserve existing user authentication. The shared-default/first-login proposal
-was withdrawn. The private candidate is prepared on source 0.35.0 and waits only
-for secure password input. Use 12–1024 characters for that revision: its setup
-and login currently have different maximum lengths. A fix release is not yet
-verified, and no test app deployment has run.
+password policy: create the password at first browser opening for a fresh setup,
+without a default or a password supplied before deployment, and preserve existing
+user authentication on updates. Earlier Vault-password requests are withdrawn.
+The application owner reports 0.35.1 published and verified, including a password
+length fix, but confirms it still lacks first-opening password creation. The
+private candidate remains on 0.35.0, held for that feature and compatible
+deployment verification; no password input or test app deployment is pending
+from the user.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
