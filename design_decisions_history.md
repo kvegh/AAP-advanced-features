@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Continue testing on the successor and retire only the old AAP — 2026-11-08
+
+Implementation `c121133` advances AutoDeploy to `05f7353` (0.48.22). The owner
+withdrew the earlier source-AAP restart and directed AAP-only retirement after
+normal Windows cleanup verifies its original baseline. The other predecessor
+guests, source images and production remain protected; remaining tests belong
+on the successor. Hactar `1bc2557` preserves this decision and all 165 encrypted
+task records with previous IDs and scope retained.
+
+Source-only assessment confirms the current decommission job selects the whole
+same-version environment. No safe AAP-only mode is implemented or selected here;
+the implementation choice remains with the owner. Current Windows application
+checks and later owned cleanup continue independently, with the old AAP off and
+intact. This index update adds no retirement feature or live resource operation.
+
 ## Reference the demonstrated lock repair and staged Windows progress — 2026-11-08
 
 Implementation `6cfbce7` advances AutoDeploy to `7710c03` (0.48.21) and Windows
