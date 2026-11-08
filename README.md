@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.17, including the guest SSH connection correction
+uses AutoDeploy source 0.48.18, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -48,16 +48,21 @@ additional service tests remain unverified.
 Remote and self-targeted AutoDeploy configuration imports passed. The successor
 also received its AIOps definitions with new EDA activations disabled; importing
 those definitions does not deploy the website, monitoring or private MCP services.
-Windows and Assistant configuration setup also passed on the successor through
-their prerequisite/import jobs. Their fresh VM tests remain separate work.
+Windows, Assistant, Automation Orchestrator and RHEL configuration setup passed
+on the successor through their prerequisite/import jobs. RHEL's independent
+EE-only preparation was verified live. These imports do not test OpenShift or
+external patching workloads; Windows' fresh runtime still needs sufficient RAM.
 The successor website now passes normal DNS and trusted HTTPS checks with
 monitoring and auto-arm off. Separate Assistant test settings and the existing
 minimal Linux provisioning template are imported, preserving predecessor data;
-the disposable software test and owned cleanup remain separate acceptance steps.
+the complete model-free software test and normal owned cleanup both passed on
+pinned Assistant source 1.11.8. All five original guests and golden images were
+preserved. This excludes provider-authentication transfer and model inference.
 The source also fixes verified Linux SSH user/port publication for AIOps imports;
-the existing caller pin and actual new-guest consumer test remain to be verified.
-Reviewed EE-only cases can now prepare independently with no PAH repository
-prerequisites; their normal metadata setup remains separate from runtime tests.
+published [Assistant source 1.11.11](https://github.com/kvegh/assistant-team/commit/9d7640257e9ff4f26de1d4e4f148b1d59c737975)
+now pins that helper fix. Actual new-guest publication and AIOps consumption
+remain separate runtime checks. Reviewed EE-only cases can prepare independently
+with no PAH repository prerequisites.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. The earlier-instance
 run passed all five guest creation stages, AD, evaluation activation, WSUS, exact
@@ -79,7 +84,10 @@ both external and localhost access work. Its shared CaC importer and target
 prerequisites are prepared. The AAP-driven test deployment now follows the chosen
 password policy: require a protected operator password for a fresh setup and
 preserve existing user authentication. The shared-default/first-login proposal
-was withdrawn; private configuration and secure input verification have resumed.
+was withdrawn. The private candidate is prepared on source 0.35.0 and waits only
+for secure password input. Use 12–1024 characters for that revision: its setup
+and login currently have different maximum lengths. A fix release is not yet
+verified, and no test app deployment has run.
 
 The AIOps reference adds bounded agent repair and native recovery checks. Normal
 Claude installation verified private AAP MCP with trusted application-scoped TLS
