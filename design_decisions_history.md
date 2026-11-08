@@ -1,5 +1,21 @@
 # Design decisions history
 
+## Reference verified successor configuration setup — 2026-11-08
+
+Implementation `790ec04` advances AutoDeploy to `f88d678` (source 0.48.11) and
+Windows to `578636e` (source 1.1.12). AutoDeploy's runtime fix remains `2cd85c8`;
+the later source documents successful remote/self configuration imports,
+Windows and Assistant setup, and the AIOps saved-settings refresh. The Windows
+fix `847f0b5` places guest release after verified evaluation activation and
+temporary-network cleanup. Production retains its tested source pin.
+
+The overview separates the earlier instance's successful functional tests from
+the successor's completed configuration imports and pending fresh VM tests.
+Hactar checkpoint `f0b4ec0` retains 160 encrypted task records and the pending
+availability decision. Diff checks and the four version-tool tests passed;
+other project references and HTTPS submodule URLs are unchanged. This update
+does not deploy an application or alter live resources.
+
 ## Reference completed AAP-only successor acceptance — 2026-11-08
 
 Implementation `b8b11502d9568bdb82e10804b40a08e67c81578c` advances AutoDeploy to
