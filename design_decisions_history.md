@@ -1,5 +1,17 @@
 # Design decisions history
 
+## Allow the observed DNS cache to expire during monitoring setup — 2026-11-08
+
+Implementation `f80756f` advances the AIOps reference to `3420f92` (1.1.7).
+The existing monitoring readiness wait was shorter than the controlled zone's
+observed ten-minute negative cache. Functional fix `93a30e3` increases only
+that bounded retry window; it returns immediately on success and preserves
+address, IPv6 and trusted-certificate checks. Fourteen focused regressions and
+strict task lint passed. Source publication is independently verified; the
+normal owned deployment retry and full repair demonstration remain separate
+runtime checks. No extra clone, resolver exception or helper was introduced.
+Other project references and HTTPS submodule URLs are preserved.
+
 ## Reference verified reset, narrow retirement and offhost recovery — 2026-11-08
 
 Implementation `81b0afd` advances AutoDeploy to `4f171f4` (0.48.23) and public
