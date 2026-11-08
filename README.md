@@ -63,8 +63,12 @@ The source also fixes verified Linux SSH user/port publication for AIOps imports
 published [Assistant source 1.11.11](https://github.com/kvegh/assistant-team/commit/9d7640257e9ff4f26de1d4e4f148b1d59c737975)
 now pins that helper fix. Successor testserver and TRA deployment, native/source
 publication and normal AIOps resource refresh have passed. Complete AIOps
-services and outage/repair acceptance remain open. Reviewed EE-only cases prepare independently
-with no PAH repository prerequisites.
+services and outage/repair acceptance remain open. AIOps source 1.1.7 extends
+the existing monitoring frontend DNS check to cover the observed ten-minute
+negative cache, retaining address, IPv6 and trusted-certificate checks. Its 14
+focused regressions and strict task lint passed; the owned deployment retry is
+a separate live check. Reviewed EE-only cases prepare independently with no
+PAH repository prerequisites.
 The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
 login/RBAC, both exact April OS baselines, application baseline/upgrades and
 combined verification. Normal cleanup on `a11695c` then removed all five owned
