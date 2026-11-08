@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.14, including the guest SSH connection correction
+uses AutoDeploy source 0.48.16, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -56,6 +56,8 @@ minimal Linux provisioning template are imported, preserving predecessor data;
 the disposable software test and owned cleanup remain separate acceptance steps.
 The source also fixes verified Linux SSH user/port publication for AIOps imports;
 the existing caller pin and actual new-guest consumer test remain to be verified.
+Reviewed EE-only cases can now prepare independently with no PAH repository
+prerequisites; their normal metadata setup remains separate from runtime tests.
 The Windows reference includes the baseline, approved evaluation activation,
 five-guest reset and final AAP-interface cleanup sequence. The earlier-instance
 run passed all five guest creation stages, AD, evaluation activation, WSUS, exact
