@@ -39,21 +39,30 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.8, including the guest SSH connection correction.
+uses AutoDeploy source 0.48.11, including the guest SSH connection correction
+and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
 a repair and continuation; fresh unattended provisioning and the successor's
 additional service tests remain unverified.
+Remote and self-targeted AutoDeploy configuration imports passed. The successor
+also received its AIOps definitions with new EDA activations disabled; importing
+those definitions does not deploy the website, monitoring or private MCP services.
+Windows and Assistant configuration setup also passed on the successor through
+their prerequisite/import jobs. Their fresh VM tests remain separate work.
 The Windows reference includes the baseline, approved evaluation activation,
-five-guest reset and final AAP-interface cleanup sequence. All five guest creation
-stages, AD, evaluation activation, WSUS, exact April OS builds and the complete
-application baseline-to-upgrade chain passed. The approved repository firewall
+five-guest reset and final AAP-interface cleanup sequence. The earlier-instance
+run passed all five guest creation stages, AD, evaluation activation, WSUS, exact
+April OS builds and the complete application baseline-to-upgrade chain. The approved repository firewall
 rule was applied and tested; it is no longer an unanswered prerequisite. The
-current Windows reference is source 1.1.11, including the Python 3.9 file-check
-correction. Final teardown passed: all five Windows guests and their owned
+current Windows reference is source 1.1.12. Its completion order keeps guests
+isolated until evaluation activation and temporary-network cleanup succeed.
+Production is pinned to its previously tested source; this newer fix is for
+versioned test environments and still needs a fresh runtime test.
+Final teardown passed: all five Windows guests and their owned
 resources were removed, with unrelated guests and golden images preserved.
 This repaired, staged reset does not establish fresh unattended provisioning.
-The Assistant software validation and normal retirement passed.
+The earlier instance's Assistant software validation and normal retirement passed.
 
 Command Center is registered below at published source 0.34.0, including the
 approval-button sizing and SSH-tunnel origin fixes. The existing installation's
