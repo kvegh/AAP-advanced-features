@@ -1,5 +1,23 @@
 # Design decisions history
 
+## Reference the first-opening correction and approved Windows window — 2026-11-08
+
+Implementation `7a6ead2` advances AutoDeploy to `4a3310a` (source 0.48.19).
+The user clarified that a fresh CCNG installation creates its password at first
+browser opening, without a default or predeployment Vault password. Earlier
+descriptions of a required Vault password were the worker's mistaken
+interpretation and are superseded. Existing authentication stays preserved.
+The application owner reports published 0.35.1 fixes password length but does
+not implement first-opening setup, so the rollout waits on functionality,
+not user input. The retained candidate and registered source are unchanged.
+
+The user approved the existing bounded temporary source-AAP outage for successor
+Windows testing and owned cleanup, followed by source restart and verification.
+Production, other core guests, golden images and force shutdown stay excluded.
+Hactar `bfa1822` preserves the decision and all 163 encrypted recovery records.
+Approval is not evidence of successful execution. This index update changes
+documentation and the AutoDeploy reference only.
+
 ## Reference completed successor software and metadata checks — 2026-11-08
 
 Implementation `f3d2ef8` advances AutoDeploy to `8b71f4c` (source 0.48.18).
