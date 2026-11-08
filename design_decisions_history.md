@@ -1,5 +1,19 @@
 # Design decisions history
 
+## Reference completed AAP-only successor acceptance — 2026-11-08
+
+Implementation `b8b11502d9568bdb82e10804b40a08e67c81578c` advances AutoDeploy to
+`0c9305b` (source 0.48.8). The executable tested remains `30629f7`; the newer
+commit documents its completed four-stage acceptance and clarifies the installed
+stage-template run procedure. Trusted API/token access, a valid license and
+preservation of original guests/images were independently verified.
+
+The overview retains the first-stage repair and continuation limitation and
+separates AAP-only success from fresh unattended provisioning and additional
+successor use-case tests. Hactar checkpoint `63f224e` retains 152 full encrypted
+task records with all previous IDs and the original user handover preserved.
+Other project references and live configuration are unchanged by this update.
+
 ## Align the project list and remote RHEL target description — 2026-11-07
 
 Implementation `c35e88cdfa7ddb2e3fa30405f188a1186c195081` adds the already
