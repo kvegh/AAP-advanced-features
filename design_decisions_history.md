@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reference the website result and Linux registration correction — 2026-11-08
+
+Implementation `25beff7` advances AutoDeploy to `e39202f` (source 0.48.14).
+Its fix `785e613` publishes the verified Linux SSH user and port for the existing
+AIOps consumer, retaining conflict refusal and Windows behavior. All 55 focused
+checks passed; the caller pin and real new-guest consumer run remain pending.
+
+The overview records successful successor website DNS/HTTPS verification and
+private Assistant preparation `0157adc`, encrypted pair `1997664`, and normal
+import. Earlier-instance data is retained, while the disposable software test
+and owned retirement remain separate acceptance work. Hactar `8a5fd43` retains
+162 full encrypted task records with all prior IDs/scope preserved. Other
+submodule references and HTTPS URLs are unchanged; this index update performs
+no live operation.
+
 ## Reference verified successor configuration setup — 2026-11-08
 
 Implementation `790ec04` advances AutoDeploy to `f88d678` (source 0.48.11) and
