@@ -33,10 +33,11 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Current published source references are AutoDeploy **0.49.14**, AIOps **1.4.1**,
-Windows **1.1.20** and Command Center **0.45.1**. These Git references do not
-establish live application acceptance. The separate Assistant deployment source
-is published at **1.11.15**; it is distinct from the intelligent-assistant
+Current published source references are AutoDeploy **0.50.1**, AIOps **1.6.0**,
+Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
+establish live application acceptance. The separate
+[Assistant deployment source](https://github.com/kvegh/assistant-team)
+is published at **1.11.17**; it is distinct from the intelligent-assistant
 submodule listed below.
 Existing production projects retain their tested commit pins. Updating these
 references deploys nothing; fresh application deployment resolves its source
@@ -46,7 +47,11 @@ An AAP-only successor deployment completed all four stages with trusted API
 access, a valid license and original guests preserved. Stage 01 needed a repair
 and continuation; fresh unattended provisioning remains unverified. Remote and
 self-targeted configuration imports passed. Updated AIOps, Windows and Assistant
-CaC imports also passed, separately from their runtime tests.
+CaC imports also passed, separately from their runtime tests. The latest normal
+AutoDeploy self-CaC run passed (job 300). The new AIOps import did not reach its
+playbook: project sync 305 stopped on a `community.general:11.4.0` artifact hash
+mismatch before job 304 executed its playbook. Read-only diagnosis is active;
+the integrity check is retained rather than bypassed.
 
 The staged Windows demonstration passed AD login/RBAC, both exact OS baselines,
 application baseline/upgrades and combined verification. Normal Windows-only
@@ -56,24 +61,25 @@ retains its tested source pin. The separate model-free Assistant installation
 and owned retirement passed; model inference and provider authentication remain
 outside that result.
 
-The successor website passes normal DNS and trusted HTTPS checks. Monitoring
-clone configuration and exact testserver agent installation passed earlier;
-a real outage exposed missing monitoring-to-hypervisor HTTPS access. AIOps now
-owns those per-instance permissions. Its native Ansible rewrite and existing
-private-source reader are published, and normal source retrieval passed. Live
-firewall/CaC reconciliation and the complete outage/EDA restore/rearm loop remain
-unfinished. Target-side MCP builds replace hypervisor image/RPM transfers;
-registration, repositories and packages passed, while image-build diagnosis and
-authenticated MCP/repair acceptance remain open. Registry/build-host work stays
-deferred.
+The successor website passes normal DNS and trusted HTTPS checks. The normal
+website outage, EDA restoration and rearm sequence passed (292, 294 and 296),
+followed by a successful reset (298). AIOps owns the monitoring VM's per-instance
+permissions through native Ansible and its existing private-source reader.
+Target-side MCP builds replace hypervisor image/RPM transfers; real authenticated
+private MCP queries passed in jobs 283 and 288. These runtime results belong to
+their recorded tested revisions. New source publication does not prove a fresh
+Windows workflow, Command Center deployment or two-account CloudCLI setup.
+Registry/build-host work stays deferred.
 An earlier environment passed the bounded agent-repair loop; that historical
 result does not establish acceptance of this successor.
 
 CaC is the sole desired-state authority, separated by instance and application
 VM. The owner approved saving a newly verified monitoring VM inside its existing
 Zabbix VM definition/configuration through the existing importer, then continuing
-configuration. That producer is being implemented without a separate ownership
-store or additional saved template. Wider helper/sidecar cleanup is queued;
+configuration. That producer is now published, without a separate ownership
+store or additional saved template; its receiving AIOps refresh is waiting on
+the collection-integrity failure above. Fresh unattended producer acceptance
+remains separate. Wider helper/sidecar cleanup is queued;
 its bounded source inventory is complete. Preserve unrelated resources and
 application-native authentication/data when applying CaC additions or removals.
 
@@ -87,10 +93,11 @@ separate from the unfinished fresh-successor deployment and browser acceptance.
 The retired predecessor AAP VM is removed; its related DNS/proxy/credential
 cleanup and companion guests remain for the later agreed retirement sequence.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
-Complete successor acceptance and scoped cleanup must precede the conditional
-test-hypervisor reinstall. Production is excluded. Current tasks, decisions and
-observed failures are retained in the linked Beads-derived overviews and encrypted
-recovery export rather than duplicated as a run diary here.
+The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
+started. Complete successor acceptance and scoped cleanup must precede them;
+production is excluded. Current tasks, decisions and observed failures are
+retained in the linked Beads-derived overviews and encrypted recovery export
+rather than duplicated as a run diary here.
 
 The Windows demo retains its approved HTTPS/NTLM certificate-validation
 exception, recorded as false. Authenticated Windows facts, exact clone ownership
