@@ -33,7 +33,7 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Current published source references are AutoDeploy **0.50.1**, AIOps **1.6.2**,
+Current published source references are AutoDeploy **0.50.3**, AIOps **1.6.2**,
 Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
 establish live application acceptance. The separate
 [Assistant deployment source](https://github.com/kvegh/assistant-team)
@@ -49,8 +49,8 @@ and continuation; the next fresh provisioning check belongs to the planned v18
 sequence. Remote and
 self-targeted configuration imports passed. Updated AIOps, Windows and Assistant
 CaC imports also passed, separately from their runtime tests. The latest normal
-imports passed for AutoDeploy self-CaC (300), AIOps (306), Windows (309) and
-Assistant (312). The earlier collection-artifact issue is resolved through the
+imports passed for AutoDeploy self-CaC, AIOps, Windows and Assistant.
+The earlier collection-artifact issue is resolved through the
 normal path, with integrity checks retained.
 
 The staged Windows demonstration passed AD login/RBAC, both exact OS baselines,
@@ -64,20 +64,21 @@ and owned retirement passed; model inference and provider authentication remain
 outside that result.
 
 The successor website passes normal DNS and trusted HTTPS checks. The normal
-website outage, EDA restoration and rearm sequence passed (292, 294 and 296),
-followed by a successful reset (298). AIOps owns the monitoring VM's per-instance
+website outage, EDA restoration and rearm sequence passed, followed by a
+successful reset. AIOps owns the monitoring VM's per-instance
 permissions through native Ansible and its existing private-source reader.
 Target-side MCP builds replace hypervisor image/RPM transfers; real authenticated
-private MCP queries passed in jobs 283 and 288. The agent CLI installer also
-passed all three private MCP checks (317), without a model request. These runtime
+private MCP queries passed. The agent CLI installer also passed all three
+private MCP checks without a model request. These runtime
 results belong to their recorded tested revisions. The controlled model repair
-is currently testing; no successful model result is claimed. Registry/build-host
+is unfinished while its required native approval remains pending; no successful
+model result is claimed. Registry/build-host
 work stays deferred.
 
 CaC is the sole desired-state authority, separated by instance and application
 VM. The owner approved saving a newly verified monitoring VM inside its existing
 Zabbix VM definition/configuration through the existing importer, then continuing
-configuration. Its normal producer run (319) and follow-up import (322) passed:
+configuration. Its normal producer run and follow-up import passed:
 the VM's actual source-inventory host and hypervisor group, encrypted Git/Vault
 reload, complete four-client firewall policy and website health were verified.
 No separate ownership store or additional saved template was added. Wider
@@ -97,6 +98,14 @@ a v17 completion gate.
 
 The retired predecessor AAP VM is removed; its related DNS/proxy/credential
 cleanup and companion guests remain for the later agreed retirement sequence.
+Published external teardown now uses durable AIOps CaC and the existing
+allocation registry, including surviving instances, while reusing existing
+authentication, data stores and Job Templates. Sixty-nine focused source checks,
+lint, syntax and an independent scoped review passed. The first read-only
+preview stopped safely on two missing saved job settings. Those settings were
+aligned with credentials and unrelated properties preserved; the specific
+check-mode retry is pending. This does not establish a completed preview or
+actual teardown.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
 started. Complete successor acceptance and scoped cleanup must precede them;
