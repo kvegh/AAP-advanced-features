@@ -103,9 +103,10 @@ allocation registry, including surviving instances, while reusing existing
 authentication, data stores and Job Templates. Sixty-nine focused source checks,
 lint, syntax and an independent scoped review passed. The first read-only
 preview stopped safely on two missing saved job settings. Those settings were
-aligned with credentials and unrelated properties preserved; the specific
-check-mode retry is pending. This does not establish a completed preview or
-actual teardown.
+aligned with credentials and unrelated properties preserved. The targeted
+check-mode retry failed safely at another existing bootstrap prerequisite;
+read-only diagnosis is comparing that guard with approved CaC. Neither a
+completed preview nor actual teardown is established.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
 started. Complete successor acceptance and scoped cleanup must precede them;

@@ -1,5 +1,33 @@
 # Design decisions history
 
+## Reference durable external teardown while live preview remains incomplete — 2026-11-09
+
+Implementation `8550fa3108474b46da745b0d4a45b2640ab0eff4` advances only the
+AutoDeploy link to `bde6ae1e06ec770892e9f0ed65b8d13c91013bc7` (0.50.3), whose
+functional implementation is `c56ac82`. All thirteen other links and HTTPS
+submodule configuration are preserved, including the current RHEL and ServiceNow
+references.
+
+The external teardown implementation consumes existing durable AIOps CaC and
+allocation records, including surviving instances, through the existing
+authentication and job path. Sixty-nine focused source checks, lint, syntax and
+an independent scoped review passed. No authentication mechanism, helper, store
+or Job Template is added by this reference update.
+
+The initial read-only preview stopped on two missing saved job prerequisites.
+Only those existing settings were aligned; credential assignments and unrelated
+properties remained unchanged. The targeted check-mode retry then failed safely
+before cleanup at an existing bootstrap prerequisite. Its exact guard is under
+read-only comparison with approved CaC. Source verification does not establish
+a completed live preview or accepted teardown fix.
+
+Detailed job and approval evidence remains in protected tracking. The public
+overview keeps outcomes and scope without private thread identifiers or
+environment values. Controlled model repair still awaits its native approval;
+no model success is claimed. CloudCLI approval remains outside the v17 gate,
+new Command Center live checks belong to v18, and physical reinstall has not
+started. This is a local documentation/reference checkpoint only.
+
 ## Record completed successor checks and the remaining model exercise — 2026-11-09
 
 Implementation `055b17c6453dbc2d5d3b877506585d2fdae88900` advances only AIOps
