@@ -1,5 +1,31 @@
 # Design decisions history
 
+## Reference repaired teardown loading without claiming completed cleanup — 2026-11-09
+
+Implementation `1fad34014a0a62f5ef051a961165e64e13bca10c` selects AutoDeploy
+`ca686daf96a1ad65f1a943736fc792343fa5fc29` (0.50.7). All thirteen other
+submodule links and HTTPS URLs remain unchanged. Its underlying changes cover
+durable ownership (`c56ac82`), native configuration loading (`859b6cc`) and
+boolean-only failure context (`03e09d7`). Their affected source checks passed:
+69 for the initial ownership work, 75 for loading, and seven for failure context,
+including verbose-output privacy. Scoped lint, syntax and independent review
+remain distinct from live teardown acceptance.
+
+The existing two non-token saved job settings were reconciled with credentials
+and unrelated properties preserved. The latest read-only preview passed both
+configuration loaders, then stopped before deletion at an existing native
+ownership, bridge or static-reservation guard. The exact mismatch remains
+unknown. New diagnostic context reports booleans without exposing values.
+
+A separate read-only diagnostic remains at an SSH host-key prompt despite its
+fingerprint matching the registered pin. No cancellation, retry or SSH trust
+change has occurred. Model-baseline and CloudCLI native approvals also remain
+pending. Detailed job, thread, timestamp and environment evidence stays in
+protected tracking; this public record claims no completed preview, actual
+teardown, successful model repair or physical reinstall. New Command Center
+live acceptance belongs to the planned successor sequence. Publishing source
+and accurate status does not depend on those unfinished live operations.
+
 ## Reference durable external teardown while live preview remains incomplete — 2026-11-09
 
 Implementation `8550fa3108474b46da745b0d4a45b2640ab0eff4` advances only the
