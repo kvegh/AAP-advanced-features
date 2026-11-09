@@ -33,7 +33,7 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Current published source references are AutoDeploy **0.50.3**, AIOps **1.6.2**,
+Selected published source references are AutoDeploy **0.50.7**, AIOps **1.6.2**,
 Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
 establish live application acceptance. The separate
 [Assistant deployment source](https://github.com/kvegh/assistant-team)
@@ -98,15 +98,16 @@ a v17 completion gate.
 
 The retired predecessor AAP VM is removed; its related DNS/proxy/credential
 cleanup and companion guests remain for the later agreed retirement sequence.
-Published external teardown now uses durable AIOps CaC and the existing
-allocation registry, including surviving instances, while reusing existing
-authentication, data stores and Job Templates. Sixty-nine focused source checks,
-lint, syntax and an independent scoped review passed. The first read-only
-preview stopped safely on two missing saved job settings. Those settings were
-aligned with credentials and unrelated properties preserved. The targeted
-check-mode retry failed safely at another existing bootstrap prerequisite;
-read-only diagnosis is comparing that guard with approved CaC. Neither a
-completed preview nor actual teardown is established.
+Published external teardown uses durable AIOps CaC and the existing allocation
+registry, including surviving instances, through existing authentication and
+Job Templates. The ownership, native loading and value-free failure-context
+changes passed focused source checks, lint, syntax and independent scoped review.
+The latest read-only preview passed both configuration loaders, then stopped
+before deletion at a native UUID, bridge or static-reservation guard. The exact
+mismatch remains unknown. A separate read-only diagnostic is waiting on an SSH
+host-key prompt despite its fingerprint matching the registered pin. It has not
+been cancelled or retried, and SSH trust remains unchanged. Neither a completed
+preview nor actual teardown is established.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
 started. Complete successor acceptance and scoped cleanup must precede them;
