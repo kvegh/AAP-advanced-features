@@ -33,102 +33,64 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-The current AutoDeploy reference includes the concise demo guide, shared
-release/retirement helpers, selected private AAP MCP issuer trust and explicit
-target prompts for the three later infrastructure stages. Its public overview
-includes the closed agent-remediation acceptance, deferred independent CloudCLI
-CaC work and current integration inputs;
-full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.28, including the guest SSH connection correction
-and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
+Current published source references are AutoDeploy **0.49.14**, AIOps **1.4.1**,
+Windows **1.1.20** and Command Center **0.45.1**. These Git references do not
+establish live application acceptance. The separate Assistant deployment source
+is published at **1.11.15**; it is distinct from the intelligent-assistant
+submodule listed below.
+Existing production projects retain their tested commit pins. Updating these
+references deploys nothing; fresh application deployment resolves its source
+under the selected project's normal procedure.
+
 An AAP-only successor deployment completed all four stages with trusted API
-access, valid license and original guests preserved. The first stage required
-a repair and continuation; fresh unattended provisioning and the successor's
-additional service tests remain unverified.
-Remote and self-targeted AutoDeploy configuration imports passed. The successor
-also received its AIOps definitions with new EDA activations disabled; importing
-those definitions does not deploy the website, monitoring or private MCP services.
-Windows, Assistant, Automation Orchestrator and RHEL configuration setup passed
-on the successor through their prerequisite/import jobs. RHEL's independent
-EE-only preparation was verified live. These imports do not test OpenShift or
-external patching workloads. The staged Windows functional test and its normal
-owned cleanup have passed, preserving unrelated guests and source images.
-The successor website now passes normal DNS and trusted HTTPS checks with
-monitoring and auto-arm off. Separate Assistant test settings and the existing
-minimal Linux provisioning template are imported, preserving predecessor data;
-the complete model-free software test and normal owned cleanup both passed on
-pinned Assistant source 1.11.8. All five original guests and golden images were
-preserved. This excludes provider-authentication transfer and model inference.
-The source also fixes verified Linux SSH user/port publication for AIOps imports;
-published [Assistant source 1.11.11](https://github.com/kvegh/assistant-team/commit/9d7640257e9ff4f26de1d4e4f148b1d59c737975)
-now pins that helper fix. Successor testserver and TRA deployment, native/source
-publication and normal AIOps resource refresh have passed. Complete AIOps
-services and outage/repair acceptance remain open. AIOps source 1.1.8 retains
-the bounded DNS correction and adds a fresh website-sample gate before forwarding,
-with standard retry failure handling. Fifteen focused tests and strict lint
-passed. The normal monitoring deployment on 1.1.7 and exact testserver agent
-installation passed, with the same clone and trusted HTTPS Basic gate verified.
-A real outage exposed a missing monitoring-guest permission to the hypervisor
-bridge on HTTPS, before any event reached EDA. The owner chose AIOps-owned
-permissions added on deployment and removed on decommission. The assigned
-firewall integration is unfinished; the earlier AutoDeploy exception is
-superseded and its unvalidated draft must not be deployed. The website is
-restored and disarmed, both activations
-are disabled, and live acceptance of the new guard remains open. Reviewed
-EE-only cases prepare independently with no PAH repository prerequisites.
+access, a valid license and original guests preserved. Stage 01 needed a repair
+and continuation; fresh unattended provisioning remains unverified. Remote and
+self-targeted configuration imports passed. Updated AIOps, Windows and Assistant
+CaC imports also passed, separately from their runtime tests.
 
-CaC is the sole desired-state authority, with independent encrypted sections
-for each instance's hypervisor, resources, permissions and validation. The
-existing cleanup task replaces unnecessary helpers and custom deployed sidecar
-state with readable Ansible. Its bounded source inventory is complete; the
-firewall/isolation rewrite is in progress and has no live acceptance yet.
-Applying CaC must propagate removals while preserving unrelated resources and
-application-native authentication/data. MCP images are to be built on the
-selected target from public recipes and encrypted instance settings; a registry
-or separate build host remains deferred.
-The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
-login/RBAC, both exact April OS baselines, application baseline/upgrades and
-combined verification. Normal cleanup on `a11695c` then removed all five owned
-guests and the Windows-only AAP connection. Production retains its tested pin.
-The new dependency `e0a96b1` has 37 focused lock/diagnostic checks; cleanup consumed
-that reviewed dependency, while live lock contention and the original masked
-failure's cause remain unproved. The original workflow required continuation,
-so fresh unattended execution is still an acceptance gap.
+The staged Windows demonstration passed AD login/RBAC, both exact OS baselines,
+application baseline/upgrades and combined verification. Normal Windows-only
+cleanup preserved unrelated guests and golden images. Its original workflow
+needed continuation, so a fresh uninterrupted run remains required. Production
+retains its tested source pin. The separate model-free Assistant installation
+and owned retirement passed; model inference and provider authentication remain
+outside that result.
 
-After Windows baseline verification, the owner directed one-off removal of only
-the predecessor AAP VM and its runtime clone. Survivor checks passed; its DNS,
-proxy and credential records remain for later scoped cleanup. Other predecessor
-guests remain running. No partial-decommission framework was introduced.
-Private Windows configuration `512e247` (0.0.2) now includes the already registered
-selected issuer when missing, with legacy/current bundles unchanged and eight
-native rendering checks passed. Next-instance runtime verification remains open.
-The 22 MCP artifact files also have a verified immutable offhost copy and
-encrypted restore metadata in Hactar's existing download-evidence Vault.
+The successor website passes normal DNS and trusted HTTPS checks. Monitoring
+clone configuration and exact testserver agent installation passed earlier;
+a real outage exposed missing monitoring-to-hypervisor HTTPS access. AIOps now
+owns those per-instance permissions. Its native Ansible rewrite and existing
+private-source reader are published, and normal source retrieval passed. Live
+firewall/CaC reconciliation and the complete outage/EDA restore/rearm loop remain
+unfinished. Target-side MCP builds replace hypervisor image/RPM transfers;
+registration, repositories and packages passed, while image-build diagnosis and
+authenticated MCP/repair acceptance remain open. Registry/build-host work stays
+deferred.
+An earlier environment passed the bounded agent-repair loop; that historical
+result does not establish acceptance of this successor.
 
-Command Center is registered below at published source 0.37.0. The existing installation's
-backend HTTPS and strict nginx trust passed verification; the operator confirmed
-both external and localhost access work. Its shared CaC importer and target
-prerequisites are prepared. The owner clarified that existing setup creates
-a user-chosen password when absent and preserves configured authentication.
-The earlier missing-feature blocker is withdrawn. Published 0.37.0 documents
-this interactive behavior; its Ansible path needs protected input only without
-authentication. The retained private candidate remains on 0.35.0 and needs
-successor data/source reconciliation. Actual guest readiness and the existing
-noninteractive setup path are being checked before requesting any further input.
-The AAP-driven successor deployment and login checks remain unfinished; no
-new password input is currently requested from the owner.
+CaC is the sole desired-state authority, separated by instance and application
+VM. The owner approved saving a newly verified monitoring VM inside its existing
+Zabbix VM definition/configuration through the existing importer, then continuing
+configuration. That producer is being implemented without a separate ownership
+store or additional saved template. Wider helper/sidecar cleanup is queued;
+its bounded source inventory is complete. Preserve unrelated resources and
+application-native authentication/data when applying CaC additions or removals.
 
-The earlier AIOps test environment proved bounded agent repair and native recovery checks. Its
-Claude installation verified private AAP MCP with trusted application-scoped TLS
-and checked the Linux and Zabbix MCP connections. The controlled service-outage
-rehearsal then passed: a real monitoring event reached EDA, one bounded agent
-invocation launched one saved repair, and native service/fresh recovery checks
-passed. The scoped activations were running at that historical checkpoint; the
-current successor state is described above. This tests a
-stopped service, not package removal or complete independent successor recovery.
-The existing production AIOps project is deliberately pinned to its previously tested
-commit so the new demo code can advance without changing that older runner.
-Shared desired configuration for new demo instances continues to use `main`.
+Fresh Command Center deployment must first verify the required trusted HTTPS and
+Basic-auth frontend. It uses the newest source at deployment, the maintained
+default installation directory, a separate agent workspace and a fresh Beads
+tracker only on first setup. Updates preserve existing authentication and
+trackers. Published source and the existing production proxy/access result are
+separate from the unfinished fresh-successor deployment and browser acceptance.
+
+The retired predecessor AAP VM is removed; its related DNS/proxy/credential
+cleanup and companion guests remain for the later agreed retirement sequence.
+Off-host input backups remain recorded in the existing encrypted Hactar evidence.
+Complete successor acceptance and scoped cleanup must precede the conditional
+test-hypervisor reinstall. Production is excluded. Current tasks, decisions and
+observed failures are retained in the linked Beads-derived overviews and encrypted
+recovery export rather than duplicated as a run diary here.
 
 The Windows demo retains its approved HTTPS/NTLM certificate-validation
 exception, recorded as false. Authenticated Windows facts, exact clone ownership
