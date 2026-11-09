@@ -1490,3 +1490,18 @@ The RHEL reference advances to0.5.7 with the witness framework removed and
 observed-failure protections retained. One complete RHSA then cutoff full-update
 cycle passed on Test and Prod, including already-current runs and exact version
 promotion. Other project references are unchanged. Implementation: `cf1b0f374fc16cc4ce01fd76c3375d4be8b0bf4f`.
+
+## 2026-11-09 — Add the public RHEL Server CaC project
+
+The owner requested public RHEL-ConfigAsCode and its separate private
+RHEL-ConfigAsCode-secrets companion. Only the public project is a submodule;
+actual host configuration belongs as whole-file Vault ciphertext outside this
+umbrella. The committed submodule URL uses HTTPS for GitHub linking, while
+agent-side Git operations use SSH.
+
+Implementation commit: `665565e`. The initial pin is source
+`976ab35fdad31c1b7d49b6619d2746bf12aef814`, version0.0.1. It records the
+RHEL9/x86_64 modular configuration scope, role catalogue and template proposal;
+no executable scanner, apply playbook, host capture or runtime acceptance is claimed.
+Unrelated project pointers are preserved. Submodule URL/pin, documentation and
+whitespace checks passed; no other submodule was initialized or changed.
