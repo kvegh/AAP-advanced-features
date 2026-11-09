@@ -1,5 +1,25 @@
 # Design decisions history
 
+## Refresh published demo references and shorten the current overview — 2026-11-09
+
+Implementation `7e800c575450768c468818e3b97ed183ca58f6cf` advances only four
+source references: AutoDeploy `ecdf8e6` (0.49.14), AIOps `b78a800` (1.4.1),
+Windows `08847a3` (1.1.20) and Command Center `1c533b1` (0.45.1). The last
+version was read from its SSH-fetched published package metadata. The separate
+Assistant source is 1.11.15; the intelligent-assistant pointer remains unchanged.
+All other pointers, including the newly added RHEL configuration project, and
+the HTTPS submodule URLs are preserved.
+
+The README now gives current published references, useful verified outcomes and
+remaining acceptance gaps instead of repeating a lengthy run diary. Full task
+history remains in Beads, its encrypted recovery export and project decision
+histories. The approved new monitoring VM record belongs in its existing
+per-instance Zabbix VM definition/configuration, using the existing importer.
+Normal configuration imports and private-source retrieval have passed; live
+firewall reconciliation, MCP builds, fresh applications and the complete
+successor workflow remain unfinished. Production pins and the conditional
+test-only physical reinstall boundary are unchanged. This update deploys nothing.
+
 ## Reference the Ansible/CaC cleanup scope and source inventory — 2026-11-09
 
 AutoDeploy `a44e909` (0.48.28), following scope documentation `e23dad0`, mirrors
