@@ -1,5 +1,36 @@
 # Design decisions history
 
+## Record completed successor checks and the remaining model exercise — 2026-11-09
+
+Implementation `055b17c6453dbc2d5d3b877506585d2fdae88900` advances only AIOps
+to published `1a935649562fff17a3aa9bc1d374e4eb4f050585` (1.6.2). AutoDeploy
+`992d331` (0.50.1), Windows `2c275da` (1.1.22), Command Center `afaccec`
+(1.1.0), the separate Assistant source reference (1.11.17) and all unrelated
+links retain their selected revisions. Current remote RHEL reference/history
+updates were merged normally before this change, preserving the other worker's
+work and the original implementation commit IDs. HTTPS submodule URLs remain
+unchanged.
+
+Normal imports now passed for AIOps (306), Windows (309) and Assistant (312).
+The earlier collection-artifact failure is resolved through the normal path,
+with integrity checks retained. The Windows reconciliation confirmed actual
+successor staged functional tests and normal owned cleanup; its task is closed.
+The original workflow needed continuation, but that historical limitation does
+not create another deployment or patching requirement.
+
+The agent CLI installer passed three real private MCP checks (317) without a
+model request. Producer 319 and its normal import child 322 verified the actual
+source inventory host/group, encrypted Git/Vault reload, complete four-client
+firewall policy and healthy website for the selected monitoring VM. The
+controlled model repair remains testing at this checkpoint; no successful model
+result is claimed.
+
+New Command Center infrastructure/domain/browser checks belong to v18.
+CloudCLI's pending native approval is separate from the v17 completion gate.
+OpenShift runtime stays deferred. The conditional test-hypervisor reinstall has
+not started, and production remains excluded. This documentation/reference
+publication performs no deployment, API write, approval bypass or new test.
+
 ## Reference coordinated sources and the verified successor demonstration — 2026-11-09
 
 Implementation `9dd5aa320abf5e641a29189d6a1717bfb4d981e4` advances only four
