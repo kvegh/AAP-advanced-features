@@ -1,5 +1,19 @@
 # Design decisions history
 
+## Reference the Ansible/CaC cleanup scope and source inventory — 2026-11-09
+
+AutoDeploy `a44e909` (0.48.28), following scope documentation `e23dad0`, mirrors
+the owner's sole-CaC authority, per-instance separation and helper/sidecar
+cleanup requirements. Its bounded source inventory is complete; actual file
+presence was not inspected. Hactar `50d0395` retains complete encrypted findings.
+The immediate firewall rewrite remains unfinished in this conversation, and
+the application-builder conversation retains application development.
+
+The offline MCP key-delivery choice is superseded by target-side image builds.
+The future registry/build-host option is deferred. This reference checkpoint
+does not apply firewall rules, delete server files, deploy software or start
+the conditional bare-metal rebuild. Other source references are preserved.
+
 ## Reference corrected setup behavior and delegated firewall work — 2026-11-09
 
 AutoDeploy `2b25410` (0.48.26) withdraws the incorrect missing-feature blocker

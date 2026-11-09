@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.26, including the guest SSH connection correction
+uses AutoDeploy source 0.48.28, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -76,6 +76,16 @@ superseded and its unvalidated draft must not be deployed. The website is
 restored and disarmed, both activations
 are disabled, and live acceptance of the new guard remains open. Reviewed
 EE-only cases prepare independently with no PAH repository prerequisites.
+
+CaC is the sole desired-state authority, with independent encrypted sections
+for each instance's hypervisor, resources, permissions and validation. The
+existing cleanup task replaces unnecessary helpers and custom deployed sidecar
+state with readable Ansible. Its bounded source inventory is complete; the
+firewall/isolation rewrite is in progress and has no live acceptance yet.
+Applying CaC must propagate removals while preserving unrelated resources and
+application-native authentication/data. MCP images are to be built on the
+selected target from public recipes and encrypted instance settings; a registry
+or separate build host remains deferred.
 The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
 login/RBAC, both exact April OS baselines, application baseline/upgrades and
 combined verification. Normal cleanup on `a11695c` then removed all five owned
