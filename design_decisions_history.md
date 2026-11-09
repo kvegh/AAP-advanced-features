@@ -1535,3 +1535,13 @@ No credential name, path or value is stored in the public source or this umbrell
 The private companion remains outside the submodules. Module policy is still
 an unapproved proposal, and executable scanner/apply behavior is not implemented.
 No unrelated project pointer was changed by this commit.
+
+## 2026-11-09 — Reference the incremental RHEL template draft
+
+Implementation commit: `2c6db71`. Only the public RHEL-ConfigAsCode pointer
+advances, to `8d92983ad94539dd97b9a455376782a04a6f4089`, version0.0.1.
+The owner requested one-module-at-a-time template work in the original order.
+The source starts with a commented root-password hash proposal awaiting scope
+agreement; later areas stay unexpanded. No scanner/apply implementation or
+runtime verification is implied. The existing README description remains
+accurate. The private companion and unrelated submodule pointers are unchanged.
