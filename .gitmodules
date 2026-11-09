@@ -37,3 +37,6 @@
 [submodule "command-center-ng"]
 	path = command-center-ng
 	url = https://github.com/kvegh/command-center-ng.git
+[submodule "RHEL-ConfigAsCode"]
+	path = RHEL-ConfigAsCode
+	url = https://github.com/kvegh/RHEL-ConfigAsCode.git
