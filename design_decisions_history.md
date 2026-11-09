@@ -1,5 +1,34 @@
 # Design decisions history
 
+## Reference coordinated sources and the verified successor demonstration — 2026-11-09
+
+Implementation `9dd5aa320abf5e641a29189d6a1717bfb4d981e4` advances only four
+existing links: AutoDeploy `992d331` (0.50.1), AIOps `dc9386a` (1.6.0), Windows
+`2c275da` (1.1.22) and Command Center `afaccec` (1.1.0). All source heads were
+independently read through the existing SSH transport; Command Center's version
+was read from that fetched commit's package metadata. The separate Assistant
+deployment source is `1e82e00` (1.11.17). It has no corresponding umbrella
+submodule, so the different intelligent-assistant link and HTTPS URL are retained.
+
+The current canonical base includes another worker's RHEL documentation update.
+All ten unrelated links, including both RHEL projects and ServiceNow, and the
+entire HTTPS submodule configuration remain exact. Preparation used an isolated
+clone; no canonical checkout, API configuration or runtime resource changed.
+
+The overview now records successful real private MCP queries (283 and 288),
+the website outage/restoration/rearm sequence (292, 294 and 296), reset (298)
+and normal AutoDeploy self-CaC (300). Those are results on their recorded tested
+revisions. The new AIOps import (304) has not executed its playbook because
+project sync 305 stopped at a collection artifact hash mismatch. Diagnosis is
+read-only and integrity checks remain enforced. Published producer and caller
+code does not establish a fresh Windows, Command Center or CloudCLI deployment.
+Fresh unattended producer acceptance is also separate.
+
+OpenShift runtime stays deferred. Successor acceptance and scoped cleanup still
+precede the conditional test-hypervisor-only reinstall and fresh v18 deployment;
+neither has started, and production remains excluded. Source-reference and
+documentation checks verify this index update, not a new application test.
+
 ## Refresh published demo references and shorten the current overview — 2026-11-09
 
 Implementation `7e800c575450768c468818e3b97ed183ca58f6cf` advances only four
