@@ -1525,3 +1525,13 @@ RHEL9/x86_64 modular configuration scope, role catalogue and template proposal;
 no executable scanner, apply playbook, host capture or runtime acceptance is claimed.
 Unrelated project pointers are preserved. Submodule URL/pin, documentation and
 whitespace checks passed; no other submodule was initialized or changed.
+
+## 2026-11-09 — Refresh the RHEL encryption-input documentation reference
+
+Implementation commit: `3242dd1`. The RHEL public source pin advances to
+`10309e62d0c39d8a292126c56b8ca497a94bb705`, still version0.0.1, to record
+the owner's selection of an existing protected external encryption password file.
+No credential name, path or value is stored in the public source or this umbrella.
+The private companion remains outside the submodules. Module policy is still
+an unapproved proposal, and executable scanner/apply behavior is not implemented.
+No unrelated project pointer was changed by this commit.
