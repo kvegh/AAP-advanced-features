@@ -39,7 +39,7 @@ target prompts for the three later infrastructure stages. Its public overview
 includes the closed agent-remediation acceptance, deferred independent CloudCLI
 CaC work and current integration inputs;
 full records remain in the separate encrypted Hactar checkpoint. This reference
-uses AutoDeploy source 0.48.25, including the guest SSH connection correction
+uses AutoDeploy source 0.48.26, including the guest SSH connection correction
 and acceptance of a canonical decimal-text inventory port at the AIOps boundary.
 An AAP-only successor deployment completed all four stages with trusted API
 access, valid license and original guests preserved. The first stage required
@@ -69,9 +69,11 @@ with standard retry failure handling. Fifteen focused tests and strict lint
 passed. The normal monitoring deployment on 1.1.7 and exact testserver agent
 installation passed, with the same clone and trusted HTTPS Basic gate verified.
 A real outage exposed a missing monitoring-guest permission to the hypervisor
-bridge on HTTPS, before any event reached EDA. Applying that permission is held
-on shared-firewall-record ownership; unattended publication from the saved-image
-job is not implemented. The website is restored and disarmed, both activations
+bridge on HTTPS, before any event reached EDA. The owner chose AIOps-owned
+permissions added on deployment and removed on decommission. The assigned
+firewall integration is unfinished; the earlier AutoDeploy exception is
+superseded and its unvalidated draft must not be deployed. The website is
+restored and disarmed, both activations
 are disabled, and live acceptance of the new guard remains open. Reviewed
 EE-only cases prepare independently with no PAH repository prerequisites.
 The Windows reference is source 1.1.16. Functional tests on `c54d4d4` passed AD
@@ -93,26 +95,26 @@ native rendering checks passed. Next-instance runtime verification remains open.
 The 22 MCP artifact files also have a verified immutable offhost copy and
 encrypted restore metadata in Hactar's existing download-evidence Vault.
 
-Command Center is registered below at published source 0.35.0, including the
-approval-button sizing and SSH-tunnel origin fixes. The existing installation's
+Command Center is registered below at published source 0.37.0. The existing installation's
 backend HTTPS and strict nginx trust passed verification; the operator confirmed
 both external and localhost access work. Its shared CaC importer and target
-prerequisites are prepared. The AAP-driven test deployment now follows the chosen
-password policy: create the password at first browser opening for a fresh setup,
-without a default or a password supplied before deployment, and preserve existing
-user authentication on updates. Earlier Vault-password requests are withdrawn.
-The application owner reports 0.35.1 published and verified, including a password
-length fix, but confirms it still lacks first-opening password creation. The
-private candidate remains on 0.35.0, held for that feature and compatible
-deployment verification; no password input or test app deployment is pending
-from the user.
+prerequisites are prepared. The owner clarified that existing setup creates
+a user-chosen password when absent and preserves configured authentication.
+The earlier missing-feature blocker is withdrawn. Published 0.37.0 documents
+this interactive behavior; its Ansible path needs protected input only without
+authentication. The retained private candidate remains on 0.35.0 and needs
+successor data/source reconciliation. Actual guest readiness and the existing
+noninteractive setup path are being checked before requesting any further input.
+The AAP-driven successor deployment and login checks remain unfinished; no
+new password input is currently requested from the owner.
 
-The AIOps reference adds bounded agent repair and native recovery checks. Normal
+The earlier AIOps test environment proved bounded agent repair and native recovery checks. Its
 Claude installation verified private AAP MCP with trusted application-scoped TLS
 and checked the Linux and Zabbix MCP connections. The controlled service-outage
 rehearsal then passed: a real monitoring event reached EDA, one bounded agent
 invocation launched one saved repair, and native service/fresh recovery checks
-passed. The scoped agent and website activations remain running. This tests a
+passed. The scoped activations were running at that historical checkpoint; the
+current successor state is described above. This tests a
 stopped service, not package removal or complete independent successor recovery.
 The existing production AIOps project is deliberately pinned to its previously tested
 commit so the new demo code can advance without changing that older runner.

@@ -1,5 +1,20 @@
 # Design decisions history
 
+## Reference corrected setup behavior and delegated firewall work — 2026-11-09
+
+AutoDeploy `2b25410` (0.48.26) withdraws the incorrect missing-feature blocker
+and keeps the successor rollout under verification. Published CCNG `f6c28a1`
+(0.37.0) documents password creation when absent and preservation on updates;
+the retained private candidate is separate and has not deployed that revision.
+The existing production proxy result remains a distinct completed scope.
+
+The owner chose AIOps ownership for Zabbix-specific access, replacing the
+AutoDeploy exception. Building Command Center owns the unfinished integration;
+its unvalidated draft is not included. Hactar `71d55df` preserves the corrected
+full encrypted task records and public overview. This reference update performs
+no deployment, authentication or firewall operation. Other references and
+HTTPS submodule URLs remain unchanged.
+
 ## Reference the sample-readiness correction and safe held state — 2026-11-08
 
 AutoDeploy `b22e413` (0.48.25) documents the proved missing monitoring-guest
