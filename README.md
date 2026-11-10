@@ -175,7 +175,7 @@ provides a focused repair for IIS MIME mappings required to serve UUP payloads.
 | `CMDB-for-AAP/` | [CMDB-for-AAP](https://github.com/kvegh/CMDB-for-AAP) | Authoritative host record for the demo estate, with git, ServiceNow and fact-generated flavours. |
 | `RHEL-sniperpatching/` | [RHEL-sniperpatching](https://github.com/kvegh/RHEL-sniperpatching) | Staged RHEL patching by one RHSA or multiple CVEs with live Satellite lookup, automatic baseline cutoffs, verified date-bounded repository publications, generic stage surveys and authoritative RPM proof; complete single-RHSA/cutoff/full Test/Prod cycle and receiving-AAP import/runtime verified. |
 | `command-center-ng/` | [command-center-ng](https://github.com/kvegh/command-center-ng) | Local agent command center with a RHEL 9 installer and AAP deployment playbook; its encrypted private CaC companion uses the shared AutoDeploy importer. |
-| `RHEL-ConfigAsCode/` | [RHEL-ConfigAsCode](https://github.com/kvegh/RHEL-ConfigAsCode) | RHEL 9/x86_64 Server CaC scope, System Roles catalogue and modular scan/apply template proposal, version 0.0.1. Executable scanning/applying is not implemented; actual host data belongs in a separate private Vault-encrypted companion outside this umbrella. |
+| `RHEL-ConfigAsCode/` | [RHEL-ConfigAsCode](https://github.com/kvegh/RHEL-ConfigAsCode) | RHEL 9/x86_64 CaC deployment playbooks, version 0.0.2: optional root hash, accounts/public keys, wheel sudo and SSH authentication. Development checks passed; AAP functional tests and the subsequent scanner remain pending. Actual configuration and generated keys belong only in the private Vault-encrypted companion outside this umbrella. |
 
 ## Cloning
 
