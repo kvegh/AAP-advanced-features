@@ -109,8 +109,18 @@ published address validator now accepts a unique, unexpired DHCP allocation
 when no static ownership exists, retaining the other identity and production
 guards. Focused native-policy checks, lint, syntax and scoped review passed.
 The stalled diagnostic was cancelled with approval; SSH trust remains unchanged.
-A new normal read-only preview is pending. Neither a completed preview nor actual
-teardown is established.
+The next preview passed address and native VM-identity checks for both selected
+instances, then stopped at related-resource ownership. An obsolete supplemental
+interface entry in the live inventory was aligned with already-agreeing CaC;
+physical absence and unchanged primary ownership were verified. The ownership
+guard remains intact. Both selected-instance normal check-mode previews then
+passed: address and ownership checks, the explicit preview endpoint, and lock
+and checkout cleanup completed with no failed or unreachable events. No actual
+stop or delete task started. This establishes paired preflight readiness, not
+actual teardown. The final controlled model exercise remains blocked on its
+native request and is the remaining acceptance dependency before cleanup and
+reinstall. CloudCLI and new Command Center checks remain outside the current
+environment's completion gate.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
 started. Complete successor acceptance and scoped cleanup must precede them;
