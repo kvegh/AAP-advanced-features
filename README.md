@@ -33,7 +33,7 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Selected published source references are AutoDeploy **0.50.7**, AIOps **1.6.2**,
+Selected published source references are AutoDeploy **0.50.9**, AIOps **1.6.2**,
 Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
 establish live application acceptance. The separate
 [Assistant deployment source](https://github.com/kvegh/assistant-team)
@@ -102,12 +102,15 @@ Published external teardown uses durable AIOps CaC and the existing allocation
 registry, including surviving instances, through existing authentication and
 Job Templates. The ownership, native loading and value-free failure-context
 changes passed focused source checks, lint, syntax and independent scoped review.
-The latest read-only preview passed both configuration loaders, then stopped
-before deletion at a native UUID, bridge or static-reservation guard. The exact
-mismatch remains unknown. A separate read-only diagnostic is waiting on an SSH
-host-key prompt despite its fingerprint matching the registered pin. It has not
-been cancelled or retried, and SSH trust remains unchanged. Neither a completed
-preview nor actual teardown is established.
+The earlier read-only preview passed both configuration loaders and the UUID
+and bridge checks, then stopped safely at the static-reservation check. A bounded
+native comparison confirmed that the selected guests use dynamic DHCP. The
+published address validator now accepts a unique, unexpired DHCP allocation
+when no static ownership exists, retaining the other identity and production
+guards. Focused native-policy checks, lint, syntax and scoped review passed.
+The stalled diagnostic was cancelled with approval; SSH trust remains unchanged.
+A new normal read-only preview is pending. Neither a completed preview nor actual
+teardown is established.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
 started. Complete successor acceptance and scoped cleanup must precede them;
