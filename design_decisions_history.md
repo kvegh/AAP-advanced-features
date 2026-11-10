@@ -1659,3 +1659,15 @@ The source starts with a commented root-password hash proposal awaiting scope
 agreement; later areas stay unexpanded. No scanner/apply implementation or
 runtime verification is implied. The existing README description remains
 accurate. The private companion and unrelated submodule pointers are unchanged.
+
+## 2026-11-10 — Reference the first RHEL deployment patch
+
+Implementation commit: `4701ab5` advances only the public RHEL-ConfigAsCode pin
+to source `b206bd3` (deployment implementation `9e64c7c`), version0.0.2, and
+updates its README description. The source implements optional root hash,
+declared accounts/public keys, wheel sudo and SSH password authentication.
+The companion contains actual defaults and generated keypairs only as whole-file
+Vault ciphertext and remains outside the umbrella. Local input tests, syntax and
+strict lint passed; root-source authentication, AAP functional verification and
+the subsequent minor scanner release remain pending. No unrelated project pin
+was changed by this implementation commit.
