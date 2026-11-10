@@ -1,5 +1,26 @@
 # Design decisions history
 
+## Reference diagnostic repair after the controlled model attempt — 2026-11-10
+
+Implementation `b4babd8053690b2dfdad5922711bfb9c7f618d6b` advances only AIOps to published
+`41166495d72264e882bafe9ec2721649b0d70d9e` (1.6.3), whose diagnostic
+implementation is `02627ba`. Fifteen focused tests, strict production lint on
+four affected files and an independent scoped review passed. No live rerun of
+this diagnostic change has occurred.
+
+The existing controlled attempt executed once. Its repair child succeeded;
+independent service and fresh monitoring checks confirmed recovery. The parent
+failed at its forty-eight-turn limit, so full successor acceptance remains
+unfinished. Both event activations are disabled and stopped, with no active
+jobs at the recorded verification boundary. The source repair does not establish
+successful model-parent acceptance, actual teardown, physical reinstall or a
+fresh successor deployment. Those outcomes remain separate from publication.
+
+The latest colleague RHEL commits were fast-forwarded before this update. All
+thirteen other gitlinks and HTTPS submodule URLs are preserved. This checkpoint
+changes only the source reference and public status/decision documentation;
+no runtime job, configuration or completed functional test was repeated.
+
 ## Reference native dynamic-address validation and paired preflight success — 2026-11-10
 
 Implementation `0159311f1ba116053677757edec102dedc0af009` advances only AutoDeploy to published
