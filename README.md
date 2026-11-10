@@ -33,7 +33,7 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Selected published source references are AutoDeploy **0.50.9**, AIOps **1.6.2**,
+Selected published source references are AutoDeploy **0.50.9**, AIOps **1.6.3**,
 Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
 establish live application acceptance. The separate
 [Assistant deployment source](https://github.com/kvegh/assistant-team)
@@ -71,9 +71,12 @@ Target-side MCP builds replace hypervisor image/RPM transfers; real authenticate
 private MCP queries passed. The agent CLI installer also passed all three
 private MCP checks without a model request. These runtime
 results belong to their recorded tested revisions. The controlled model repair
-is unfinished while its required native approval remains pending; no successful
-model result is claimed. Registry/build-host
-work stays deferred.
+executed once: its repair child succeeded and independent service and fresh
+monitoring checks confirmed recovery, but the parent failed at its turn limit.
+Both event activations are disabled and stopped, and no jobs remain active.
+A diagnostic repair is published with focused source checks, lint and review
+passed; it has not been rerun live. Full successor acceptance remains unfinished.
+Registry/build-host work stays deferred.
 
 CaC is the sole desired-state authority, separated by instance and application
 VM. The owner approved saving a newly verified monitoring VM inside its existing
@@ -117,9 +120,9 @@ guard remains intact. Both selected-instance normal check-mode previews then
 passed: address and ownership checks, the explicit preview endpoint, and lock
 and checkout cleanup completed with no failed or unreachable events. No actual
 stop or delete task started. This establishes paired preflight readiness, not
-actual teardown. The final controlled model exercise remains blocked on its
-native request and is the remaining acceptance dependency before cleanup and
-reinstall. CloudCLI and new Command Center checks remain outside the current
+actual teardown. The controlled model parent still needs successful acceptance
+after the published diagnostic repair; it remains the dependency before cleanup
+and reinstall. CloudCLI and new Command Center checks remain outside the current
 environment's completion gate.
 Off-host input backups remain recorded in the existing encrypted Hactar evidence.
 The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
