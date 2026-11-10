@@ -1712,3 +1712,19 @@ Vault ciphertext and remains outside the umbrella. Local input tests, syntax and
 strict lint passed; root-source authentication, AAP functional verification and
 the subsequent minor scanner release remain pending. No unrelated project pin
 was changed by this implementation commit.
+
+## 2026-11-10 — Reference verified RHEL capture and replay
+
+Implementation commit: `f383c4822036bf4139830881eb29ec6ef7ec6d80` advances
+only the public RHEL-ConfigAsCode pin and its README summary to **0.1.0**,
+source `7f979d8687c7b560017812f9fd16d66dcba2f21b` (scanner implementation
+`19ead369c53b675815de5b6b78f8f835499cfde3`). Deployment patch **0.0.3** was
+completed first. The four supported modules now have bounded encrypted capture
+and stored-config replay. Repeatable command-line tests passed on both
+authorized disposable guests, including fresh key/sudo access and no guest
+changes on repeated apply or stored replay. All capture publication changes
+were controller-local. Eight scanner fixture tests, syntax and offline strict
+production lint also passed. Actual configuration, captures and evidence remain
+encrypted in the private companion outside this umbrella. AAP acceptance and
+snapshot restoration remain unperformed, and Job Template creation remains on
+hold. Unrelated project pins and the committed HTTPS submodule URL are preserved.
