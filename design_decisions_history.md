@@ -1728,3 +1728,9 @@ production lint also passed. Actual configuration, captures and evidence remain
 encrypted in the private companion outside this umbrella. AAP acceptance and
 snapshot restoration remain unperformed, and Job Template creation remains on
 hold. Unrelated project pins and the committed HTTPS submodule URL are preserved.
+
+Documentation-reference commit: `9c3d778b2f6e57c6bf74d9bb802aac463c276c33`
+advances the same source pin to `34f4c774c72bab129ad520436a95b8a980229032`.
+That source change only corrects an obsolete README sentence so the documented
+stored-config test route matches the already verified scanner workflow; version
+and executable code are unchanged.
