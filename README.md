@@ -33,7 +33,7 @@ failed automation step before repeating the sequence. Keep intended-resource and
 production safeguards; avoid adding generic recovery layers or duplicating run
 history in the operator instructions. OpenShift runtime verification is deferred.
 
-Selected published source references are AutoDeploy **0.50.9**, AIOps **1.6.3**,
+Selected published source references are AutoDeploy **0.50.13**, AIOps **1.6.3**,
 Windows **1.1.22** and Command Center **1.1.0**. These Git references do not
 establish live application acceptance. The separate
 [Assistant deployment source](https://github.com/kvegh/assistant-team)
@@ -63,20 +63,19 @@ pin. The separate model-free Assistant installation
 and owned retirement passed; model inference and provider authentication remain
 outside that result.
 
-The successor website passes normal DNS and trusted HTTPS checks. The normal
+The successor website passed normal DNS and trusted HTTPS checks. The normal
 website outage, EDA restoration and rearm sequence passed, followed by a
 successful reset. AIOps owns the monitoring VM's per-instance
 permissions through native Ansible and its existing private-source reader.
 Target-side MCP builds replace hypervisor image/RPM transfers; real authenticated
 private MCP queries passed. The agent CLI installer also passed all three
 private MCP checks without a model request. These runtime
-results belong to their recorded tested revisions. The controlled model repair
-executed once: its repair child succeeded and independent service and fresh
-monitoring checks confirmed recovery, but the parent failed at its turn limit.
-Both event activations are disabled and stopped, and no jobs remain active.
-A diagnostic repair is published with focused source checks, lint and review
-passed; it has not been rerun live. Full successor acceptance remains unfinished.
-Registry/build-host work stays deferred.
+results belong to their recorded tested revisions. After the earlier parent
+turn-limit failure, the corrected bounded model exercise passed: Zabbix and EDA
+triggered the agent, the model launched the normal repair job, and both parent
+and repair child succeeded. Independent service and fresh monitoring checks
+confirmed recovery. This establishes the selected scenario's controlled model
+acceptance. Registry/build-host work stays deferred.
 
 CaC is the sole desired-state authority, separated by instance and application
 VM. The owner approved saving a newly verified monitoring VM inside its existing
@@ -99,37 +98,20 @@ and existing production proxy/access result remain separate from those checks.
 Two-account CloudCLI installation is waiting on its native approval and is not
 a v17 completion gate.
 
-The retired predecessor AAP VM is removed; its related DNS/proxy/credential
-cleanup and companion guests remain for the later agreed retirement sequence.
-Published external teardown uses durable AIOps CaC and the existing allocation
-registry, including surviving instances, through existing authentication and
-Job Templates. The ownership, native loading and value-free failure-context
-changes passed focused source checks, lint, syntax and independent scoped review.
-The earlier read-only preview passed both configuration loaders and the UUID
-and bridge checks, then stopped safely at the static-reservation check. A bounded
-native comparison confirmed that the selected guests use dynamic DHCP. The
-published address validator now accepts a unique, unexpired DHCP allocation
-when no static ownership exists, retaining the other identity and production
-guards. Focused native-policy checks, lint, syntax and scoped review passed.
-The stalled diagnostic was cancelled with approval; SSH trust remains unchanged.
-The next preview passed address and native VM-identity checks for both selected
-instances, then stopped at related-resource ownership. An obsolete supplemental
-interface entry in the live inventory was aligned with already-agreeing CaC;
-physical absence and unchanged primary ownership were verified. The ownership
-guard remains intact. Both selected-instance normal check-mode previews then
-passed: address and ownership checks, the explicit preview endpoint, and lock
-and checkout cleanup completed with no failed or unreachable events. No actual
-stop or delete task started. This establishes paired preflight readiness, not
-actual teardown. The controlled model parent still needs successful acceptance
-after the published diagnostic repair; it remains the dependency before cleanup
-and reinstall. CloudCLI and new Command Center checks remain outside the current
-environment's completion gate.
-Off-host input backups remain recorded in the existing encrypted Hactar evidence.
-The conditional test-hypervisor-only reinstall and fresh v18 deployment have not
-started. Complete successor acceptance and scoped cleanup must precede them;
-production is excluded. Current tasks, decisions and observed failures are
-retained in the linked Beads-derived overviews and encrypted recovery export
-rather than duplicated as a run diary here.
+Normal external teardown of the successor completed on AutoDeploy
+`73418ca` (0.50.11), including its final source-access publisher. Both retired
+namespaces' current allocation and application CaC rows are absent; shared
+settings and the monotonic next-number counter are preserved. The published
+AutoDeploy reference includes only a later task-label/documentation correction
+after that tested retirement implementation; no later runtime result is implied.
+
+Immediately before the approved hardware action, the independently pinned test
+hypervisor's identity and absence of all libvirt domains were verified. The
+provider installation and single-reset command returned successfully. OS
+installation completion, post-reinstall identity and new trust are not yet
+verified, and fresh v18 AAP deployment has not started. Production remains
+excluded. Off-host inputs and detailed task/decision evidence remain in the
+existing encrypted recovery records and Beads-derived overviews.
 
 The Windows demo retains its approved HTTPS/NTLM certificate-validation
 exception, recorded as false. Authenticated Windows facts, exact clone ownership
