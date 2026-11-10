@@ -1,5 +1,46 @@
 # Design decisions history
 
+## Reference native dynamic-address validation and paired preflight success — 2026-11-10
+
+Implementation `0159311f1ba116053677757edec102dedc0af009` advances only AutoDeploy to published
+`571454bdc6c73108460cea8cf3b354c3cca38484` (0.50.9), documenting functional
+fix `c084ce9` (0.50.8). The prior read-only preview stopped before cleanup:
+UUID and bridge matched, but the static-reservation check rejected the actual
+dynamic DHCP allocation. A bounded native comparison established that cause.
+The corrected validator accepts only a unique, unexpired dynamic allocation
+when static ownership is absent; other identity and production guards remain.
+Nine native-policy tests covering sixteen address cases, lint, syntax and
+scoped review passed. Source verification remains separate from live teardown.
+
+The stalled read-only diagnostic was cancelled with approval, without changing
+SSH trust. The subsequent preview passed the new address proof and native UUID,
+bridge, persistent/current disk, NIC, MAC, network and grant checks for both
+selected instances. It then stopped before deletion at related-resource
+ownership. A read-only comparison identified an obsolete supplemental-interface
+entry only in the live inventory; existing central allocation and host CaC
+already agreed that it was absent. Physical absence was verified, only the
+stale inventory field was aligned, and all other primary ownership data was
+preserved. The existing related-resource ownership check then passed.
+
+Status implementation `11c015614ac1c8cff51efe67950a52260f32c115` records the final outcome.
+The normal check-mode previews for both selected instances then succeeded on
+the referenced source, each reaching the explicit preview endpoint with no
+failed or unreachable events. Both verified address guards and completed lock
+and checkout cleanup. No actual main-play teardown task started. The bounded
+source, ownership and preflight repair is complete; actual teardown remains
+separate. The final controlled model exercise is still waiting on its native
+request and remains the acceptance dependency before cleanup and reinstall.
+CloudCLI and new Command Center checks do not add a current-environment gate.
+No model-repair success, actual teardown, fresh Command Center acceptance,
+physical reinstall or fresh deployment is claimed. Detailed execution evidence
+stays in protected tracking.
+
+The latest colleague RHEL reference and history were fast-forwarded before
+this checkpoint. All thirteen other gitlinks and HTTPS submodule URLs remain
+unchanged. No implementation code, environment configuration or live operation
+was changed by this umbrella update. This checkpoint publishes the source
+reference and verified preview result without authorizing destructive work.
+
 ## Reference repaired teardown loading without claiming completed cleanup — 2026-11-09
 
 Implementation `1fad34014a0a62f5ef051a961165e64e13bca10c` selects AutoDeploy
