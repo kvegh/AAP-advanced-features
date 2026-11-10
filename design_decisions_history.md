@@ -1,5 +1,36 @@
 # Design decisions history
 
+## Record bounded model acceptance and normal retirement — 2026-11-10
+
+Implementation `04b368ce5439339a09e979c19ad46a4b08dd0cb7` advances only AutoDeploy to
+`e0378b2ab7bfdf2a8a2ce34a3ed1bc9a89975160` (0.50.13) and AIOps to
+`f6a180920598d64d1ac7af1710889a166f3fe4a6` (deployment release 1.6.3,
+documentation follow-up). All twelve other gitlinks and HTTPS URLs remain
+unchanged, including colleagues' RHEL and ServiceNow work.
+
+The bounded successor model scenario passed on its recorded functional AIOps
+implementation `02627ba8ff0044d89b8abad92a62177f5f0973c6`: actual monitoring
+and EDA launched the agent, its model selected the ordinary repair automation,
+and both parent and repair child succeeded. Independent service and fresh
+monitoring evidence confirmed recovery. This supersedes the earlier failed
+parent attempt without relabelling that failure as success.
+
+The subsequent normal successor teardown succeeded on AutoDeploy
+`73418cae722657805565fc465c7c9730bd60f0e6` (0.50.11), including the final
+access publisher. The later linked 0.50.13 source changes only retirement task
+wording and documentation. Both retired namespaces' current allocation and
+application CaC entries are absent; shared settings and the advancing counter
+are preserved. Publication does not imply that a later executable revision was
+rerun live.
+
+The pinned test hypervisor's identity and absence of all libvirt domains were
+verified before the approved physical action. The provider installation and
+single hardware-reset command returned successfully, but OS completion,
+post-reinstall identity and new trust are not yet verified. Fresh v18 AAP
+installation has not started; production is excluded. Detailed environment,
+provider, job and credential evidence remains in protected tracking. This
+umbrella checkpoint performs no live operation or private configuration edit.
+
 ## Reference diagnostic repair after the controlled model attempt — 2026-11-10
 
 Implementation `b4babd8053690b2dfdad5922711bfb9c7f618d6b` advances only AIOps to published
