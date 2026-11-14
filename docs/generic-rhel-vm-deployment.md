@@ -128,8 +128,14 @@ creation; it does not prove customization, boot or guest access.
 
 ## Verification and acceptance status
 
-The frozen initial executable source passed 25 focused synthetic tests,
-playbook syntax and strict production lint using actual Core **2.20.10**.
+The frozen initial executable source passed 25 focused synthetic tests and
+playbook syntax using actual Core **2.20.10** in the cached AAP 2.7 minimal EE:
+`registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9@sha256:aea45867ebbfcb57bba69b3b6e33542dbbe95f237dfdf35e8b68773b4f3268f8`.
+Local image ID was
+`6ac3ae57346f0900fab85077798225c3498793084662a3a9ee2a14dd5f0dc3a6`.
+Strict production lint separately passed with ansible-lint **26.8.0** on the
+development host's Core **2.16.19**. That lint result does not establish complete
+target-Core compatibility or replace the actual Core 2.20 syntax/tests.
 Tests cover protected-file loading, routing/pin/hash/bridge failures, image-mode
 behavior, explicit no-creation truthfulness, partial-tag refusal, existing-disk
 preservation and root-growth behavior. Independent source re-review confirmed
@@ -140,7 +146,7 @@ Repeat the focused suite in an existing compatible environment with:
 ```sh
 python3 -m unittest discover -s tests -p 'test_generic_linux_vm*.py'
 ansible-playbook -i localhost, playbooks/deploy_generic_linux_vm.yml --syntax-check
-ansible-lint --profile production --strict playbooks/
+ansible-lint --offline --profile production --strict playbooks/
 ```
 
 Do not install or upgrade dependencies as part of those commands. Final AAP

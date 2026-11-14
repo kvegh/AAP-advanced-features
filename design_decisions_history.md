@@ -1786,3 +1786,35 @@ advances the same source pin to `34f4c774c72bab129ad520436a95b8a980229032`.
 That source change only corrects an obsolete README sentence so the documented
 stored-config test route matches the already verified scanner workflow; version
 and executable code are unchanged.
+
+
+## 2026-11-14 — Own the shared RHEL VM creator in the umbrella
+
+Implementation commit: `052ce3c0d9f9d7fb78115101fdafaa5945cc01d7` adds the
+canonical `playbooks/deploy_generic_linux_vm.yml`, focused roles/tests and
+operator documentation. This first executable umbrella component is version
+0.0.1 in VERSION; application submodules keep independent versions.
+
+The owner selected one maintained creator for general original RHEL9.8 images,
+Sniper RHEL9.4 patch-test images with updates disabled, and prepared AAP images
+that retain their installer. AAP keeps resource reservation before creation and
+registration/infrastructure/installation/base CaC afterward. Zabbix appliance
+cloning remains unchanged. Actual image paths, checksums, access and host pins
+stay in protected configuration. The approved minimal VM-only credential reuses
+the existing Vault mechanism and private CaC repository.
+
+Creation refuses existing domains/disks and unsafe image/target identities.
+Prepared mode preserves installed content and accounts. Explicit no-creation
+performs no remote work and supplies no existing-VM proof; its resource owner
+must independently verify reuse. Partial task selection is rejected before host
+work after an independent review identified a bypass through guest-only tags.
+The corrected source passed25 fixture tests and syntax on actual Core2.20.10;
+separate strict development-host lint passed with zero failures/warnings.
+The operator guide records the exact runtime and the lint baseline difference.
+
+This additive source publication does not switch existing callers. The shared
+AAP base binding, five-step AutoDeploy integration, complete review/APME and
+final relocated AAP end-to-end acceptance remain unfinished. Retain the Assistant
+copy until its consumers qualify against the shared replacement. No VM, live
+AAP workflow, credential value, environment configuration or submodule pointer
+was changed by this implementation.

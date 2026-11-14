@@ -15,7 +15,8 @@ select the original RHEL 9.8 KVM image, Sniper patch-test clients select RHEL 9.
 with updates disabled, and AAP selects its prepared installer-bearing image.
 Zabbix appliance cloning remains with its existing owner.
 
-The shared source has passed focused Core 2.20 tests, syntax and strict lint.
+The shared source has passed focused Core 2.20 tests and syntax, plus separate
+strict development-host lint.
 AAP base-template integration, consumer migration and complete relocated AAP
 end-to-end acceptance are unfinished. Existing application jobs continue to use
 their current source until that transition is verified.
