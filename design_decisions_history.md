@@ -1836,3 +1836,25 @@ The new cases exercise real protected loading/preflight/add_host behavior,
 including preserved inventory escalation, an explicit separate password and
 rejected upstream omission. Final AAP and full review/APME acceptance remain
 unfinished. Existing live consumers and guests were not changed.
+
+
+## 2026-11-14 — Match native inventory host-pattern behavior
+
+Implementation `d91c48db6c0752f396560095c2c8328b5b0e045e` advances shared source to 0.0.3. The
+first native AAP test failed at local validation: its existing inventory had one
+host named `hypervisor`, while the relocated guard incorrectly required a group
+with that name. No hypervisor or guest play ran, and all existing guests and
+source-image metadata were preserved.
+
+Resolve the fixed `hypervisor` pattern with Ansible's native inventory_hostnames
+lookup, then require exactly one match and verify that selected host against the
+protected pin. Named hosts and single-member groups now share the same contract
+as the execution play. No inventory, SSH policy, target scope or overwrite guard
+is changed. New real-entrypoint fixtures cover both valid forms and refusal of
+zero/multiple matches before SSH.
+
+All 29 focused tests and syntax passed on actual Core 2.20.10. Separate strict
+development-host lint passed without failures or warnings. Independent bounded
+review found no significant issue in this correction. The failed native run
+remains historical evidence; a successful full VM run on the corrected pin and
+complete review/APME acceptance remain pending.
