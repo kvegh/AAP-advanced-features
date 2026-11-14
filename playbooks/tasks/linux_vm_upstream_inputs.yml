@@ -41,6 +41,6 @@
       - provisioning.update_packages is boolean
       - provisioning.guest_ssh_user == __linux_vm_environment.provisioning.guest_ssh_user
       - provisioning.guest_ssh_password == __linux_vm_environment.provisioning.guest_ssh_password
-      - provisioning.guest_become_password == __linux_vm_environment.provisioning.guest_become_password
+      - provisioning.get('guest_become_password') == __linux_vm_environment.provisioning.get('guest_become_password')
     fail_msg: Preserve the selected image route, explicit update policy and existing protected bootstrap login.
   no_log: true

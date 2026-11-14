@@ -7,7 +7,7 @@
       - __linux_vm_environment.provisioning is mapping
       - provisioning.guest_ssh_user == __linux_vm_environment.provisioning.guest_ssh_user
       - provisioning.guest_ssh_password == __linux_vm_environment.provisioning.guest_ssh_password
-      - provisioning.guest_become_password == __linux_vm_environment.provisioning.guest_become_password
+      - provisioning.get('guest_become_password') == __linux_vm_environment.provisioning.get('guest_become_password')
       - provisioning.hypervisor_pin | linux_vm_recovery_pin(ansible_host) is mapping
       - provisioning.generic_image | default(false) is boolean
       - provisioning.update_packages | default(true) is boolean

@@ -221,7 +221,7 @@
     ansible_user: "{{ provisioning.guest_ssh_user }}"
     ansible_password: "{{ provisioning.guest_ssh_password }}"
     ansible_become: true
-    ansible_become_password: "{{ provisioning.guest_become_password }}"
+    ansible_become_password: "{{ provisioning.guest_become_password | default(omit) }}"
     ansible_ssh_common_args: "{{ __linux_vm_recovery_ssh_args | default(omit) }}"
     ansible_host_key_checking: "{{ true if provisioning.hypervisor_pin is defined else omit }}"
     ansible_ssh_host_key_checking: "{{ true if provisioning.hypervisor_pin is defined else omit }}"

@@ -5,8 +5,8 @@ Demo and automation projects for Red Hat Ansible Automation Platform 2.7.
 Application projects are separate repositories linked here as git submodules.
 This umbrella also owns the shared RHEL VM deployment playbook,
 [`playbooks/deploy_generic_linux_vm.yml`](playbooks/deploy_generic_linux_vm.yml),
-so projects can reuse one maintained creator. Its initial source version is
-**0.0.1**, recorded in [`VERSION`](VERSION); submodules keep independent versions.
+so projects can reuse one maintained creator. Its current source version is
+**0.0.2**, recorded in [`VERSION`](VERSION); submodules keep independent versions.
 Actual environment settings and credentials remain in protected configuration.
 
 Start with the shared deployment [quick overview](TLDR.md) and

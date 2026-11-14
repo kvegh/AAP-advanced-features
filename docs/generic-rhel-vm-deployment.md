@@ -1,6 +1,6 @@
 # Generic RHEL VM deployment
 
-Source version **0.0.1** provides the shared basic VM creator at
+Source version **0.0.2** provides the shared basic VM creator at
 [`playbooks/deploy_generic_linux_vm.yml`](../playbooks/deploy_generic_linux_vm.yml).
 Application code remains in its own project. The original Assistant creator
 supplies the implementation being relocated; this source removes its dependency
@@ -39,6 +39,11 @@ Use the existing supported Core 2.20 EE and an inventory with exactly one host
 in `hypervisor`. Hypervisor connection settings must match the protected pin.
 Existing privilege escalation and network access must already work; this source
 does not install controller dependencies or change SSH trust settings.
+For prepared images, omitting `guest_become_password` preserves the existing
+Machine credential or inventory escalation setting. The creator does not infer
+passwordless sudo or substitute the SSH password. An explicitly provided
+separate password remains exact; upstream-image bootstrap still requires its
+existing matching login/sudo password contract.
 
 The hypervisor needs its maintained libvirt, QCOW2, libguestfs and cloud-init seed
 tools. The guest needs Python, sudo and the documented GPT/XFS native utilities.
@@ -128,7 +133,7 @@ creation; it does not prove customization, boot or guest access.
 
 ## Verification and acceptance status
 
-The frozen initial executable source passed 25 focused synthetic tests and
+The current frozen executable source passed 27 focused synthetic tests and
 playbook syntax using actual Core **2.20.10** in the cached AAP 2.7 minimal EE:
 `registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9@sha256:aea45867ebbfcb57bba69b3b6e33542dbbe95f237dfdf35e8b68773b4f3268f8`.
 Local image ID was

@@ -456,5 +456,71 @@ class NormalUpstreamTests(unittest.TestCase):
             self.assertNotIn('"generic_linux_vm_creation":',result.stdout)
             self.assertNotIn('"verified": true',result.stdout)
 
+
+    def test_prepared_optional_become_preserves_omission_and_upstream_still_requires_it(self):
+        input_tasks=yaml.safe_load((ROOT/'playbooks/tasks/linux_vm_upstream_inputs.yml').read_text())
+        guard=yaml.safe_load((ROLE/'tasks/upstream-preflight.yml').read_text())[0]
+        for mode in ('prepared_missing','prepared_explicit','upstream_missing'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory(prefix='shared-vm-optional-become-') as tmp:
+                root=Path(tmp);route,provision,variables=self.inputs(root)
+                upstream=mode=='upstream_missing'
+                route['generic_image']=provision['generic_image']=upstream
+                provision.pop('guest_become_password')
+                if mode=='prepared_explicit':
+                    provision['guest_become_password']='synthetic-prepared-sudo-canary'
+                variables['__linux_vm_environment']['provisioning']=deepcopy(provision)
+                marker=root/'validated'
+                assertion="'guest_become_password' not in provisioning" if mode!='prepared_explicit' else (
+                    "provisioning.guest_become_password == 'synthetic-prepared-sudo-canary'")
+                tasks=deepcopy(input_tasks)+[deepcopy(guard),
+                    {'name':'Prove protected optional escalation was not guessed','no_log':True,
+                     'ansible.builtin.assert':{'that':[assertion]}},
+                    {'name':'Disposable protected-input boundary',
+                     'ansible.builtin.copy':{'dest':str(marker),'content':'passed','mode':'0600'}}]
+                result=self.run_play(root,tasks,variables)
+                self.assertEqual(result.returncode==0,not upstream,result.stdout+result.stderr)
+                self.assertEqual(marker.exists(),not upstream)
+                self.assertNotIn('synthetic-prepared-sudo-canary',result.stdout+result.stderr)
+                self.assertNotIn('synthetic-bootstrap-canary',result.stdout+result.stderr)
+
+    def test_prepared_add_host_omits_absent_become_and_preserves_existing_inventory_or_explicit_value(self):
+        original=next(t for t in yaml.safe_load((ROLE/'tasks/main.yml').read_text())
+                      if t['name']=='Add the new guest for connection verification')
+        for mode in ('missing_new_host','missing_existing_inventory','explicit_separate'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory(prefix='shared-vm-become-binding-') as tmp:
+                root=Path(tmp);route,provision,variables=self.inputs(root)
+                provision['generic_image']=False
+                provision.pop('guest_become_password')
+                if mode=='explicit_separate':
+                    provision['guest_become_password']='synthetic-explicit-sudo-canary'
+                variables.update(linux_vm_disk_gb=20,linux_vm_vcpus=2,linux_vm_memory_mb=4096,
+                    linux_vm_deployment_disk=str(root/'clone.qcow2'),__linux_vm_deployment_ip='192.0.2.11',
+                    __linux_vm_domain_uuid={'stdout':'fixture-domain-uuid'},__linux_vm_deployment_bridge='fixture0',
+                    __linux_vm_deployment_mac='52:54:00:00:00:11',
+                    __linux_vm_public_host_keys=['ssh-ed25519 AAAA'],
+                    __linux_vm_source_image={'stat':{'checksum':route['source_image_sha256']}})
+                tasks=[]
+                if mode!='missing_new_host':
+                    tasks.append({'name':'Seed existing native inventory escalation','no_log':True,
+                        'ansible.builtin.add_host':{'name':route['vm_name'],
+                            'ansible_become_password':'synthetic-native-inventory-sudo-canary'}})
+                bind=deepcopy(original);bind.update(no_log=True,register='__fixture_bound_guest')
+                tasks.append(bind)
+                if mode=='explicit_separate':
+                    checks=[
+                        "__fixture_bound_guest.add_host.host_vars.ansible_become_password == 'synthetic-explicit-sudo-canary'",
+                        "hostvars['fixture-v07'].ansible_become_password == 'synthetic-explicit-sudo-canary'"]
+                else:
+                    checks=["'ansible_become_password' not in __fixture_bound_guest.add_host.host_vars"]
+                    checks.append("'ansible_become_password' not in hostvars['fixture-v07']" if mode=='missing_new_host' else
+                        "hostvars['fixture-v07'].ansible_become_password == 'synthetic-native-inventory-sudo-canary'")
+                tasks.append({'name':'Prove actual add-host escalation binding is preserved','no_log':True,
+                              'ansible.builtin.assert':{'that':checks}})
+                result=self.run_play(root,tasks,variables)
+                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+                for canary in ('synthetic-explicit-sudo-canary','synthetic-native-inventory-sudo-canary',
+                               'synthetic-bootstrap-canary'):
+                    self.assertNotIn(canary,result.stdout+result.stderr)
+
 if __name__=='__main__':
     unittest.main()
