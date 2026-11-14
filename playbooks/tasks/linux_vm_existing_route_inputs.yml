@@ -1,0 +1,26 @@
+---
+- name: Require explicit non-image routing only for skipped creation
+  ansible.builtin.assert:
+    that:
+      - generic_linux_vm_create | default(true) is sameas false
+      - linux_vm_upstream is not defined
+      - linux_vm_existing_route is mapping
+      - __linux_vm_environment is mapping
+      - __linux_vm_environment.provisioning is mapping
+      - vm_name is defined
+      - linux_vm_existing_route.vm_name | default('') == vm_name
+      - >-
+        linux_vm_existing_route.keys() | list | sort ==
+        ['hypervisor_pin', 'network_bridge', 'vm_dir', 'vm_domain', 'vm_name', 'vm_network'] | sort
+      - __linux_vm_environment.provisioning.guest_ssh_user is string
+      - __linux_vm_environment.provisioning.guest_ssh_user | length > 0
+      - __linux_vm_environment.provisioning.guest_ssh_password is string
+      - __linux_vm_environment.provisioning.guest_ssh_password | length > 0
+    fail_msg: Supply only the explicit existing route for false creation; guest credentials stay in the protected file.
+    quiet: true
+  no_log: true
+
+- name: Bind existing routing without adding image or credential claims
+  ansible.builtin.set_fact:
+    provisioning: "{{ __linux_vm_environment.provisioning | combine(linux_vm_existing_route) }}"
+  no_log: true

@@ -12,16 +12,24 @@
       - vm_vcpus | default(2) | int >= 1
       - vm_memory_mb | default(4096) | int >= 1024
       - vm_disk_gb | default(provisioning.vm_disk_gb | default(20)) | int >= 1
-      - provisioning.golden_image_path is abs
       - provisioning.vm_dir is abs
       - provisioning.vm_domain | length > 0
       - provisioning.vm_network | length > 0
       - provisioning.generic_image | default(false) is boolean
-      - provisioning.source_image_sha256 is match('^[0-9a-f]{64}$')
       - provisioning.network_bridge is match('^[A-Za-z0-9_.-]{1,15}$')
       - >-
         provisioning.hypervisor_pin | linux_vm_recovery_pin(
           hostvars[__generic_linux_vm_target_hosts[0]].ansible_host | default(__generic_linux_vm_target_hosts[0])) is mapping
-    fail_msg: Supply one matching protected hypervisor route and valid VM resources, image hash and guest hostname.
+    fail_msg: Supply one matching protected hypervisor route, valid VM resources and guest hostname.
     quiet: true
+  no_log: true
+
+- name: Require the selected image and exact hash only for fresh creation
+  ansible.builtin.assert:
+    that:
+      - provisioning.golden_image_path is abs
+      - provisioning.source_image_sha256 is match('^[0-9a-f]{64}$')
+    fail_msg: Fresh creation requires the selected image path and exact SHA-256 before any managed-host action.
+    quiet: true
+  when: generic_linux_vm_create | default(true)
   no_log: true

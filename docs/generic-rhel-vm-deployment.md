@@ -1,6 +1,6 @@
 # Generic RHEL VM deployment
 
-Source version **0.0.3** provides the shared basic VM creator at
+Source version **0.0.4** provides the shared basic VM creator at
 [`playbooks/deploy_generic_linux_vm.yml`](../playbooks/deploy_generic_linux_vm.yml).
 Application code remains in its own project. The original Assistant creator
 supplies the implementation being relocated; this source removes its dependency
@@ -79,7 +79,17 @@ existing Vault credential; do not put a password in launch variables or code.
 
 An optional `linux_vm_upstream` mapping carries only the documented routing,
 image, checksum, pin and update selections. Credential overrides are refused.
-It exists for application resource owners to pass their selected VM route.
+It exists for application resource owners to pass their selected fresh VM route.
+
+For an independently verified existing allocation, the resource owner instead
+supplies `linux_vm_existing_route` with exactly `vm_name`, `vm_dir`, `vm_domain`,
+`vm_network`, `network_bridge` and `hypervisor_pin`, together with strict
+`generic_linux_vm_create: false`. This route adds no image or credential values;
+the mounted encrypted file may contain only the existing guest bootstrap access.
+Both routing maps together, unexpected keys and existing-route input with
+creation enabled are refused. Name, resources and target pin are checked on both
+paths; image path and checksum are mandatory only for fresh creation.
+
 All actual settings remain in protected CaC; the shared public source has no
 environment defaults or private companion fallback.
 
@@ -89,8 +99,10 @@ The approved base-CaC integration adds a shared umbrella Project and a generic
 RHEL deployment Job Template. Its minimal VM-only file credential contains the
 encrypted settings file and uses the existing Vault password. It does not need
 Assistant application authentication snapshots or a new secret store.
-This integration and the migration of existing callers are still in progress.
-The shared importer remains the only CaC import route.
+The shared Project, Job Template and credential type have been created and
+read back, with their definitions captured in the existing private base CaC.
+Repeat reconstruction from that capture and migration of existing callers remain
+unfinished. The shared importer remains the only CaC import route.
 
 The generic template must accept the caller's inventory, required credentials
 and VM inputs, and execute the complete playbook. Leave job tags and skip-tags
@@ -135,8 +147,10 @@ creation; it does not prove customization, boot or guest access.
 
 ## Verification and acceptance status
 
-The current frozen executable source passed 29 focused synthetic tests and
-playbook syntax using actual Core **2.20.10** in the cached AAP 2.7 minimal EE:
+The 0.0.4 source passed all 29 existing shared regression methods; the paired
+AAP candidate passed seven affected methods and three actual producer/consumer
+contract methods, for 39 distinct passing tests. Both entrypoint syntax checks
+passed using actual Core **2.20.10** in the cached AAP 2.7 minimal EE:
 `registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9@sha256:aea45867ebbfcb57bba69b3b6e33542dbbe95f237dfdf35e8b68773b4f3268f8`.
 Local image ID was
 `6ac3ae57346f0900fab85077798225c3498793084662a3a9ee2a14dd5f0dc3a6`.
@@ -146,7 +160,20 @@ target-Core compatibility or replace the actual Core 2.20 syntax/tests.
 The first native AAP attempt stopped at local validation because the earlier
 check required a group and rejected a valid named host. The correction uses the
 same native host-pattern lookup as the play; it changes no inventory or SSH
-policy. Successful VM creation remains to be verified on the corrected pin.
+policy. A subsequent native AAP job on exact source 0.0.3 completed fresh
+creation with a verified-result artifact and reported package updates.
+Independent post-job identity, RPM, storage and unrelated-resource checks plus
+test cleanup remain unfinished. That job does not verify the later owner-route
+repair, prepared-image deployment or no-update Sniper deployment from this source.
+
+The 0.0.4 cross-project fixtures pass actual AAP owner output through the actual
+shared entrypoint with only encrypted bootstrap settings. They preserve the
+owner's null/unknown legacy image checksum, prove no SSH or image action for
+false creation and reject malformed, mixed, credential-bearing and fresh routes
+without image inputs. Full shared regression qualification took 142.115 seconds;
+the seven existing AAP methods took 25.429 seconds. Independent bounded source
+review found the owner-contract defect resolved, with no remaining concrete
+finding in that delta. These are fixture and source checks, not live reuse proof.
 
 Tests cover protected-file loading, routing/pin/hash/bridge failures, image-mode
 behavior, explicit no-creation truthfulness, partial-tag refusal, existing-disk
@@ -162,9 +189,10 @@ ansible-lint --offline --profile production --strict playbooks/
 ```
 
 Do not install or upgrade dependencies as part of those commands. Final AAP
-acceptance, live QCOW2 customization/boot/root growth, CaC reconstruction/repeat
-apply, full per-directive review and APME coverage remain unperformed for this
-relocated revision. No completed review report or functional acceptance is
+acceptance, independent final guest/storage verification, test cleanup,
+CaC reconstruction/repeat apply, full per-directive review and APME coverage
+remain unfinished. Prepared-image and no-update live acceptance have not been
+performed through this relocated source. No completed review report or functional acceptance is
 claimed. Publication makes source available for the remaining integration and
 AAP tests; it does not establish deployment or justify deleting an active caller.
 

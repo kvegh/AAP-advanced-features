@@ -1,6 +1,6 @@
 # Shared RHEL VM deployment
 
-Source version **0.0.3**. The canonical creator lives in
+Source version **0.0.4**. The canonical creator lives in
 [`playbooks/deploy_generic_linux_vm.yml`](playbooks/deploy_generic_linux_vm.yml).
 Application submodules have independent versions and workflows.
 
@@ -24,8 +24,15 @@ infrastructure, installation and base configuration afterward. Zabbix stays on
 its existing appliance-cloning path. Satellite registration and patching are
 separate from basic VM creation.
 
-Focused tests, syntax and strict lint passed on Core 2.20.10. The relocated source
-has not completed AAP end-to-end acceptance; caller migration remains unfinished.
+Existing AAP owners may supply a separate six-field route with strict
+`generic_linux_vm_create: false`. That path validates locally, creates nothing
+and supplies no new VM-verification or historical image-checksum claim.
+
+A general-image AAP creation job passed on source 0.0.3. Independent final
+verification and test cleanup remain unfinished; caller migration and complete
+AAP acceptance are still pending. The 0.0.4 owner-route fix passed 39 tests
+across the shared/AAP contract, both syntax checks and separate development-host
+strict lint. Existing live callers have not adopted this repair.
 See the [operator guide](docs/generic-rhel-vm-deployment.md) for inputs, safety,
 verification and partial-failure handling. Existing consumers must qualify their
 replacement before removing the Assistant copy.

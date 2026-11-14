@@ -3,6 +3,7 @@
   ansible.builtin.assert:
     that:
       - linux_vm_recovery is not defined
+      - not (linux_vm_upstream is defined and linux_vm_existing_route is defined)
       - "'offline_recovery' not in ansible_run_tags"
     fail_msg: Use the existing recovery owner for isolated recovery; this playbook creates normal Linux guests.
     quiet: true
@@ -66,10 +67,17 @@
   ansible.builtin.include_tasks: linux_vm_upstream_inputs.yml
   when: linux_vm_upstream is defined
 
+- name: Apply explicit existing routing without image or credential overrides
+  ansible.builtin.include_tasks: linux_vm_existing_route_inputs.yml
+  when: linux_vm_existing_route is defined
+
 - name: Refuse higher-priority overrides of the selected protected definition
   ansible.builtin.assert:
     that:
-      - provisioning == (__linux_vm_environment.provisioning | combine(linux_vm_upstream | default({})))
+      - >-
+        provisioning == (__linux_vm_environment.provisioning
+          | combine(linux_vm_upstream | default({}))
+          | combine(linux_vm_existing_route | default({})))
     fail_msg: Retain the selected protected provisioning and its validated image-route inputs.
     quiet: true
   no_log: true
