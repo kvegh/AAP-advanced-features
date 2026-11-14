@@ -2,9 +2,23 @@
 
 Demo and automation projects for Red Hat Ansible Automation Platform 2.7.
 
-Each project is its own repository, linked here as a git submodule. This repo
-holds no playbooks or project data — only the index below, the submodule
-pointers, and umbrella-level planning and decision records.
+Application projects are separate repositories linked here as git submodules.
+This umbrella also owns the shared RHEL VM deployment playbook,
+[`playbooks/deploy_generic_linux_vm.yml`](playbooks/deploy_generic_linux_vm.yml),
+so projects can reuse one maintained creator. Its initial source version is
+**0.0.1**, recorded in [`VERSION`](VERSION); submodules keep independent versions.
+Actual environment settings and credentials remain in protected configuration.
+
+Start with the shared deployment [quick overview](TLDR.md) and
+[operator guide](docs/generic-rhel-vm-deployment.md). General RHEL deployments
+select the original RHEL 9.8 KVM image, Sniper patch-test clients select RHEL 9.4
+with updates disabled, and AAP selects its prepared installer-bearing image.
+Zabbix appliance cloning remains with its existing owner.
+
+The shared source has passed focused Core 2.20 tests, syntax and strict lint.
+AAP base-template integration, consumer migration and complete relocated AAP
+end-to-end acceptance are unfinished. Existing application jobs continue to use
+their current source until that transition is verified.
 
 Significant decisions and their implementation commits are summarized in
 [design_decisions_history.md](design_decisions_history.md). Each changed project

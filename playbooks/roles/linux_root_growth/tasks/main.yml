@@ -1,0 +1,17 @@
+---
+- name: Wait for the selected guest after boot
+  ansible.builtin.wait_for_connection:
+    timeout: 180
+- name: Install direct GPT/XFS root growth automation
+  ansible.builtin.copy:
+    src: grow-root.py
+    dest: /var/lib/generic-linux-vm-grow-root.py
+    owner: root
+    group: root
+    mode: "0700"
+# Exact storage identity preservation: ../README.md#supporting-tools
+- name: Expand only the existing last root partition and XFS filesystem
+  ansible.builtin.command:
+    argv: [python3, /var/lib/generic-linux-vm-grow-root.py]
+  register: __linux_root_growth_result
+  changed_when: (__linux_root_growth_result.stdout | from_json).changed

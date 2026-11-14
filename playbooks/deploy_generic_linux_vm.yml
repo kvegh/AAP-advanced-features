@@ -1,0 +1,81 @@
+---
+- name: Validate the selected protected Linux VM request
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  any_errors_fatal: true
+  tags: [always]
+  vars:
+    linux_vm_deployment_name: "{{ vm_name | default(provisioning.vm_name) }}"
+    linux_vm_hostname: "{{ vm_hostname | default(linux_vm_deployment_name ~ '.' ~ provisioning.vm_domain) }}"
+  tasks:
+    - name: Require atomic execution without partial task selection
+      ansible.builtin.assert:
+        that:
+          - ansible_run_tags | difference(['all']) | length == 0
+          - "'all' in ansible_run_tags"
+          - ansible_skip_tags | length == 0
+        fail_msg: Run the whole shared deployment without tags or skip-tags; explicit no-creation is the only skip control.
+        quiet: true
+    - name: Require an explicit boolean creation control
+      ansible.builtin.assert:
+        that:
+          - generic_linux_vm_create | default(true) is boolean
+        fail_msg: generic_linux_vm_create must be a boolean; false explicitly skips all VM and guest work.
+        quiet: true
+    - name: Load only the existing protected VM configuration
+      ansible.builtin.import_tasks: tasks/load_generic_linux_vm_config.yml
+    - name: Validate the selected resource routing without remote inspection
+      ansible.builtin.import_tasks: tasks/validate_generic_linux_vm_request.yml
+    - name: Publish only the explicit no-creation marker
+      ansible.builtin.set_stats:
+        data:
+          generic_linux_vm_creation:
+            skipped: true
+            created: false
+            requested_vm_name: "{{ linux_vm_deployment_name }}"
+            reason: Explicit no-creation control; the resource owner must verify any existing VM.
+        per_host: false
+        aggregate: false
+      when: not (generic_linux_vm_create | default(true))
+
+- name: Deploy one generic Linux VM
+  hosts: hypervisor
+  become: true
+  gather_facts: false
+  no_log: true
+  tags: [always]
+  vars:
+    provisioning: "{{ hostvars.localhost.provisioning }}"
+    __linux_vm_environment: "{{ hostvars.localhost.__linux_vm_environment }}"
+  pre_tasks:
+    - name: End before any managed-host action when creation is explicitly skipped
+      ansible.builtin.meta: end_play
+      when: not (generic_linux_vm_create | default(true))
+      tags: [always]
+  roles:
+    - linux_vm
+
+- name: Verify and optionally update the new Linux guest
+  hosts: provisioned_linux_guest
+  become: true
+  gather_facts: false
+  no_log: true
+  tags: [always]
+  vars:
+    provisioning: "{{ hostvars.localhost.provisioning }}"
+    __linux_vm_environment: "{{ hostvars.localhost.__linux_vm_environment }}"
+  pre_tasks:
+    - name: End before all guest work when creation is explicitly skipped
+      ansible.builtin.meta: end_play
+      when: not (generic_linux_vm_create | default(true))
+      tags: [always]
+  roles:
+    - linux_guest
+    - linux_root_growth
+    - role: linux_updates
+      when: provisioning.update_packages | default(true) | bool
+  tasks:
+    - name: Publish the verified VM identity and selected update outcome
+      ansible.builtin.import_tasks: tasks/verified_generic_guest.yml

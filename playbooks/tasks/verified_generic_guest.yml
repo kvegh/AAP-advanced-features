@@ -1,0 +1,23 @@
+---
+- name: Retain the successfully verified generic guest identity
+  ansible.builtin.set_fact:
+    deployment_vm_verified_provenance: "{{ deployment_vm_provenance | combine({\n  'machine_id': ansible_facts.machine_id,\n\
+      \  'verified': true,\n  'vcpus': deployment_vm_vcpus | int,\n  'memory_mb': deployment_vm_memory_mb | int,\n  'disk_gb':\
+      \ deployment_vm_disk_gb | int,\n  'packages_updated': __linux_updates_remaining_updates.rc | default(-1) | int == 0})\
+      \ }}"
+- name: Publish verified generic guest provenance
+  ansible.builtin.set_stats:
+    data:
+      generic_linux_vm: '{{ deployment_vm_verified_provenance }}'
+    per_host: false
+    aggregate: false
+- name: Remove the normal upstream guest public SSH trust after verification
+  ansible.builtin.file:
+    path: '{{ deployment_vm_trust_file }}'
+    state: absent
+  delegate_to: localhost
+  become: false
+  no_log: true
+  when: deployment_vm_hypervisor_pin | length > 0
+  tags:
+    - guest_config

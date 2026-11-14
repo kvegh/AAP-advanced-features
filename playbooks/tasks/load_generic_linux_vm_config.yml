@@ -1,0 +1,75 @@
+---
+- name: Reject isolated recovery inputs in the normal base deployment
+  ansible.builtin.assert:
+    that:
+      - linux_vm_recovery is not defined
+      - "'offline_recovery' not in ansible_run_tags"
+    fail_msg: Use the existing recovery owner for isolated recovery; this playbook creates normal Linux guests.
+    quiet: true
+
+- name: Resolve only the explicit or existing credential-mounted encrypted VM file
+  ansible.builtin.set_fact:
+    __generic_linux_vm_config_file: >-
+      {{ generic_linux_vm_config_file | default(
+           lookup('ansible.builtin.env', 'AC_AGENTS_ENVIRONMENT_VAULT_FILE'), true) }}
+  no_log: true
+
+- name: Require the existing protected VM configuration binding
+  ansible.builtin.assert:
+    that:
+      - __generic_linux_vm_config_file is string
+      - __generic_linux_vm_config_file | length > 0
+      - __generic_linux_vm_config_file is abs
+    fail_msg: Supply generic_linux_vm_config_file or the existing environment-file credential and its Vault credential.
+    quiet: true
+
+- name: Inspect the credential-mounted file on the Ansible controller
+  ansible.builtin.stat:
+    path: "{{ __generic_linux_vm_config_file }}"
+  delegate_to: localhost
+  connection: local
+  become: false
+  register: __generic_linux_vm_config_stat
+  no_log: true
+
+- name: Require a readable protected VM configuration file
+  ansible.builtin.assert:
+    that:
+      - __generic_linux_vm_config_stat.stat.exists | default(false)
+      - __generic_linux_vm_config_stat.stat.isreg | default(false)
+      - __generic_linux_vm_config_stat.stat.readable | default(false)
+    fail_msg: The selected protected VM configuration is unavailable; no sibling-repository fallback is used.
+    quiet: true
+
+- name: Read the encrypted VM definition into a private namespace
+  ansible.builtin.include_vars:
+    file: "{{ __generic_linux_vm_config_stat.stat.path }}"
+    name: __linux_vm_environment
+  no_log: true
+
+- name: Require the protected provisioning contract
+  ansible.builtin.assert:
+    that:
+      - __linux_vm_environment is mapping
+      - __linux_vm_environment.provisioning is mapping
+      - __linux_vm_environment.provisioning.update_packages | default(true) is boolean
+    fail_msg: The protected file must contain provisioning with an optional boolean update_packages.
+    quiet: true
+  no_log: true
+
+- name: Bind only the protected VM provisioning definition
+  ansible.builtin.set_fact:
+    provisioning: "{{ __linux_vm_environment.provisioning }}"
+  no_log: true
+
+- name: Apply an explicitly selected normal image route without credential overrides
+  ansible.builtin.include_tasks: linux_vm_upstream_inputs.yml
+  when: linux_vm_upstream is defined
+
+- name: Refuse higher-priority overrides of the selected protected definition
+  ansible.builtin.assert:
+    that:
+      - provisioning == (__linux_vm_environment.provisioning | combine(linux_vm_upstream | default({})))
+    fail_msg: Retain the selected protected provisioning and its validated image-route inputs.
+    quiet: true
+  no_log: true

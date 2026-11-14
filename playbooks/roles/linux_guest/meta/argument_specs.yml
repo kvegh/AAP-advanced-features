@@ -1,0 +1,5 @@
+---
+argument_specs:
+  main:
+    short_description: Verify the selected guest identity, allocated resources without application cleanup.
+    options: {}

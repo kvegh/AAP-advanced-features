@@ -1,0 +1,249 @@
+---
+- name: Validate deployment inputs
+  tags: [always]
+  ansible.builtin.assert:
+    that:
+      - ansible_play_hosts_all | length == 1
+      - linux_vm_deployment_name is match('^[a-z][a-z0-9-]{0,62}$')
+      - linux_vm_hostname is string
+      - linux_vm_hostname | length <= 253
+      - >-
+        linux_vm_hostname is match(
+          '^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?[.])*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$')
+      - linux_vm_vcpus | int >= 1
+      - linux_vm_memory_mb | int >= 1024
+      - linux_vm_disk_gb | int >= 1
+      - provisioning.golden_image_path is match('^/')
+      - provisioning.vm_dir is match('^/')
+      - provisioning.vm_domain | length > 0
+      - provisioning.vm_network | length > 0
+      - provisioning.guest_ssh_user | length > 0
+      - provisioning.hypervisor_pin is defined
+      - provisioning.generic_image | default(false) is boolean
+    fail_msg: Invalid deployment inputs; check the Vault configuration and launch variables.
+
+- name: Verify a declared normal upstream image target before remote inspection
+  ansible.builtin.include_tasks:
+    file: upstream-preflight.yml
+    apply:
+      tags: [always]
+  when: provisioning.hypervisor_pin is defined
+  tags: [always]
+
+- name: Inspect existing VM names
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', list, --all, --name]
+  register: __linux_vm_existing_vms
+  changed_when: false
+  check_mode: false
+
+- name: Inspect target disk
+  ansible.builtin.stat:
+    path: "{{ linux_vm_deployment_disk }}"
+  register: __linux_vm_existing_disk
+
+- name: Refuse to overwrite an existing VM or disk
+  ansible.builtin.assert:
+    that:
+      - linux_vm_deployment_name not in __linux_vm_existing_vms.stdout_lines
+      - not __linux_vm_existing_disk.stat.exists
+    fail_msg: The VM or disk already exists; investigate before retrying.
+
+- name: Inspect golden image
+  ansible.builtin.command:
+    argv: [qemu-img, info, --output=json, "{{ provisioning.golden_image_path }}"]
+  register: __linux_vm_golden_image
+  changed_when: false
+  check_mode: false
+
+- name: Refuse disk sizes smaller than the golden image
+  ansible.builtin.assert:
+    that:
+      - (linux_vm_disk_gb | int * 1073741824) >= ((__linux_vm_golden_image.stdout | from_json)['virtual-size'] | int)
+    fail_msg: Requested disk size is smaller than the source image; increase linux_vm_disk_gb.
+
+- name: Require a standalone upstream generic image without an external backing chain
+  ansible.builtin.assert:
+    that: "'backing-filename' not in (__linux_vm_golden_image.stdout | from_json)"
+    fail_msg: Select a standalone upstream image before creating a generic guest.
+  when: provisioning.hypervisor_pin is defined
+
+- name: Stop a successful check-mode preflight before provisioning
+  ansible.builtin.meta: end_play
+  when: ansible_check_mode
+
+- name: Ensure VM directory exists
+  ansible.builtin.file:
+    path: "{{ provisioning.vm_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Clone the golden image without overwriting a disk
+  ansible.builtin.copy:
+    src: "{{ provisioning.golden_image_path }}"
+    dest: "{{ linux_vm_deployment_disk }}"
+    remote_src: true
+    force: false
+    mode: "0600"
+  register: __linux_vm_new_clone
+
+- name: Refuse to customize a disk that this run did not create
+  ansible.builtin.assert:
+    that: __linux_vm_new_clone.changed
+    fail_msg: The destination appeared while cloning; preserve it and investigate before retrying.
+
+- name: Hash the newly copied normal upstream clone before customization
+  ansible.builtin.stat:
+    path: "{{ linux_vm_deployment_disk }}"
+    follow: false
+    checksum_algorithm: sha256
+  register: __linux_vm_upstream_clone
+  when: provisioning.hypervisor_pin is defined
+  no_log: true
+
+- name: Require the new normal clone to retain the selected source image hash
+  ansible.builtin.assert:
+    that:
+      - __linux_vm_upstream_clone.stat.isreg | default(false)
+      - not (__linux_vm_upstream_clone.stat.islnk | default(false))
+      - __linux_vm_upstream_clone.stat.checksum == provisioning.source_image_sha256
+    fail_msg: Preserve the new clone and investigate the image mismatch before resizing or customization.
+  when: provisioning.hypervisor_pin is defined
+  no_log: true
+
+- name: Resize the cloned disk
+  ansible.builtin.command:
+    argv: [qemu-img, resize, "{{ linux_vm_deployment_disk }}", "{{ linux_vm_disk_gb | int }}G"]
+  changed_when: true
+
+- name: Bootstrap an upstream generic image without network or inherited access
+  ansible.builtin.include_tasks: generic-bootstrap.yml
+  when: provisioning.generic_image | default(false) | bool
+
+- name: Reset only identity in the prepared image while preserving its access and installer
+  ansible.builtin.include_tasks: prepared-bootstrap.yml
+  when: not (provisioning.generic_image | default(false) | bool)
+
+# Existing native libvirt operations: ../README.md#supporting-tools
+- name: Import and start the VM
+  ansible.builtin.command:
+    argv: >-
+      {{ ['virt-install', '--connect', 'qemu:///system',
+      '--name', linux_vm_deployment_name,
+      '--vcpus', (linux_vm_vcpus | string) ~
+        (',sockets=1,cores=' ~ (linux_vm_vcpus | string) ~ ',threads=1'
+         if provisioning.hypervisor_pin is defined else ''),
+      '--memory', linux_vm_memory_mb | string,
+      '--import', '--graphics', 'none', '--osinfo', 'detect=on,require=off',
+      '--disk', 'path=' ~ linux_vm_deployment_disk ~ ',format=qcow2' ~
+        (',bus=virtio' if provisioning.hypervisor_pin is defined else ''),
+      '--network', 'network=' ~ provisioning.vm_network ~
+        (',model=virtio' if provisioning.hypervisor_pin is defined else ''),
+      '--noautoconsole'] +
+      (['--cpu', 'host-passthrough', '--machine', 'q35'] if provisioning.hypervisor_pin is defined else []) }}
+  changed_when: true
+
+- name: Read the VM network interface
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', domiflist, "{{ linux_vm_deployment_name }}"]
+  register: __linux_vm_vm_interfaces
+  changed_when: false
+
+- name: Extract the VM MAC address
+  ansible.builtin.set_fact:
+    __linux_vm_deployment_mac: "{{ __linux_vm_vm_interfaces.stdout | regex_search('(?i)(?:[0-9a-f]{2}:){5}[0-9a-f]{2}') }}"
+
+- name: Inspect the VM memory allocation in libvirt
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', dominfo, "{{ linux_vm_deployment_name }}"]
+  environment:
+    LC_ALL: C
+  register: __linux_vm_vm_allocation
+  changed_when: false
+
+- name: Verify the requested memory is allocated to the VM
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__linux_vm_vm_allocation.stdout | regex_findall('Used memory: +([0-9]+) +KiB') | first | int) == (linux_vm_memory_mb | int * 1024)
+    fail_msg: Libvirt memory allocation does not match the requested VM memory.
+
+- name: Validate the VM MAC address
+  ansible.builtin.assert:
+    that:
+      - __linux_vm_deployment_mac is string
+      - __linux_vm_deployment_mac | length == 17
+
+- name: Wait for a DHCP lease matching the VM MAC address
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', net-dhcp-leases, "{{ provisioning.vm_network }}", --mac, "{{ __linux_vm_deployment_mac }}"]
+  register: __linux_vm_vm_lease
+  changed_when: false
+  until: __linux_vm_vm_lease.stdout is search('(?:[0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]+')
+  retries: 60
+  delay: 5
+
+- name: Extract the IPv4 address
+  ansible.builtin.set_fact:
+    __linux_vm_deployment_ip: "{{ __linux_vm_vm_lease.stdout | regex_search('(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?=/)') }}"
+
+- name: Read the new domain UUID for later exact decommissioning
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', domuuid, "{{ linux_vm_deployment_name }}"]
+  register: __linux_vm_domain_uuid
+  changed_when: false
+
+- name: Read the selected network bridge for exact generic guest ownership
+  ansible.builtin.command:
+    argv: [virsh, -c, 'qemu:///system', net-dumpxml, "{{ provisioning.vm_network }}"]
+  register: __linux_vm_network_xml
+  changed_when: false
+  when: provisioning.hypervisor_pin is defined
+
+- name: Bind the actual network bridge to the pinned generic guest
+  ansible.builtin.set_fact:
+    __linux_vm_deployment_bridge: >-
+      {{ __linux_vm_network_xml.stdout | linux_vm_recovery_bridge(
+           provisioning.vm_network,
+           [provisioning.network_bridge]) }}
+  when: provisioning.hypervisor_pin is defined
+
+- name: Prepare pinned guest trust through the selected hypervisor
+  ansible.builtin.include_tasks:
+    file: recovery-guest.yml
+  when: provisioning.hypervisor_pin is defined
+
+- name: Add the new guest for connection verification
+  ansible.builtin.add_host:
+    name: "{{ linux_vm_deployment_name }}"
+    groups: provisioned_linux_guest
+    ansible_host: "{{ __linux_vm_deployment_ip }}"
+    ansible_user: "{{ provisioning.guest_ssh_user }}"
+    ansible_password: "{{ provisioning.guest_ssh_password }}"
+    ansible_become: true
+    ansible_become_password: "{{ provisioning.guest_become_password }}"
+    ansible_ssh_common_args: "{{ __linux_vm_recovery_ssh_args | default(omit) }}"
+    ansible_host_key_checking: "{{ true if provisioning.hypervisor_pin is defined else omit }}"
+    ansible_ssh_host_key_checking: "{{ true if provisioning.hypervisor_pin is defined else omit }}"
+    deployment_vm_name: "{{ linux_vm_deployment_name }}"
+    deployment_vm_hostname: "{{ linux_vm_hostname }}"
+    deployment_vm_ip: "{{ __linux_vm_deployment_ip }}"
+    deployment_vm_disk_gb: "{{ linux_vm_disk_gb | int }}"
+    deployment_vm_vcpus: "{{ linux_vm_vcpus | int }}"
+    deployment_vm_memory_mb: "{{ linux_vm_memory_mb | int }}"
+    deployment_vm_hypervisor_pin: "{{ provisioning.hypervisor_pin | default({}) }}"
+    deployment_vm_trust_file: "{{ __linux_vm_recovery_trust.path | default('') }}"
+    deployment_vm_provenance:
+      vm_name: "{{ linux_vm_deployment_name }}"
+      hostname: "{{ linux_vm_hostname }}"
+      uuid: "{{ __linux_vm_domain_uuid.stdout | trim }}"
+      disk: "{{ linux_vm_deployment_disk }}"
+      network: "{{ provisioning.vm_network }}"
+      bridge: "{{ __linux_vm_deployment_bridge | default('') }}"
+      mac: "{{ __linux_vm_deployment_mac }}"
+      address: "{{ __linux_vm_deployment_ip }}"
+      user: "{{ provisioning.guest_ssh_user }}"
+      port: 22
+      host_keys: "{{ __linux_vm_public_host_keys | default([]) }}"
+      hypervisor_machine_id: "{{ provisioning.hypervisor_pin.machine_id | default('') }}"
+      source_image_sha256: "{{ __linux_vm_source_image.stat.checksum | default('') }}"
