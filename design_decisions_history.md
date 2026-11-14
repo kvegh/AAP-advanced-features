@@ -1818,3 +1818,21 @@ final relocated AAP end-to-end acceptance remain unfinished. Retain the Assistan
 copy until its consumers qualify against the shared replacement. No VM, live
 AAP workflow, credential value, environment configuration or submodule pointer
 was changed by this implementation.
+
+
+## 2026-11-14 — Preserve existing prepared-image escalation credentials
+
+Implementation `543a32ed486e9ec94a8969a60ac2b82e706e010b` advances shared source to0.0.2. The
+prepared AAP bootstrap file has no separate escalation password because its
+existing native Machine credential supplies one. The shared creator now omits
+an absent override and preserves that credential or an existing inventory value.
+Explicit protected values stay exact; raw upstream bootstrap still requires
+its existing matching login/sudo password contract. No passwordless assumption,
+credential inference, login change or new secret source is introduced.
+
+All27 focused tests and syntax passed on the same actual Core2.20.10 EE;
+separate strict development-host lint passed without failures or warnings.
+The new cases exercise real protected loading/preflight/add_host behavior,
+including preserved inventory escalation, an explicit separate password and
+rejected upstream omission. Final AAP and full review/APME acceptance remain
+unfinished. Existing live consumers and guests were not changed.
