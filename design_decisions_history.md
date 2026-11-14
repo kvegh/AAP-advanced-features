@@ -1858,3 +1858,34 @@ development-host lint passed without failures or warnings. Independent bounded
 review found no significant issue in this correction. The failed native run
 remains historical evidence; a successful full VM run on the corrected pin and
 complete review/APME acceptance remain pending.
+
+
+## 2026-11-14 — Preserve the existing-owner no-creation contract
+
+Implementation `d0d6e6918d15695ec94d7bd85e40184bbec399e5` advances shared source
+to 0.0.4. A paired AAP candidate supplied a verified existing-owner artifact and
+false creation, but the shared loader still required a fresh image route from
+its minimal encrypted bootstrap credential. That stopped a legitimate skip at
+local validation. Do not invent a legacy image checksum to satisfy this input.
+
+The existing owner now passes a distinct, exact six-field non-image route.
+The shared loader accepts it only for strict false creation, retains protected
+credentials and validates the selected name, resources and hypervisor pin.
+Image path/checksum remain mandatory for fresh creation. Mixed maps, unknown
+keys and credential/image overrides are refused. False creation still performs
+no remote/image action and publishes only its skip marker; independent existing
+VM verification belongs to the AAP resource owner. Original source-image
+provenance stays null/unknown when historical evidence is absent.
+
+All 29 existing shared methods, seven affected AAP methods and three actual
+producer-to-entrypoint contract methods passed on Core 2.20.10, with both syntax
+checks. Separate development-host strict production lint passed with no failures
+or warnings. Independent bounded review found the prior contract defect resolved;
+reviewed file hashes stayed exact. The AAP producer/test repair is implementation
+`203c0999b8c8cdb15b7f2dea056cfd6535870906` on its separate candidate branch.
+
+A general-image native creation completed on earlier source 0.0.3. Its independent
+final verification and cleanup remain unfinished. Existing live source pins,
+AAP deployment main, consumers and guests are not changed by this publication.
+Complete formal review/APME, caller migration and live five-step acceptance
+remain pending; this is not a completed acceptance report.

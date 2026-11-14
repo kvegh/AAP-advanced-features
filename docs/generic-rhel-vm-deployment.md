@@ -192,8 +192,8 @@ Do not install or upgrade dependencies as part of those commands. Final AAP
 acceptance, independent final guest/storage verification, test cleanup,
 CaC reconstruction/repeat apply, full per-directive review and APME coverage
 remain unfinished. Prepared-image and no-update live acceptance have not been
-performed through this relocated source. No completed review report or functional acceptance is
-claimed. Publication makes source available for the remaining integration and
+performed through this relocated source. No completed review report or functional
+acceptance is claimed. Publication makes source available for the remaining integration and
 AAP tests; it does not establish deployment or justify deleting an active caller.
 
 The required AAP acceptance starts with an absent authorized test VM and uses
