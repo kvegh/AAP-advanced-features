@@ -7,6 +7,7 @@
   any_errors_fatal: true
   tags: [always]
   vars:
+    __generic_linux_vm_target_hosts: "{{ query('ansible.builtin.inventory_hostnames', 'hypervisor') }}"
     linux_vm_deployment_name: "{{ vm_name | default(provisioning.vm_name) }}"
     linux_vm_hostname: "{{ vm_hostname | default(linux_vm_deployment_name ~ '.' ~ provisioning.vm_domain) }}"
   tasks:

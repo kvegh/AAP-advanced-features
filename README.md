@@ -6,7 +6,7 @@ Application projects are separate repositories linked here as git submodules.
 This umbrella also owns the shared RHEL VM deployment playbook,
 [`playbooks/deploy_generic_linux_vm.yml`](playbooks/deploy_generic_linux_vm.yml),
 so projects can reuse one maintained creator. Its current source version is
-**0.0.2**, recorded in [`VERSION`](VERSION); submodules keep independent versions.
+**0.0.3**, recorded in [`VERSION`](VERSION); submodules keep independent versions.
 Actual environment settings and credentials remain in protected configuration.
 
 Start with the shared deployment [quick overview](TLDR.md) and

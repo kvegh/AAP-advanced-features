@@ -348,7 +348,7 @@ class NormalUpstreamTests(unittest.TestCase):
         self.assertFalse((ROLE/'templates/clean_linux_clone.sh.j2').exists())
 
 
-    def run_entrypoint_probe(self, root, *, create=False, hostname=None, invalid_route=False, missing_config=False, tags=None, skip_tags=None):
+    def run_entrypoint_probe(self, root, *, create=False, hostname=None, invalid_route=False, missing_config=False, tags=None, skip_tags=None, inventory_style="group"):
         route,provision,_=self.inputs(root)
         existing_disk=root/'vms'/('fixture-v07.disk.qcow2')
         existing_disk.parent.mkdir()
@@ -360,9 +360,18 @@ class NormalUpstreamTests(unittest.TestCase):
         host={'ansible_host':pin()['address'],'ansible_connection':'ssh','ansible_user':'fixture',
               'ansible_ssh_executable':str(trap)}
         inventory=root/'inventory.yml'
-        inventory.write_text(yaml.safe_dump({'all':{'children':{
-            'hypervisor':{'hosts':{'fixture-hypervisor':host}},
-            'provisioned_linux_guest':{'hosts':{'fixture-guest':dict(host,ansible_host='192.0.2.11')}}}}}))
+        children={'provisioned_linux_guest':{'hosts':{'fixture-guest':dict(host,ansible_host='192.0.2.11')}}}
+        all_hosts={}
+        if inventory_style=='host_alias':
+            all_hosts['hypervisor']=host
+        elif inventory_style=='group':
+            children['hypervisor']={'hosts':{'fixture-hypervisor':host}}
+        elif inventory_style=='multiple':
+            children['hypervisor']={'hosts':{'fixture-hypervisor':host,
+                'fixture-hypervisor2':dict(host,ansible_host='192.0.2.12')}}
+        else:
+            assert inventory_style=='missing'
+        inventory.write_text(yaml.safe_dump({'all':{'hosts':all_hosts,'children':children}}))
         if invalid_route:
             provision['hypervisor_pin']=dict(pin(),address='192.0.2.99')
         vault_file=root/'environment_vault.yml'
@@ -521,6 +530,29 @@ class NormalUpstreamTests(unittest.TestCase):
                 for canary in ('synthetic-explicit-sudo-canary','synthetic-native-inventory-sudo-canary',
                                'synthetic-bootstrap-canary'):
                     self.assertNotIn(canary,result.stdout+result.stderr)
+
+
+    def test_native_inventory_target_accepts_single_host_alias_and_single_group_member(self):
+        for style in ('host_alias','group'):
+            with self.subTest(style=style),tempfile.TemporaryDirectory(prefix='shared-vm-inventory-target-') as tmp:
+                result,marker=self.run_entrypoint_probe(Path(tmp),create=False,inventory_style=style)
+                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+                self.assertIn('"generic_linux_vm_creation":',result.stdout)
+                self.assertFalse(marker.exists())
+            with self.subTest(style=style,creation=True),tempfile.TemporaryDirectory(prefix='shared-vm-inventory-create-') as tmp:
+                result,marker=self.run_entrypoint_probe(Path(tmp),create=True,inventory_style=style)
+                self.assertNotEqual(result.returncode,0)
+                self.assertTrue(marker.exists(),'A single native host-pattern match must reach the guarded creator')
+                self.assertNotIn('"verified": true',result.stdout)
+
+    def test_native_inventory_target_rejects_missing_or_multiple_matches_before_host_work(self):
+        for style in ('missing','multiple'):
+            with self.subTest(style=style),tempfile.TemporaryDirectory(prefix='shared-vm-inventory-ambiguous-') as tmp:
+                result,marker=self.run_entrypoint_probe(Path(tmp),create=True,inventory_style=style)
+                self.assertNotEqual(result.returncode,0,result.stdout+result.stderr)
+                self.assertFalse(marker.exists())
+                self.assertNotIn('"generic_linux_vm_creation":',result.stdout)
+                self.assertNotIn('"verified": true',result.stdout)
 
 if __name__=='__main__':
     unittest.main()

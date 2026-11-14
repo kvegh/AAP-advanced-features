@@ -1,6 +1,6 @@
 # Shared RHEL VM deployment
 
-Source version **0.0.2**. The canonical creator lives in
+Source version **0.0.3**. The canonical creator lives in
 [`playbooks/deploy_generic_linux_vm.yml`](playbooks/deploy_generic_linux_vm.yml).
 Application submodules have independent versions and workflows.
 

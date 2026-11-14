@@ -1,6 +1,6 @@
 # Generic RHEL VM deployment
 
-Source version **0.0.2** provides the shared basic VM creator at
+Source version **0.0.3** provides the shared basic VM creator at
 [`playbooks/deploy_generic_linux_vm.yml`](../playbooks/deploy_generic_linux_vm.yml).
 Application code remains in its own project. The original Assistant creator
 supplies the implementation being relocated; this source removes its dependency
@@ -35,8 +35,10 @@ of this creator.
 
 ## Inputs and prerequisites
 
-Use the existing supported Core 2.20 EE and an inventory with exactly one host
-in `hypervisor`. Hypervisor connection settings must match the protected pin.
+Use the existing supported Core 2.20 EE and an inventory where the Ansible
+pattern `hypervisor` selects exactly one host. A host named `hypervisor` or a
+single-member group works; zero or multiple matches are refused before SSH.
+Hypervisor connection settings must match the protected pin.
 Existing privilege escalation and network access must already work; this source
 does not install controller dependencies or change SSH trust settings.
 For prepared images, omitting `guest_become_password` preserves the existing
@@ -133,7 +135,7 @@ creation; it does not prove customization, boot or guest access.
 
 ## Verification and acceptance status
 
-The current frozen executable source passed 27 focused synthetic tests and
+The current frozen executable source passed 29 focused synthetic tests and
 playbook syntax using actual Core **2.20.10** in the cached AAP 2.7 minimal EE:
 `registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9@sha256:aea45867ebbfcb57bba69b3b6e33542dbbe95f237dfdf35e8b68773b4f3268f8`.
 Local image ID was
@@ -141,6 +143,11 @@ Local image ID was
 Strict production lint separately passed with ansible-lint **26.8.0** on the
 development host's Core **2.16.19**. That lint result does not establish complete
 target-Core compatibility or replace the actual Core 2.20 syntax/tests.
+The first native AAP attempt stopped at local validation because the earlier
+check required a group and rejected a valid named host. The correction uses the
+same native host-pattern lookup as the play; it changes no inventory or SSH
+policy. Successful VM creation remains to be verified on the corrected pin.
+
 Tests cover protected-file loading, routing/pin/hash/bridge failures, image-mode
 behavior, explicit no-creation truthfulness, partial-tag refusal, existing-disk
 preservation and root-growth behavior. Independent source re-review confirmed

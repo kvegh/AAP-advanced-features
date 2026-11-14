@@ -2,7 +2,7 @@
 - name: Require one consistent protected target and valid guest identity
   ansible.builtin.assert:
     that:
-      - groups.hypervisor | default([]) | length == 1
+      - __generic_linux_vm_target_hosts | length == 1
       - linux_vm_deployment_name is match('^[a-z][a-z0-9-]{0,62}$')
       - linux_vm_hostname is string
       - linux_vm_hostname | length <= 253
@@ -21,7 +21,7 @@
       - provisioning.network_bridge is match('^[A-Za-z0-9_.-]{1,15}$')
       - >-
         provisioning.hypervisor_pin | linux_vm_recovery_pin(
-          hostvars[groups.hypervisor[0]].ansible_host | default(groups.hypervisor[0])) is mapping
+          hostvars[__generic_linux_vm_target_hosts[0]].ansible_host | default(__generic_linux_vm_target_hosts[0])) is mapping
     fail_msg: Supply one matching protected hypervisor route and valid VM resources, image hash and guest hostname.
     quiet: true
   no_log: true
